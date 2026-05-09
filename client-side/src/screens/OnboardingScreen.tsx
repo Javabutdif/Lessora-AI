@@ -13,18 +13,19 @@ export default function OnboardingScreen({ navigation }: Props) {
     <SafeAreaView className="flex-1 bg-soft-gray">
       <View className="flex-1 justify-center items-center px-6 pt-10 pb-6">
         <View className="flex-1 justify-center items-center w-full">
-          {/* Logo representation */}
-          <View className="w-32 h-32 bg-white rounded-3xl items-center justify-center shadow-xl shadow-royal/20 mb-10">
-            <Text className="text-navy font-poppins-bold text-6xl">L</Text>
-            <View className="absolute top-4 right-4 w-3 h-3 bg-electric rounded-full" />
-            <View className="absolute bottom-4 left-4 w-3 h-3 bg-purple rounded-full" />
-          </View>
-          
+          {/* Logo */}
+          <Image
+            source={require("../assets/LessoraLogo.png")}
+            style={{ width: 120, height: 120, marginBottom: 40 }}
+            resizeMode="contain"
+          />
+
           <Text className="text-primary font-poppins-bold text-3xl text-center mb-4">
             AI-Powered Lesson Planning
           </Text>
           <Text className="text-secondary font-poppins text-base text-center px-4 leading-relaxed">
-            Create engaging, standards-aligned lesson plans in seconds. Empower your teaching with Lessora AI.
+            Create engaging, standards-aligned lesson plans in seconds. Empower
+            your teaching with Lessora AI.
           </Text>
         </View>
 

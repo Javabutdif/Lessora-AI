@@ -9,8 +9,7 @@ export default function LandingScreen({ navigation }: Props) {
     <View style={styles.container}>
       <Text style={styles.title}>Lessora AI Mobile</Text>
       <Text style={styles.subtitle}>
-        A simple React Native app with login and registration workflows backed
-        by Express.
+       AI-Powered Lesson Planning
       </Text>
 
       <Pressable
