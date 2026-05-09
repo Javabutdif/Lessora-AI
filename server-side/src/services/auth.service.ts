@@ -1,37 +1,47 @@
-import { randomUUID } from "crypto";
 import { LoginPayload, RegisterPayload } from "../schemas/auth.schema";
-
-interface UserRecord {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-}
-
-const users: UserRecord[] = [];
+import { User } from "../schemas/user.schema";
+import bcrypt from "bcryptjs";
 
 export async function registerUser({ name, email, password }: RegisterPayload) {
-  const existing = users.find((user) => user.email === email.toLowerCase());
+  const emailLower = email.toLowerCase();
+  const existing = await User.findOne({ email: emailLower });
+  
   if (existing) {
     throw new Error("Account already exists for this email");
   }
 
-  const user: UserRecord = {
-    id: randomUUID(),
-    name,
-    email: email.toLowerCase(),
-    password,
-  };
+  const nameParts = name.trim().split(" ");
+  const firstName = nameParts[0] || "User";
+  const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
+  const username = emailLower.split("@")[0] + Math.floor(Math.random() * 10000);
 
-  users.push(user);
-  return { id: user.id, name: user.name, email: user.email };
+  const passwordHash = await bcrypt.hash(password, 10);
+
+  const user = await User.create({
+    email: emailLower,
+    username,
+    passwordHash,
+    firstName,
+    lastName,
+   
+  });
+
+  return { id: user._id.toString(), name, email: user.email };
 }
 
 export async function loginUser({ email, password }: LoginPayload) {
-  const user = users.find((record) => record.email === email.toLowerCase());
-  if (!user || user.password !== password) {
+  const emailLower = email.toLowerCase();
+  const user = await User.findOne({ email: emailLower }).select("+passwordHash");
+  
+  if (!user) {
     throw new Error("Invalid email or password");
   }
 
-  return { id: user.id, name: user.name, email: user.email };
+  const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+  if (!isValidPassword) {
+    throw new Error("Invalid email or password");
+  }
+
+  const name = `${user.firstName} ${user.lastName}`.trim();
+  return { id: user._id.toString(), name, email: user.email };
 }

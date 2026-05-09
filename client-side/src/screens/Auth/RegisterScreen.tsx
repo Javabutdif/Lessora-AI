@@ -1,15 +1,56 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, SafeAreaView, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../navigation/AppNavigator";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
+import { register } from "../../services/api";
+import Toast from "react-native-toast-message";
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Register">;
 };
 
 export default function RegisterScreen({ navigation }: Props) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleRegister = async () => {
+    if (!name || !email || !password) {
+      setErrorMessage("Please fill in all fields.");
+      return;
+    }
+    
+    try {
+      setIsLoading(true);
+      setErrorMessage("");
+      const res = await register({ name, email, password });
+      
+      if(res){
+      Toast.show({
+        type: "success",
+        text1: "Registration Successful",
+        text2: "Your account has been created.",
+      });
+    }
+      // Optionally navigate after a short delay or immediately
+      // navigation.navigate("Main");
+    } catch (error: any) {
+      const msg = error.message || "An error occurred during registration.";
+      setErrorMessage(msg);
+      Toast.show({
+        type: "error",
+        text1: "Registration Failed",
+        text2: msg,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-soft-gray">
       <KeyboardAvoidingView
@@ -25,11 +66,18 @@ export default function RegisterScreen({ navigation }: Props) {
           </View>
 
           <View className="bg-white p-6 rounded-3xl shadow-sm shadow-navy/5 mb-8">
+            {errorMessage ? (
+              <Text className="text-red-500 font-poppins text-sm mb-4 text-center">
+                {errorMessage}
+              </Text>
+            ) : null}
             <Input
               label="Full Name"
               placeholder="Jane Doe"
               autoCapitalize="words"
               icon="person-outline"
+              value={name}
+              onChangeText={setName}
             />
             <Input
               label="Email Address"
@@ -37,19 +85,24 @@ export default function RegisterScreen({ navigation }: Props) {
               keyboardType="email-address"
               autoCapitalize="none"
               icon="mail-outline"
+              value={email}
+              onChangeText={setEmail}
             />
             <Input
               label="Password"
               placeholder="••••••••"
               isPassword
               icon="lock-closed-outline"
+              value={password}
+              onChangeText={setPassword}
             />
             
             <View className="mt-6">
               <Button
-                title="Sign Up"
+                title={isLoading ? "Signing Up..." : "Sign Up"}
                 variant="glowing"
-                onPress={() => navigation.navigate("Main")}
+                onPress={handleRegister}
+                disabled={isLoading}
               />
             </View>
           </View>

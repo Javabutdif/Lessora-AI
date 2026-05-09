@@ -11,7 +11,7 @@ config({ path: path.resolve(__dirname, "../.env") });
 const mongoUri = process.env.MONGODB_URI;
 
 if (!mongoUri) {
-  // eslint-disable-next-line no-console
+  
   console.warn("MONGODB_URI is not set. MongoDB connection was skipped.");
 } else {
   mongoose
@@ -19,11 +19,11 @@ if (!mongoUri) {
       dbName: process.env.MONGODB_DBNAME,
     })
     .then(() => {
-      // eslint-disable-next-line no-console
+      
       console.log("MongoDB connected successfully");
     })
     .catch((error) => {
-      // eslint-disable-next-line no-console
+      
       console.error("MongoDB connection failed:", error);
     });
 }

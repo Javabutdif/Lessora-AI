@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from "@expo-google-fonts/poppins";
 import * as SplashScreen from "expo-splash-screen";
+import Toast from 'react-native-toast-message';
 import "./global.css";
 import AppNavigator from "./src/navigation/AppNavigator";
 
@@ -26,8 +27,11 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <AppNavigator />
-    </NavigationContainer>
+    <>
+      <NavigationContainer>
+        <AppNavigator />
+      </NavigationContainer>
+      <Toast />
+    </>
   );
 }

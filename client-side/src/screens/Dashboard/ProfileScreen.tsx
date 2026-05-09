@@ -2,8 +2,14 @@ import React from "react";
 import { View, Text, SafeAreaView, ScrollView, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Button from "../../components/ui/Button";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../navigation/AppNavigator";
 
-export default function ProfileScreen() {
+type Props = {
+  navigation: NativeStackNavigationProp<RootStackParamList, "Main">;
+};
+
+export default function ProfileScreen({ navigation }: Props) {
   return (
     <SafeAreaView className="flex-1 bg-soft-gray">
       <ScrollView contentContainerStyle={{ padding: 24 }}>
@@ -35,7 +41,7 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
-        <Button title="Log Out" variant="outline" className="mt-4" />
+        <Button title="Log Out" variant="outline" className="mt-4" onPress={() => navigation.navigate("Login")} />
       </ScrollView>
     </SafeAreaView>
   );

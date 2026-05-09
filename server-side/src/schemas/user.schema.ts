@@ -17,7 +17,7 @@ export interface IUser extends Document {
   lastName: string;
   avatar?: string;
   bio?: string;
-  role: "student" | "instructor" | "admin";
+  role: "teacher";
   isVerified: boolean;
   isActive: boolean;
   lastLogin?: Date;
@@ -67,8 +67,8 @@ const UserSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ["student", "instructor", "admin"],
-      default: "student",
+     
+      default: "teacher",
       index: true,
     },
     isVerified: {
