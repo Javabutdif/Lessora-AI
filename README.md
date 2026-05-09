@@ -33,6 +33,13 @@ npx expo start
 
 Open the Expo URL with Expo Go on your phone, or use `expo start --lan` to connect over your local network.
 
+### Building for Production (Client)
+
+The client is configured with Expo Application Services (EAS) for cloud building. 
+- You can find the EAS workflows in `client-side/.eas/workflows`.
+- To generate an APK: `cd client-side && npx eas-cli build -p android --profile preview`
+- To generate an App Bundle (Play Store): `cd client-side && npx eas-cli build -p android --profile production`
+
 ## Notes
 
 - The logo is stored in `assets/Lessora-ai logo.png`.
