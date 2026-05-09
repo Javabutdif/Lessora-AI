@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "Lessora AI Client",
+    "slug": "lessora-ai-client",
+    "version": "1.0.0",
+    "sdkVersion": "49.0.0",
+    "platforms": ["ios", "android", "web"],
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"]
+  }
+}

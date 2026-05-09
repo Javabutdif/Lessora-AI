@@ -1,0 +1,32 @@
+
+
+# AI Workflow
+docs/ai/handoffs/
+tmp/
+
+# Node and Expo
+node_modules/
+client-side/node_modules/
+server-side/node_modules/
+.expo/
+client-side/.expo/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment files
+*.env
+server-side/.env
+client-side/.env
+
+# Build and editor files
+build/
+dist/
+coverage/
+.DS_Store
+.vscode/
+.idea/
