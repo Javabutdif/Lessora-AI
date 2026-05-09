@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../App";
+import { RootStackParamList } from "../navigation/AppNavigator";
 import { login } from "@services/api";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;

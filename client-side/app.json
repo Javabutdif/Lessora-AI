@@ -3,11 +3,24 @@
     "name": "Lessora AI Client",
     "slug": "lessora-ai-client",
     "version": "1.0.0",
-    "sdkVersion": "49.0.0",
-    "platforms": ["ios", "android", "web"],
+    "sdkVersion": "54.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "updates": {
+      "enabled": false,
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"]
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "plugins": [
+      "expo-font"
+    ],
+    "android": {
+      "package": "com.lessora.client"
+    }
   }
 }

@@ -1,35 +1,33 @@
 import "react-native-gesture-handler";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LandingScreen from "./src/screens/LandingScreen";
-import LoginScreen from "./src/screens/LoginScreen";
-import RegisterScreen from "./src/screens/RegisterScreen";
-import HomeScreen from "./src/screens/HomeScreen";
+import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from "@expo-google-fonts/poppins";
+import * as SplashScreen from "expo-splash-screen";
+import "./global.css";
+import AppNavigator from "./src/navigation/AppNavigator";
 
-export type RootStackParamList = {
-  Landing: undefined;
-  Login: undefined;
-  Register: undefined;
-  Home: undefined;
-};
-
-const Stack = createNativeStackNavigator<RootStackParamList>();
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
+  const [fontsLoaded, fontError] = useFonts({
+    "Poppins-Regular": Poppins_400Regular,
+    "Poppins-SemiBold": Poppins_600SemiBold,
+    "Poppins-Bold": Poppins_700Bold,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
+
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Landing"
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: "#f8fafc" },
-        }}
-      >
-        <Stack.Screen name="Landing" component={LandingScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-      </Stack.Navigator>
+      <AppNavigator />
     </NavigationContainer>
   );
 }
