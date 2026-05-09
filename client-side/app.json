@@ -21,6 +21,11 @@
     ],
     "android": {
       "package": "com.lessora.client"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "276aada3-b5e4-445d-9f81-9108bd01b556"
+      }
     }
   }
 }
