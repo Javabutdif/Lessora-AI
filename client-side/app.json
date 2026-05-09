@@ -3,6 +3,7 @@
     "name": "Lessora AI Client",
     "slug": "lessora-ai-client",
     "version": "1.0.0",
+    "userInterfaceStyle": "automatic",
     "sdkVersion": "54.0.0",
     "platforms": [
       "ios",
