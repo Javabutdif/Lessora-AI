@@ -160,7 +160,7 @@ This is a dummy lesson plan. Replace this with real OpenAI API integration.
       role: OpenAIConfig.role,
       model: OpenAIConfig.model,
       constraints: OpenAIConfig.constraints,
-      focusArea: OpenAIConfig.focusArea,
+      focusArea: OpenAIConfig.constraints.focusArea,
     };
   }
 }
