@@ -2,10 +2,10 @@ import React from "react";
 import {
   View,
   Text,
-  SafeAreaView,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Card from "../../components/ui/Card";
 import FloatingAssistant from "../../components/ui/FloatingAssistant";

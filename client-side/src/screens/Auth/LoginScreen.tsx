@@ -2,11 +2,11 @@ import React from "react";
 import {
   View,
   Text,
-  SafeAreaView,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../navigation/AppNavigator";
 import Input from "../../components/ui/Input";

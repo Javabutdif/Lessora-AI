@@ -2,11 +2,11 @@ import React from "react";
 import {
   View,
   Text,
-  SafeAreaView,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
 import Input from "../../components/ui/Input";
