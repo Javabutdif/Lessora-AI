@@ -8,6 +8,17 @@
 - [x] Protect app routes through navigation stack selection.
 - [x] Run validation.
 
+## Linked artifacts
+
+- spec: `docs/specs/2026-05-24-auth-session-context.md`
+- plan: `docs/plans/2026-05-24-auth-session-context.md`
+
+## Current state
+
+- status: in review
+- next action: review auth session implementation and validation blockers
+- blockers: full repo validation has pre-existing TypeScript blockers outside the auth session files
+
 ## Relevant files
 
 - `server-side/src/services/auth.service.ts`

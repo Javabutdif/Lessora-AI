@@ -4,6 +4,12 @@
 
 Connect the Express server to MongoDB during app startup using the existing environment variables.
 
+## Current state
+
+- status: completed
+- next action: none
+- blockers: none
+
 ## Status
 
 - [x] Inspect server startup and package dependencies

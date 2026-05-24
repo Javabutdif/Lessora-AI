@@ -1,0 +1,7 @@
+{
+  "name": "lessora-ai",
+  "private": true,
+  "scripts": {
+    "workflow": "node scripts/workflow.mjs"
+  }
+}

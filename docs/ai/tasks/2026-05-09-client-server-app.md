@@ -4,6 +4,12 @@
 
 Create a new React Native client app under `client-side/` and a Node + Express API in `server-side/`. The client includes a landing page, login, register, and home screen. The server exposes auth endpoints and a health check.
 
+## Current state
+
+- status: completed
+- next action: none
+- blockers: none
+
 ## Files created
 
 - `client-side/package.json`
