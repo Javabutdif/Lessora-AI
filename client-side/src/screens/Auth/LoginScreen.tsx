@@ -11,8 +11,9 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../navigation/AppNavigator";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
-import { login } from "../../services/api";
+import { login as loginRequest } from "../../services/api";
 import Toast from "react-native-toast-message";
+import { useAuth } from "../../context/AuthContext";
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Login">;
@@ -21,6 +22,7 @@ type Props = {
 export default function LoginScreen({ navigation }: Props) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const { login } = useAuth();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -33,13 +35,13 @@ export default function LoginScreen({ navigation }: Props) {
     }
 
     try {
-      const user = await login({ email, password });
+      const session = await loginRequest({ email, password });
+      await login(session.token);
       Toast.show({
         type: "success",
-        text1: `Welcome back, ${user.name}!`,
+        text1: `Welcome back, ${session.user.name}!`,
         text2: "You have successfully logged in.",
       });
-      navigation.navigate("Main");
     } catch (error: any) {
       const msg = error.message || "An error occurred during login.";
       Toast.show({

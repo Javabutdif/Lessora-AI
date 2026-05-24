@@ -9,6 +9,17 @@ export type RegisterPayload = {
   password: string;
 };
 
+export type AuthUser = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+export type LoginResponse = {
+  token: string;
+  user: AuthUser;
+};
+
 const API_BASE = "http://localhost:4000/api";
 
 async function requestData<T>(path: string, body: unknown): Promise<T> {
@@ -44,10 +55,7 @@ async function requestMessage(path: string, body: unknown): Promise<string> {
 }
 
 export async function login(payload: LoginPayload) {
-  return requestData<{ id: string; name: string; email: string }>(
-    "/auth/login",
-    payload,
-  );
+  return requestData<LoginResponse>("/auth/login", payload);
 }
 
 export async function register(payload: RegisterPayload) {

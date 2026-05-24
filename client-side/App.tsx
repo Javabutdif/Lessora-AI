@@ -6,6 +6,7 @@ import * as SplashScreen from "expo-splash-screen";
 import Toast from 'react-native-toast-message';
 import "./global.css";
 import AppNavigator from "./src/navigation/AppNavigator";
+import { AuthProvider } from "./src/context/AuthContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,9 +29,11 @@ export default function App() {
 
   return (
     <>
-      <NavigationContainer>
-        <AppNavigator />
-      </NavigationContainer>
+      <AuthProvider>
+        <NavigationContainer>
+          <AppNavigator />
+        </NavigationContainer>
+      </AuthProvider>
       <Toast />
     </>
   );

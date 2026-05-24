@@ -1,6 +1,23 @@
 import { LoginPayload, RegisterPayload } from "../schemas/auth.schema";
 import { User } from "../schemas/user.schema";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+const JWT_EXPIRES_IN = "1h";
+
+type AuthUser = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+function getJwtSecret() {
+  return process.env.JWT_SECRET || "lessora-dev-secret-change-me";
+}
+
+function signAuthToken(user: AuthUser) {
+  return jwt.sign({ user }, getJwtSecret(), { expiresIn: JWT_EXPIRES_IN });
+}
 
 export async function registerUser({ name, email, password }: RegisterPayload) {
   const existing = await User.findOne({ email });
@@ -40,5 +57,11 @@ export async function loginUser({ email, password }: LoginPayload) {
   }
 
   const name = `${user.firstName} ${user.lastName}`.trim();
-  return { id: user._id.toString(), name, email: user.email };
+  const authUser = { id: user._id.toString(), name, email: user.email };
+  const token = signAuthToken(authUser);
+
+  user.lastLogin = new Date();
+  await user.save();
+
+  return { token, user: authUser };
 }

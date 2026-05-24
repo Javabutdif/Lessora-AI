@@ -19,7 +19,7 @@ export async function register(
 ) {
   try {
     const input = registerSchema.parse(req.body);
-    const user = await registerUser(input);
+    await registerUser(input);
     res.status(200).json({ message: "Register Successful", error: null });
   } catch (error) {
     next(error);

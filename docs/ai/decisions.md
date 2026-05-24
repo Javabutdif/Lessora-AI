@@ -4,6 +4,14 @@ Use this file for durable decisions that affect how the product or repository sh
 
 Keep entries short, specific, and ordered with the newest decision at the top.
 
+### Client auth context owns JWT session state
+
+- date: 2026-05-24
+- status: accepted
+- context: The mobile client needs token persistence, route protection, and automatic logout when a session expires.
+- decision: Use a centralized React Auth Context with AsyncStorage persistence and `jwt-decode` expiration checks; protected React Navigation screens are rendered only when authenticated.
+- consequences: Auth state has one owner on the client, and future protected API calls can read the token from context. AsyncStorage is sufficient for the current implementation but should be replaced with SecureStore or keychain-backed storage for stronger token-at-rest protection.
+
 ## What belongs here
 
 - workflow continuity rules that should stay true across tasks and tool switches
