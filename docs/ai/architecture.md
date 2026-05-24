@@ -14,6 +14,7 @@ Keep it current enough that a new agent can understand where things live, what b
 ## Boundaries
 
 - (Describe module boundaries and coupling rules)
+- API-oriented client and server changes must follow [`docs/ai/lessora-structure-workflow.md`](./lessora-structure-workflow.md).
 - Doc templates (`docs/specs/TEMPLATE.md`, `docs/plans/TEMPLATE.md`, `docs/ai/tasks/TEMPLATE.md`) must stay in sync with the scaffold output
 - Tool adapter files (`.claude/`, `.github/`, `.agent/`, `CLAUDE.md`, `GEMINI.md`) must stay thin — they point back to `AGENTS.md` and shared docs rather than duplicating guidance
 
