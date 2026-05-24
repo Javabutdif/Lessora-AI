@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, SafeAreaView, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../navigation/AppNavigator";
 import Input from "../../components/ui/Input";
@@ -23,19 +30,20 @@ export default function RegisterScreen({ navigation }: Props) {
       setErrorMessage("Please fill in all fields.");
       return;
     }
-    
+
     try {
       setIsLoading(true);
       setErrorMessage("");
       const res = await register({ name, email, password });
-      
-      if(res){
-      Toast.show({
-        type: "success",
-        text1: "Registration Successful",
-        text2: "Your account has been created.",
-      });
-    }
+
+      if (res) {
+        Toast.show({
+          type: "success",
+          text1: res,
+          text2: "Your account has been created.",
+        });
+        navigation.navigate("Login");
+      }
       // Optionally navigate after a short delay or immediately
       // navigation.navigate("Main");
     } catch (error: any) {
@@ -57,9 +65,17 @@ export default function RegisterScreen({ navigation }: Props) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
-        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center", padding: 24 }}>
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: "center",
+            padding: 24,
+          }}
+        >
           <View className="mb-10">
-            <Text className="text-navy font-poppins-bold text-4xl mb-2">Create Account</Text>
+            <Text className="text-navy font-poppins-bold text-4xl mb-2">
+              Create Account
+            </Text>
             <Text className="text-secondary font-poppins text-base">
               Join Lessora AI and supercharge your teaching.
             </Text>
@@ -96,7 +112,7 @@ export default function RegisterScreen({ navigation }: Props) {
               value={password}
               onChangeText={setPassword}
             />
-            
+
             <View className="mt-6">
               <Button
                 title={isLoading ? "Signing Up..." : "Sign Up"}
@@ -108,7 +124,9 @@ export default function RegisterScreen({ navigation }: Props) {
           </View>
 
           <View className="flex-row justify-center mt-4">
-            <Text className="text-secondary font-poppins text-sm">Already have an account? </Text>
+            <Text className="text-secondary font-poppins text-sm">
+              Already have an account?{" "}
+            </Text>
             <Text
               className="text-royal font-poppins-semi text-sm"
               onPress={() => navigation.navigate("Login")}

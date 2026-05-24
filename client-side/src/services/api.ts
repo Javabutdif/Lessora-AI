@@ -11,7 +11,7 @@ export type RegisterPayload = {
 
 const API_BASE = "http://localhost:4000/api";
 
-async function request<T>(path: string, body: unknown) {
+async function requestData<T>(path: string, body: unknown): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -24,19 +24,32 @@ async function request<T>(path: string, body: unknown) {
     throw new Error(payload?.error?.message || "Request failed");
   }
 
-  return payload.data as T;
+  return payload.data;
+}
+
+async function requestMessage(path: string, body: unknown): Promise<string> {
+  const response = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  const payload = await response.json();
+
+  if (!response.ok) {
+    throw new Error(payload?.error?.message || "Request failed");
+  }
+
+  return payload.message;
 }
 
 export async function login(payload: LoginPayload) {
-  return request<{ id: string; name: string; email: string }>(
+  return requestData<{ id: string; name: string; email: string }>(
     "/auth/login",
     payload,
   );
 }
 
 export async function register(payload: RegisterPayload) {
-  return request<{ id: string; name: string; email: string }>(
-    "/auth/register",
-    payload,
-  );
+  return requestMessage("/auth/register", payload);
 }

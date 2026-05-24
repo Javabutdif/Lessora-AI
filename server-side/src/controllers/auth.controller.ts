@@ -20,7 +20,7 @@ export async function register(
   try {
     const input = registerSchema.parse(req.body);
     const user = await registerUser(input);
-    res.status(201).json({ data: user, error: null });
+    res.status(200).json({ message: "Register Successful", error: null });
   } catch (error) {
     next(error);
   }

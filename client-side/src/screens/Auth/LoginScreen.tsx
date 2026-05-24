@@ -1,24 +1,72 @@
 import React from "react";
-import { View, Text, SafeAreaView, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../navigation/AppNavigator";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
+import { login } from "../../services/api";
+import Toast from "react-native-toast-message";
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Login">;
 };
 
 export default function LoginScreen({ navigation }: Props) {
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Toast.show({
+        type: "error",
+        text1: "Validation Error",
+        text2: "Please fill in all fields.",
+      });
+      return;
+    }
+
+    try {
+      const user = await login({ email, password });
+      Toast.show({
+        type: "success",
+        text1: `Welcome back, ${user.name}!`,
+        text2: "You have successfully logged in.",
+      });
+      navigation.navigate("Main");
+    } catch (error: any) {
+      const msg = error.message || "An error occurred during login.";
+      Toast.show({
+        type: "error",
+        text1: "Login Failed",
+        text2: msg,
+      });
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-soft-gray">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
-        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center", padding: 24 }}>
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: "center",
+            padding: 24,
+          }}
+        >
           <View className="mb-10">
-            <Text className="text-navy font-poppins-bold text-4xl mb-2">Welcome Back</Text>
+            <Text className="text-navy font-poppins-bold text-4xl mb-2">
+              Welcome Back
+            </Text>
             <Text className="text-secondary font-poppins text-base">
               Sign in to continue planning with Lessora AI.
             </Text>
@@ -31,12 +79,16 @@ export default function LoginScreen({ navigation }: Props) {
               keyboardType="email-address"
               autoCapitalize="none"
               icon="mail-outline"
+              value={email}
+              onChangeText={setEmail}
             />
             <Input
               label="Password"
               placeholder="••••••••"
               isPassword
               icon="lock-closed-outline"
+              value={password}
+              onChangeText={setPassword}
             />
             <Text className="text-royal font-poppins-semi text-sm text-right mt-2 mb-6">
               Forgot Password?
@@ -45,12 +97,14 @@ export default function LoginScreen({ navigation }: Props) {
             <Button
               title="Log In"
               variant="primary"
-              onPress={() => navigation.navigate("Main")}
+              onPress={() => handleLogin()}
             />
           </View>
 
           <View className="flex-row justify-center mt-4">
-            <Text className="text-secondary font-poppins text-sm">Don't have an account? </Text>
+            <Text className="text-secondary font-poppins text-sm">
+              Don't have an account?{" "}
+            </Text>
             <Text
               className="text-royal font-poppins-semi text-sm"
               onPress={() => navigation.navigate("Register")}
