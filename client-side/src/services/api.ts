@@ -20,7 +20,7 @@ export type LoginResponse = {
   user: AuthUser;
 };
 
-const API_BASE = "http://localhost:4000/api";
+const API_BASE = "https://worthy-joby-psits-fd575fc8.koyeb.app/api";
 
 async function requestData<T>(path: string, body: unknown): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
