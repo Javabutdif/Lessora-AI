@@ -30,7 +30,6 @@
 - `client-side/src/screens/Auth/LoginScreen.tsx`
 - `client-side/src/screens/Dashboard/ProfileScreen.tsx`
 - `client-side/package.json`
-- `client-side/package-lock.json`
 
 ## Notes
 
