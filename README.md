@@ -1,6 +1,6 @@
 # Lessora AI
 
-![Lessora AI logo](.client-side/src/assets/LessoraLogo.png)
+<img src="./client-side/src/assets/LessoraLogo.png" alt="Lessora AI logo" width="300" />
 
 Lessora AI is an AI-powered lesson planning application for teachers. It helps educators turn a topic, grade level, class duration, and learning goals into organized lesson plans that are easier to prepare, review, and reuse.
 
