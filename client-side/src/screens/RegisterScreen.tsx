@@ -23,7 +23,7 @@ export default function RegisterScreen({ navigation }: Props) {
     setLoading(true);
     try {
       await register({ name, email, password });
-      navigation.replace("Home");
+      navigation.replace("Main");
     } catch (error) {
       Alert.alert(
         "Registration failed",

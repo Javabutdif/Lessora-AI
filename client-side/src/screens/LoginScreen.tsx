@@ -22,7 +22,7 @@ export default function LoginScreen({ navigation }: Props) {
     setLoading(true);
     try {
       await login({ email, password });
-      navigation.replace("Home");
+      navigation.replace("Main");
     } catch (error) {
       Alert.alert(
         "Login failed",

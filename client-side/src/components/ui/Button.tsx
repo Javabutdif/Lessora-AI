@@ -1,5 +1,10 @@
 import React from "react";
-import { TouchableOpacity, Text, TouchableOpacityProps, View } from "react-native";
+import {
+  ActivityIndicator,
+  TouchableOpacity,
+  Text,
+  TouchableOpacityProps,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -15,9 +20,12 @@ export default function Button({
   variant = "primary",
   icon,
   isLoading,
+  disabled,
   className = "",
   ...props
 }: ButtonProps) {
+  const isDisabled = disabled || isLoading;
+
   const getContainerStyles = () => {
     switch (variant) {
       case "primary":
@@ -51,14 +59,23 @@ export default function Button({
 
   if (variant === "glowing") {
     return (
-      <TouchableOpacity activeOpacity={0.8} {...props} className={`w-full ${className}`}>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        disabled={isDisabled}
+        {...props}
+        className={`w-full ${isDisabled ? "opacity-70" : ""} ${className}`}
+      >
         <LinearGradient
           colors={["#4A7DFF", "#8A3FFC"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           className="py-4 rounded-2xl flex-row justify-center items-center shadow-lg shadow-purple/50"
         >
-          {icon && <Ionicons name={icon} size={20} color="#FFFFFF" className="mr-2" />}
+          {isLoading ? (
+            <ActivityIndicator color="#FFFFFF" size="small" style={{ marginRight: 8 }} />
+          ) : icon ? (
+            <Ionicons name={icon} size={20} color="#FFFFFF" className="mr-2" />
+          ) : null}
           <Text className={getTextStyle()}>{title}</Text>
         </LinearGradient>
       </TouchableOpacity>
@@ -68,17 +85,24 @@ export default function Button({
   return (
     <TouchableOpacity
       activeOpacity={0.8}
-      className={`${getContainerStyles()} ${className}`}
+      disabled={isDisabled}
+      className={`${getContainerStyles()} ${isDisabled ? "opacity-70" : ""} ${className}`}
       {...props}
     >
-      {icon && (
+      {isLoading ? (
+        <ActivityIndicator
+          color={variant === "primary" ? "#FFFFFF" : "#2F5BFF"}
+          size="small"
+          style={{ marginRight: 8 }}
+        />
+      ) : icon ? (
         <Ionicons
           name={icon}
           size={20}
           color={variant === "primary" ? "#FFFFFF" : "#2F5BFF"}
           style={{ marginRight: 8 }}
         />
-      )}
+      ) : null}
       <Text className={getTextStyle()}>{title}</Text>
     </TouchableOpacity>
   );

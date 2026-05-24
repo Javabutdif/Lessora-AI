@@ -21,37 +21,70 @@ export type LoginResponse = {
 };
 
 const API_BASE = "https://worthy-joby-psits-fd575fc8.koyeb.app/api";
+type RequestLoadingListener = (activeRequestCount: number) => void;
+
+const requestLoadingListeners = new Set<RequestLoadingListener>();
+let activeRequestCount = 0;
+
+function emitRequestLoading() {
+  requestLoadingListeners.forEach((listener) => listener(activeRequestCount));
+}
+
+export function subscribeToRequestLoading(listener: RequestLoadingListener) {
+  requestLoadingListeners.add(listener);
+  listener(activeRequestCount);
+
+  return () => {
+    requestLoadingListeners.delete(listener);
+  };
+}
+
+async function trackRequest<T>(request: () => Promise<T>): Promise<T> {
+  activeRequestCount += 1;
+  emitRequestLoading();
+
+  try {
+    return await request();
+  } finally {
+    activeRequestCount = Math.max(0, activeRequestCount - 1);
+    emitRequestLoading();
+  }
+}
 
 async function requestData<T>(path: string, body: unknown): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+  return trackRequest(async () => {
+    const response = await fetch(`${API_BASE}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    const payload = await response.json();
+
+    if (!response.ok) {
+      throw new Error(payload?.error?.message || "Request failed");
+    }
+
+    return payload.data;
   });
-
-  const payload = await response.json();
-
-  if (!response.ok) {
-    throw new Error(payload?.error?.message || "Request failed");
-  }
-
-  return payload.data;
 }
 
 async function requestMessage(path: string, body: unknown): Promise<string> {
-  const response = await fetch(`${API_BASE}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+  return trackRequest(async () => {
+    const response = await fetch(`${API_BASE}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    const payload = await response.json();
+
+    if (!response.ok) {
+      throw new Error(payload?.error?.message || "Request failed");
+    }
+
+    return payload.message;
   });
-
-  const payload = await response.json();
-
-  if (!response.ok) {
-    throw new Error(payload?.error?.message || "Request failed");
-  }
-
-  return payload.message;
 }
 
 export async function login(payload: LoginPayload) {

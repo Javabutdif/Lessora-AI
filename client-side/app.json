@@ -1,8 +1,9 @@
 {
   "expo": {
-    "name": "Lessora AI Client",
+    "name": "Lessora AI",
     "slug": "lessora-ai-client",
     "version": "1.0.0",
+    "icon": "./src/assets/LessoraLogo.png",
     "userInterfaceStyle": "automatic",
     "sdkVersion": "54.0.0",
     "platforms": [
@@ -18,10 +19,30 @@
       "**/*"
     ],
     "plugins": [
-      "expo-font"
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./src/assets/LessoraLogo.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#F7F8FC"
+        }
+      ]
     ],
+    "splash": {
+      "image": "./src/assets/LessoraLogo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F7F8FC"
+    },
     "android": {
-      "package": "com.lessora.client"
+      "package": "com.lessora.client",
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/LessoraLogo.png",
+        "backgroundColor": "#F7F8FC"
+      }
+    },
+    "web": {
+      "favicon": "./src/assets/LessoraLogo.png"
     },
     "extra": {
       "eas": {

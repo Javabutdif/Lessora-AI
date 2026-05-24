@@ -14,6 +14,7 @@ import Button from "../../components/ui/Button";
 import { login as loginRequest } from "../../services/api";
 import Toast from "react-native-toast-message";
 import { useAuth } from "../../context/AuthContext";
+import { useSuppressGlobalRequestOverlay } from "../../context/RequestLoadingContext";
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Login">;
@@ -22,9 +23,17 @@ type Props = {
 export default function LoginScreen({ navigation }: Props) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const { login } = useAuth();
+  const isLoginLoading = isSubmitting;
+
+  useSuppressGlobalRequestOverlay();
 
   const handleLogin = async () => {
+    if (isSubmitting) {
+      return;
+    }
+
     if (!email || !password) {
       Toast.show({
         type: "error",
@@ -35,6 +44,7 @@ export default function LoginScreen({ navigation }: Props) {
     }
 
     try {
+      setIsSubmitting(true);
       const session = await loginRequest({ email, password });
       await login(session.token);
       Toast.show({
@@ -49,6 +59,8 @@ export default function LoginScreen({ navigation }: Props) {
         text1: "Login Failed",
         text2: msg,
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -83,6 +95,7 @@ export default function LoginScreen({ navigation }: Props) {
               icon="mail-outline"
               value={email}
               onChangeText={setEmail}
+              editable={!isLoginLoading}
             />
             <Input
               label="Password"
@@ -91,15 +104,18 @@ export default function LoginScreen({ navigation }: Props) {
               icon="lock-closed-outline"
               value={password}
               onChangeText={setPassword}
+              editable={!isLoginLoading}
             />
             <Text className="text-royal font-poppins-semi text-sm text-right mt-2 mb-6">
               Forgot Password?
             </Text>
 
             <Button
-              title="Log In"
+              title={isLoginLoading ? "Signing in..." : "Log In"}
               variant="primary"
               onPress={() => handleLogin()}
+              disabled={isLoginLoading}
+              isLoading={isLoginLoading}
             />
           </View>
 

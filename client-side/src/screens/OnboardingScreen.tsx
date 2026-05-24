@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, Image, SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  SafeAreaView,
+  useWindowDimensions,
+} from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import Button from "../components/ui/Button";
@@ -9,6 +15,9 @@ type Props = {
 };
 
 export default function OnboardingScreen({ navigation }: Props) {
+  const { width } = useWindowDimensions();
+  const logoSize = Math.min(width * 0.68, 250);
+
   return (
     <SafeAreaView className="flex-1 bg-soft-gray">
       <View className="flex-1 justify-center items-center px-6 pt-10 pb-6">
@@ -16,8 +25,9 @@ export default function OnboardingScreen({ navigation }: Props) {
           {/* Logo */}
           <Image
             source={require("../assets/LessoraLogo.png")}
-            style={{ width: 120, height: 120, marginBottom: 40 }}
+            style={{ width: logoSize, height: logoSize, marginBottom: 40 }}
             resizeMode="contain"
+            accessibilityLabel="Lessora AI logo"
           />
 
           <Text className="text-primary font-poppins-bold text-3xl text-center mb-4">

@@ -7,6 +7,7 @@ import Toast from 'react-native-toast-message';
 import "./global.css";
 import AppNavigator from "./src/navigation/AppNavigator";
 import { AuthProvider } from "./src/context/AuthContext";
+import { RequestLoadingProvider } from "./src/context/RequestLoadingContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -30,9 +31,11 @@ export default function App() {
   return (
     <>
       <AuthProvider>
-        <NavigationContainer>
-          <AppNavigator />
-        </NavigationContainer>
+        <RequestLoadingProvider>
+          <NavigationContainer>
+            <AppNavigator />
+          </NavigationContainer>
+        </RequestLoadingProvider>
       </AuthProvider>
       <Toast />
     </>

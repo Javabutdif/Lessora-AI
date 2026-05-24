@@ -2,7 +2,7 @@ import { View, Text, Pressable, StyleSheet } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Landing">;
+type Props = NativeStackScreenProps<RootStackParamList, "Onboarding">;
 
 export default function LandingScreen({ navigation }: Props) {
   return (
