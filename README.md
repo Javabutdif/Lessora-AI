@@ -1,6 +1,6 @@
 # Lessora AI
 
-![Lessora AI logo](./assets/Lessora-ai%20logo.png)
+![Lessora AI logo](.client-side/src/assets/LessoraLogo.png)
 
 Lessora AI is an AI-powered lesson planning application for teachers. It helps educators turn a topic, grade level, class duration, and learning goals into organized lesson plans that are easier to prepare, review, and reuse.
 
@@ -17,8 +17,6 @@ The current application includes an Expo React Native client and a Node.js API. 
 - Teacher onboarding with Lessora AI branding and app introduction
 - Account registration and login
 - Secure password hashing on the server
-- JWT-based authenticated sessions
-- Saved mobile sessions with automatic expired-token logout
 - Personalized dashboard greeting using the logged-in teacher profile
 - Recent lesson plan preview area
 - AI suggestion preview card for improving lesson content
@@ -29,15 +27,7 @@ The current application includes an Expo React Native client and a Node.js API. 
   - specific goals or standards
 - Grade-level picker from preschool through senior high school
 - AI lesson generation service structure with placeholder generation logic
-- Lesson plan schema for storing draft text, sessions, objectives, content, activities, status, tags, visibility, and AI metadata
 - Teaching analytics screen with summary cards for plans created, time saved, and average rating
-- Activity overview placeholder for future charting
-- Profile screen with teacher name, email, initials, and account actions
-- Logout flow with confirmation toast
-- Bottom-tab dashboard navigation for Home, Generate, Analytics, and Profile
-- Shared mobile UI components for buttons, cards, inputs, section headers, and assistant-style floating actions
-- MongoDB/Mongoose data models for users and lesson plans
-- Express API structure with validation, error handling, authentication routes, and service boundaries
 
 ## Product Direction
 
@@ -57,4 +47,3 @@ This project is licensed under the Apache License 2.0. See [LICENSE](./LICENSE) 
 ## Contributors
 
 - Jims
-
