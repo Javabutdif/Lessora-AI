@@ -9,6 +9,7 @@ type AuthUser = {
   id: string;
   name: string;
   email: string;
+  role?: string;
   aiResponseCredits?: number;
 };
 
@@ -62,6 +63,7 @@ export async function loginUser({ email, password }: LoginPayload) {
     id: user._id.toString(),
     name,
     email: user.email,
+    role: user.role,
     aiResponseCredits: user.aiResponseCredits ?? 5,
   };
   const token = signAuthToken(authUser);

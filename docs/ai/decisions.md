@@ -28,6 +28,14 @@ Keep entries short, specific, and ordered with the newest decision at the top.
 - decision:
 - consequences:
 
+### Shared React web admin portal on dedicated Vite app
+
+- date: 2026-05-28
+- status: accepted
+- context: The repository needs a second client experience for administrators without duplicating backend ownership.
+- decision: Build a dedicated React + TypeScript web admin under `client-side-admin` that consumes the existing Express API through shared auth and stats endpoints.
+- consequences: The admin portal can evolve independently from the mobile client while continuing to use the same backend server and data contracts.
+
 ## Notes
 
 - Prefer a new entry when a decision would otherwise be easy to forget or reverse incorrectly.

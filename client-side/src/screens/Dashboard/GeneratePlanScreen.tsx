@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import { useFocusEffect } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
@@ -61,10 +62,7 @@ function getGradeLabel(value: string) {
 
 type EditableDocumentBlock = LessonPlanDocumentBlock;
 
-function renderDocumentBlock(
-  block: EditableDocumentBlock,
-  index: number,
-) {
+function renderDocumentBlock(block: EditableDocumentBlock, index: number) {
   if (block.type === "heading") {
     const headingClass =
       block.level === 1
@@ -156,6 +154,25 @@ export default function GeneratePlanScreen({ route }: Props) {
   const [isExporting, setIsExporting] = React.useState(false);
   const [isEditingPreview, setIsEditingPreview] = React.useState(false);
 
+  const resetDraftState = React.useCallback(() => {
+    setTopicSubject("");
+    setSelectedGrade("");
+    setDuration("");
+    setGoalsStandards("");
+    setGeneratedPlan(null);
+    setEditableDocument(null);
+    setIsEditingPreview(false);
+    setIsExporting(false);
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!route.params?.lessonPlanId) {
+        resetDraftState();
+      }
+    }, [resetDraftState, route.params?.lessonPlanId]),
+  );
+
   React.useEffect(() => {
     let isActive = true;
     const lessonPlanId = route.params?.lessonPlanId;
@@ -173,7 +190,8 @@ export default function GeneratePlanScreen({ route }: Props) {
           return;
         }
 
-        setGeneratedPlan(null);
+        resetDraftState();
+        setTopicSubject(plan.title);
         setEditableDocument(plan.document);
         setIsEditingPreview(false);
         Toast.show({
@@ -241,7 +259,9 @@ export default function GeneratePlanScreen({ route }: Props) {
       });
 
       if (!result.document?.blocks?.length) {
-        throw new Error("The generated lesson plan was empty. Please try again.");
+        throw new Error(
+          "The generated lesson plan was empty. Please try again.",
+        );
       }
 
       setGeneratedPlan(result);
@@ -447,7 +467,9 @@ export default function GeneratePlanScreen({ route }: Props) {
                   }
                 >
                   <Ionicons
-                    name={isEditingPreview ? "checkmark-outline" : "pencil-outline"}
+                    name={
+                      isEditingPreview ? "checkmark-outline" : "pencil-outline"
+                    }
                     size={20}
                     color="#2F5BFF"
                   />
@@ -463,7 +485,11 @@ export default function GeneratePlanScreen({ route }: Props) {
               {isEditingPreview ? (
                 <View className="mt-3">
                   {editableDocument.blocks.map((block, index) =>
-                    renderEditableDocumentBlock(block, index, handleUpdateBlock),
+                    renderEditableDocumentBlock(
+                      block,
+                      index,
+                      handleUpdateBlock,
+                    ),
                   )}
                 </View>
               ) : (

@@ -240,8 +240,6 @@ class OpenAIService {
     refinementRequest: string,
     userId: string,
   ): Promise<GenerateLessonPlanResponse> {
-  
-
     const scopeCheck = this.validateRequest(
       `${currentDraftText} ${refinementRequest}`,
     );
@@ -432,13 +430,10 @@ class OpenAIService {
     }
 
     const rawText = this.extractOpenAIText(payload);
-    
 
     const parsed = JSON.parse(rawText);
     const normalizedBlocks = this.normalizeDocumentBlocks(parsed, request);
     this.assertCompleteLessonPlan(normalizedBlocks);
-
-   
 
     return {
       ...parsed,
