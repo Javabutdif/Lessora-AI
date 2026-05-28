@@ -137,9 +137,6 @@ class OpenAIService {
     request: GenerateLessonPlanRequest,
     userId: string,
   ): Promise<GenerateLessonPlanResponse> {
-    console.log(`[OpenAI] Structuring lesson plan: ${request.title}`);
-    console.log(`[OpenAI] Using role: ${OpenAIConfig.role}`);
-
     const scopeCheck = this.validateRequest(
       [
         request.title,
@@ -243,7 +240,7 @@ class OpenAIService {
     refinementRequest: string,
     userId: string,
   ): Promise<GenerateLessonPlanResponse> {
-    console.log("[OpenAI] Refining lesson plan with specialist role");
+  
 
     const scopeCheck = this.validateRequest(
       `${currentDraftText} ${refinementRequest}`,
@@ -253,15 +250,18 @@ class OpenAIService {
       throw new Error(scopeCheck.reason ?? OpenAIConfig.refusalMessage);
     }
 
-    return this.generateLessonPlan({
-      title: "Refined Lesson Plan",
-      subject: "Teacher-provided subject",
-      gradeLevel: "Teacher-provided grade level",
-      duration: 60,
-      numberOfSessions: 1,
-      userDraftText: currentDraftText,
-      templateNotes: `Requested refinement: ${refinementRequest}`,
-    }, userId);
+    return this.generateLessonPlan(
+      {
+        title: "Refined Lesson Plan",
+        subject: "Teacher-provided subject",
+        gradeLevel: "Teacher-provided grade level",
+        duration: 60,
+        numberOfSessions: 1,
+        userDraftText: currentDraftText,
+        templateNotes: `Requested refinement: ${refinementRequest}`,
+      },
+      userId,
+    );
   }
 
   async exportLessonPlanDocument(
@@ -280,7 +280,9 @@ class OpenAIService {
     };
   }
 
-  async listRecentLessonPlans(userId: string): Promise<LessonPlanHistoryItem[]> {
+  async listRecentLessonPlans(
+    userId: string,
+  ): Promise<LessonPlanHistoryItem[]> {
     const plans = await LessonPlan.find({ userId, generatedByAI: true })
       .sort({ updatedAt: -1 })
       .limit(10)
@@ -383,10 +385,7 @@ class OpenAIService {
   }
 
   private async refundResponseCredit(userId: string) {
-    await User.updateOne(
-      { _id: userId },
-      { $inc: { aiResponseCredits: 1 } },
-    );
+    await User.updateOne({ _id: userId }, { $inc: { aiResponseCredits: 1 } });
   }
 
   private async createDocumentWithOpenAI(
@@ -433,17 +432,13 @@ class OpenAIService {
     }
 
     const rawText = this.extractOpenAIText(payload);
-    console.log("[OpenAI] Raw lesson plan response preview:", rawText.slice(0, 500));
+    
 
     const parsed = JSON.parse(rawText);
     const normalizedBlocks = this.normalizeDocumentBlocks(parsed, request);
     this.assertCompleteLessonPlan(normalizedBlocks);
 
-    console.log("[OpenAI] Parsed lesson plan document:", {
-      keys: Object.keys(parsed ?? {}),
-      blockCount: normalizedBlocks.length,
-      title: parsed?.title,
-    });
+   
 
     return {
       ...parsed,
@@ -586,12 +581,15 @@ class OpenAIService {
         return null;
       })
       .filter(
-        (block: LessonPlanDocumentBlock | null): block is LessonPlanDocumentBlock =>
-          block !== null,
+        (
+          block: LessonPlanDocumentBlock | null,
+        ): block is LessonPlanDocumentBlock => block !== null,
       );
 
     if (!blocks.length) {
-      throw new Error("OpenAI returned JSON but no renderable lesson plan blocks.");
+      throw new Error(
+        "OpenAI returned JSON but no renderable lesson plan blocks.",
+      );
     }
 
     return blocks;
@@ -885,11 +883,11 @@ class OpenAIService {
   private buildWordCompatibleHtml(document: LessonPlanDocument) {
     const body = document.blocks.map((block) => {
       if (block.type === "heading") {
-        return `<h${block.level}>${this.escapeHtml(block.text)}</h${block.level}>`;
+        return `<div class="doc-block"><h${block.level}>${this.escapeHtml(block.text)}</h${block.level}></div>`;
       }
 
       if (block.type === "paragraph") {
-        return `<p>${this.escapeHtml(block.text)}</p>`;
+        return `<div class="doc-block"><p>${this.escapeHtml(block.text)}</p></div>`;
       }
 
       const tag = block.style === "numbered" ? "ol" : "ul";
@@ -897,7 +895,7 @@ class OpenAIService {
         .map((item) => `<li>${this.escapeHtml(item)}</li>`)
         .join("");
 
-      return `<${tag}>${items}</${tag}>`;
+      return `<div class="doc-block"><${tag}>${items}</${tag}></div>`;
     });
 
     return [
@@ -907,10 +905,14 @@ class OpenAIService {
       '<meta charset="utf-8" />',
       `<title>${this.escapeHtml(document.title)}</title>`,
       "<style>",
-      "body { font-family: Arial, sans-serif; line-height: 1.5; }",
-      "h1 { font-size: 24px; }",
-      "h2 { font-size: 18px; margin-top: 20px; }",
-      "p, li { font-size: 12pt; }",
+      "body { font-family: Arial, sans-serif; line-height: 1.4; margin: 24px; color: #000; }",
+      ".doc-block { margin-bottom: 14px; }",
+      "h1 { font-size: 24px; margin: 0 0 12px 0; }",
+      "h2 { font-size: 18px; margin: 18px 0 10px 0; }",
+      "h3 { font-size: 16px; margin: 14px 0 8px 0; }",
+      "p { font-size: 12pt; margin: 0 0 10px 0; }",
+      "ul, ol { margin: 0 0 10px 20px; padding-left: 20px; }",
+      "li { font-size: 12pt; margin-bottom: 4px; }",
       "</style>",
       "</head>",
       "<body>",
