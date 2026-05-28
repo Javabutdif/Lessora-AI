@@ -35,6 +35,7 @@ export interface ILessonPlan extends Document {
   isPublic: boolean;
   generatedByAI: boolean;
   aiModel?: string; // e.g., 'gpt-4', 'gpt-3.5-turbo'
+  aiDocument?: Record<string, unknown>;
   lastGeneratedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -144,6 +145,10 @@ const LessonPlanSchema = new Schema<ILessonPlan>(
     },
     aiModel: {
       type: String,
+      default: null,
+    },
+    aiDocument: {
+      type: Schema.Types.Mixed,
       default: null,
     },
     lastGeneratedAt: {

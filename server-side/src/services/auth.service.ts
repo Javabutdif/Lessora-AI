@@ -9,6 +9,7 @@ type AuthUser = {
   id: string;
   name: string;
   email: string;
+  aiResponseCredits?: number;
 };
 
 function getJwtSecret() {
@@ -57,7 +58,12 @@ export async function loginUser({ email, password }: LoginPayload) {
   }
 
   const name = `${user.firstName} ${user.lastName}`.trim();
-  const authUser = { id: user._id.toString(), name, email: user.email };
+  const authUser = {
+    id: user._id.toString(),
+    name,
+    email: user.email,
+    aiResponseCredits: user.aiResponseCredits ?? 5,
+  };
   const token = signAuthToken(authUser);
 
   user.lastLogin = new Date();

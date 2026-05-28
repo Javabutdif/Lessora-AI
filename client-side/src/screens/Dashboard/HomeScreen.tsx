@@ -1,17 +1,36 @@
 import React from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { useFocusEffect } from "@react-navigation/native";
+import Toast from "react-native-toast-message";
 import Card from "../../components/ui/Card";
 import FloatingAssistant from "../../components/ui/FloatingAssistant";
 import { useAuth } from "../../context/AuthContext";
+import {
+  LessonPlanHistoryItem,
+  listRecentLessonPlans,
+} from "../../services/api";
 
-export default function HomeScreen() {
+type DashboardTabParamList = {
+  HomeTab: undefined;
+  Generate: { lessonPlanId?: string } | undefined;
+  Analytics: undefined;
+  Profile: undefined;
+};
+
+type Props = {
+  navigation: BottomTabNavigationProp<DashboardTabParamList, "HomeTab">;
+};
+
+export default function HomeScreen({ navigation }: Props) {
+  const { user } = useAuth();
+  const [recentPlans, setRecentPlans] = React.useState<LessonPlanHistoryItem[]>(
+    [],
+  );
+  const [isLoadingRecentPlans, setIsLoadingRecentPlans] = React.useState(false);
+
   function getInitials(name?: string) {
     if (!name) {
       return "U";
@@ -25,18 +44,62 @@ export default function HomeScreen() {
       .join("")
       .toUpperCase();
   }
-  const { user } = useAuth();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      let isActive = true;
+
+      async function loadRecentPlans() {
+        try {
+          setIsLoadingRecentPlans(true);
+          const plans = await listRecentLessonPlans();
+
+          if (isActive) {
+            setRecentPlans(plans);
+          }
+        } catch (error: any) {
+          if (isActive) {
+            Toast.show({
+              type: "error",
+              text1: "Could not load recent plans",
+              text2: error?.message || "Please try again.",
+            });
+          }
+        } finally {
+          if (isActive) {
+            setIsLoadingRecentPlans(false);
+          }
+        }
+      }
+
+      loadRecentPlans();
+
+      return () => {
+        isActive = false;
+      };
+    }, []),
+  );
+
+  function formatUpdatedAt(value: string) {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return "Recently updated";
+    }
+
+    return `Updated ${date.toLocaleDateString()}`;
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-soft-gray">
       <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 100 }}>
-        {/* Header */}
         <View className="flex-row justify-between items-center mb-8">
           <View>
             <Text className="text-secondary font-poppins text-sm mb-1">
               Good Morning,
             </Text>
             <Text className="text-navy font-poppins-bold text-2xl">
-              {user?.name} 👋
+              {user?.name}
             </Text>
           </View>
           <View className="w-12 h-12 bg-lavender rounded-full items-center justify-center">
@@ -46,7 +109,6 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Hero Section */}
         <Card variant="gradient" className="mb-8">
           <Text className="text-white font-poppins-semi text-sm mb-2 opacity-90">
             Ready for your next class?
@@ -54,7 +116,11 @@ export default function HomeScreen() {
           <Text className="text-white font-poppins-bold text-2xl mb-4 leading-tight">
             Generate an AI-powered lesson plan in seconds.
           </Text>
-          <TouchableOpacity className="bg-white/20 self-start px-4 py-2 rounded-xl flex-row items-center">
+          <TouchableOpacity
+            className="bg-white/20 self-start px-4 py-2 rounded-xl flex-row items-center"
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate("Generate")}
+          >
             <Text className="text-white font-poppins-semi mr-2">
               Try it now
             </Text>
@@ -62,50 +128,69 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </Card>
 
-        {/* Recent Plans */}
         <View className="mb-6 flex-row justify-between items-end">
           <Text className="text-navy font-poppins-bold text-xl">
             Recent Plans
           </Text>
-          <Text className="text-royal font-poppins-semi text-sm">View All</Text>
+          <Text className="text-royal font-poppins-semi text-sm">
+            {isLoadingRecentPlans ? "Loading" : "View All"}
+          </Text>
         </View>
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          className="mb-8 -mx-6 px-6"
-        >
-          {[1, 2, 3].map((item) => (
-            <Card key={item} className="w-64 mr-4 p-4">
-              <View className="flex-row justify-between items-start mb-3">
-                <View className="bg-soft-blue px-3 py-1 rounded-lg">
-                  <Text className="text-royal font-poppins-semi text-xs">
-                    Science
-                  </Text>
-                </View>
-                <Ionicons
-                  name="ellipsis-horizontal"
-                  size={20}
-                  color="#8E95B2"
-                />
-              </View>
-              <Text
-                className="text-primary font-poppins-semi text-lg mb-1"
-                numberOfLines={1}
+        {recentPlans.length ? (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            className="mb-8 -mx-6 px-6"
+          >
+            {recentPlans.map((plan) => (
+              <TouchableOpacity
+                key={plan.id}
+                activeOpacity={0.85}
+                onPress={() =>
+                  navigation.navigate("Generate", { lessonPlanId: plan.id })
+                }
               >
-                Photosynthesis & Cells
-              </Text>
-              <Text className="text-secondary font-poppins text-sm mb-4">
-                Grade 8 • 45 mins
-              </Text>
-              <Text className="text-muted font-poppins text-xs">
-                Updated 2h ago
-              </Text>
-            </Card>
-          ))}
-        </ScrollView>
+                <Card className="w-64 mr-4 p-4">
+                  <View className="flex-row justify-between items-start mb-3">
+                    <View className="bg-soft-blue px-3 py-1 rounded-lg">
+                      <Text className="text-royal font-poppins-semi text-xs">
+                        {plan.subject}
+                      </Text>
+                    </View>
+                    <Ionicons
+                      name="document-text-outline"
+                      size={20}
+                      color="#8E95B2"
+                    />
+                  </View>
+                  <Text
+                    className="text-primary font-poppins-semi text-lg mb-1"
+                    numberOfLines={1}
+                  >
+                    {plan.title}
+                  </Text>
+                  <Text className="text-secondary font-poppins text-sm mb-4">
+                    {plan.gradeLevel} - {plan.totalDuration} mins
+                  </Text>
+                  <Text className="text-muted font-poppins text-xs">
+                    {formatUpdatedAt(plan.updatedAt)}
+                  </Text>
+                </Card>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        ) : (
+          <Card className="mb-8 p-4">
+            <Text className="text-primary font-poppins-semi text-base mb-1">
+              No recent plans yet
+            </Text>
+            <Text className="text-secondary font-poppins text-sm">
+              Generate your first lesson plan and it will appear here.
+            </Text>
+          </Card>
+        )}
 
-        {/* AI Suggestions */}
         <Text className="text-navy font-poppins-bold text-xl mb-4">
           AI Suggestions
         </Text>
@@ -118,7 +203,7 @@ export default function HomeScreen() {
               Add Interactive Quiz
             </Text>
             <Text className="text-secondary font-poppins text-sm">
-              To your History lesson plan.
+              To your latest lesson plan.
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#8E95B2" />

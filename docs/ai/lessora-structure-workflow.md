@@ -235,3 +235,196 @@ If any answer is unknown, inspect the relevant file or document the assumption i
 - Client API service: `client-side/src/services/api.ts`
 - Client auth session context: `client-side/src/context/AuthContext.tsx`
 
+## Lesson Plan AI Generation Workflow
+
+Use this workflow for the Generate Plan screen. Do not invent a new AI route, client service, prompt location, or response shape without updating the linked spec and plan first.
+
+### Ownership
+
+- client screen: `client-side/src/screens/Dashboard/GeneratePlanScreen.tsx`
+- client service: `client-side/src/services/api.ts`
+- client API base env: `client-side/.env` -> `EXPO_PUBLIC_API_BASE`
+- server route: `server-side/src/routes/ai.routes.ts`
+- server controller: `server-side/src/controllers/ai.controller.ts`
+- server validation schema: `server-side/src/schemas/ai.schema.ts`
+- server business logic: `server-side/src/services/openai.service.ts`
+- server AI role and strict rules: `server-side/src/config/openai.config.ts`
+- auth middleware: `server-side/src/middleware/auth.middleware.ts`
+- quota field: `User.aiResponseCredits`
+- history model: `LessonPlan.aiDocument`
+- mounted route group: `/api/ai`
+- endpoint: `POST /api/ai/lesson-plan/generate`
+- history list endpoint: `GET /api/ai/lesson-plan/history`
+- history detail endpoint: `GET /api/ai/lesson-plan/history/:lessonPlanId`
+- export endpoint: `POST /api/ai/lesson-plan/export`
+
+### Client Field Mapping
+
+The visible mobile form fields map to the backend request as follows:
+
+```ts
+{
+  title: topicSubject,
+  subject: topicSubject,
+  gradeLevel: selectedGradeLabel,
+  duration: Number(duration),
+  numberOfSessions: 1,
+  userDraftText: goalsStandards || undefined,
+  templateNotes: goalsStandards || undefined,
+}
+```
+
+Current visible fields:
+
+- Topic / Subject: required
+- Grade Level: required
+- Duration: required, whole minutes, minimum 5
+- Specific Goals / Standards: optional teacher draft context
+
+### Response Contract
+
+The backend returns the standard data envelope:
+
+```ts
+{
+  data: {
+    success: boolean;
+    document: {
+      type: "lesson_plan_document";
+      format: "json";
+      version: 1;
+      title: string;
+      blocks: Array<
+        | { type: "heading"; level: 1 | 2 | 3; text: string }
+        | { type: "paragraph"; text: string }
+        | { type: "list"; style: "bullet" | "numbered"; items: string[] }
+      >;
+      exportTargets: string[];
+    };
+    draftText: string;
+    sections: {
+      title: string;
+      subject: string;
+      gradeLevel: string;
+      duration: string;
+      lessonOverview: string;
+      learningObjectives: string[];
+      materials: string[];
+      procedure: string[];
+      assessment: string[];
+      teacherNotes: string[];
+    };
+    sessions: Array<{
+      sessionNumber: number;
+      title: string;
+      duration: number;
+      objectives: string[];
+      content: string;
+      activities: string[];
+    }>;
+    model: string;
+    role: string;
+    tokens: {
+      prompt: number;
+      completion: number;
+      total: number;
+    };
+  },
+  error: null
+}
+```
+
+### Anti-Hallucination Answers For This Flow
+
+- Existing file that owns client fetch logic: `client-side/src/services/api.ts`
+- Existing client API base setting: `process.env.EXPO_PUBLIC_API_BASE`, falling back to the deployed API URL
+- Existing screen that owns the form: `client-side/src/screens/Dashboard/GeneratePlanScreen.tsx`
+- Existing backend route path: `/api/ai/lesson-plan/generate`
+- Existing response envelope: `{ data: T, error: null }`
+- Existing Zod request schema: `generateLessonPlanSchema`
+- Existing service method: `openAIService.generateLessonPlan`
+- Mongoose persistence model: `User.aiResponseCredits` tracks remaining AI responses
+- Mongoose history model: `LessonPlan.aiDocument` stores generated JSON documents
+- Validation command: `npx tsc --noEmit` in `client-side`, then `./scripts/check.ps1`
+
+### Strict AI Role Rule
+
+The client must never send a system prompt, role prompt, or role override. The lesson plan specialist identity belongs only in `server-side/src/config/openai.config.ts`.
+
+### Document And Media Rules
+
+- The canonical generated output is `data.document`, a text-only JSON document.
+- The Generate Plan screen should render `document.blocks` as a read-only preview by default.
+- Editing should be opt-in from the preview panel through the pencil icon, which toggles editable fields for the same `document.blocks`.
+- Export features should send the edited `document` to `POST /api/ai/lesson-plan/export`.
+- The current export endpoint returns a Word-compatible `.doc` payload as base64 plus plain text for mobile sharing.
+- The AI service itself should not generate media or binary files; document export is a deterministic server conversion from JSON blocks.
+- AI media generation is disabled. Do not request or return images, audio, video, slides, charts, or other media from the lesson plan specialist.
+- `draftText` is a compatibility preview string, not the source of truth for editing or exporting.
+
+### Accepted Lesson Plan Document Structure
+
+The approved generated lesson plan is a JSON document with this shape:
+
+```ts
+{
+  type: "lesson_plan_document";
+  format: "json";
+  version: 1;
+  title: string;
+  blocks: LessonPlanDocumentBlock[];
+  exportTargets: ["doc"];
+}
+```
+
+The `blocks` array must render a complete classroom-ready lesson plan in this order:
+
+- heading level 1: lesson title
+- paragraph: subject
+- paragraph: grade level
+- paragraph: duration
+- heading level 2: Lesson Overview
+- paragraph: overview
+- heading level 2: Learning Objectives
+- bullet list: at least 3 objectives
+- heading level 2: Materials
+- bullet list: at least 3 materials
+- heading level 2: Procedure
+- numbered list: at least 5 teaching steps
+- heading level 2: Assessment
+- bullet list: at least 2 assessment methods
+- heading level 2: Teacher Notes
+- bullet list: at least 2 teacher notes
+
+The backend must reject incomplete generated documents that miss required headings. The client must render the preview from `document.blocks`, not from `draftText`.
+
+### History Rules
+
+- A successful AI generation must create a `LessonPlan` owned by the authenticated user.
+- The saved `LessonPlan.aiDocument` is the same JSON document used by preview, edit, and export.
+- Dashboard recent plans must call `GET /api/ai/lesson-plan/history`; do not use static recent-plan cards.
+- Tapping a recent plan should navigate to the `Generate` tab with `{ lessonPlanId }`.
+- The Generate Plan screen loads saved plan details from `GET /api/ai/lesson-plan/history/:lessonPlanId`.
+- Saved plans open in preview mode by default and can be edited locally with the pencil toggle.
+- Exporting a history plan uses the same `POST /api/ai/lesson-plan/export` endpoint with the currently loaded document.
+- Saved-plan edits are local only until a save/update endpoint is explicitly added.
+
+### OpenAI And Quota Rules
+
+- `POST /api/ai/lesson-plan/generate` and `POST /api/ai/lesson-plan/refine` require `Authorization: Bearer <token>`.
+- The client API service owns the bearer token through `setAuthToken`; screens should not attach headers manually.
+- Each user starts with `aiResponseCredits: 5`.
+- One successful OpenAI generation/refinement consumes one response credit.
+- If credits are `0`, the backend must reject before calling OpenAI.
+- If OpenAI fails after a credit is reserved, the backend refunds the credit.
+- If MongoDB saving fails after a credit is reserved, the backend refunds the credit.
+- The OpenAI call must request JSON output and normalize it into `LessonPlanDocument`; do not accept free-form prose for this workflow.
+- Default model is `gpt-4o-mini`. If `OPENAI_MODEL` is overridden, it must support the Responses API and JSON output.
+- The OpenAI prompt must include the full required lesson plan document shape through `Teacher Notes`; do not provide a partial example that stops at objectives.
+- The backend should reject incomplete generated documents that miss required headings: Lesson Overview, Learning Objectives, Materials, Procedure, Assessment, and Teacher Notes.
+
+### Home Redirect Rules
+
+- The dashboard floating assistant icon should navigate to the `Generate` tab.
+- The dashboard hero "Try it now" action should also navigate to the `Generate` tab.
+- Navigation belongs in the dashboard screen/component; screens must not call backend AI endpoints directly.

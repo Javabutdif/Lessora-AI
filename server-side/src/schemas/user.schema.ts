@@ -20,6 +20,7 @@ export interface IUser extends Document {
   role: "teacher";
   isVerified: boolean;
   isActive: boolean;
+  aiResponseCredits: number;
   lastLogin?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -80,6 +81,11 @@ const UserSchema = new Schema<IUser>(
       type: Boolean,
       default: true,
       index: true,
+    },
+    aiResponseCredits: {
+      type: Number,
+      default: 5,
+      min: 0,
     },
     lastLogin: {
       type: Date,

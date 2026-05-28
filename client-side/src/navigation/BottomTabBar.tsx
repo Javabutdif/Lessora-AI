@@ -7,7 +7,14 @@ import AnalyticsScreen from "../screens/Dashboard/AnalyticsScreen";
 import ProfileScreen from "../screens/Dashboard/ProfileScreen";
 import { View } from "react-native";
 
-const Tab = createBottomTabNavigator();
+type DashboardTabParamList = {
+  HomeTab: undefined;
+  Generate: { lessonPlanId?: string } | undefined;
+  Analytics: undefined;
+  Profile: undefined;
+};
+
+const Tab = createBottomTabNavigator<DashboardTabParamList>();
 
 export default function BottomTabBar() {
   return (

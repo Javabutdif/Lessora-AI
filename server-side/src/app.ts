@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { authRouter } from "./routes/auth.routes";
+import { aiRouter } from "./routes/ai.routes";
 import { errorHandler } from "./middleware/errorHandler";
 import mongoose from "mongoose";
 import { config } from "dotenv";
@@ -33,6 +34,7 @@ app.use(cors({ origin: true }));
 app.use(express.json());
 
 app.use("/api/auth", authRouter);
+app.use("/api/ai", aiRouter);
 
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });

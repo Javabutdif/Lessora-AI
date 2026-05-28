@@ -10,6 +10,7 @@ import React, {
   useState,
 } from "react";
 import type { AuthUser } from "../services/api";
+import { setAuthToken } from "../services/api";
 
 const TOKEN_STORAGE_KEY = "userToken";
 
@@ -47,6 +48,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const logout = useCallback(async () => {
     await AsyncStorage.removeItem(TOKEN_STORAGE_KEY);
+    setAuthToken(null);
     setToken(null);
     setUser(null);
   }, []);
@@ -59,6 +61,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
 
     await AsyncStorage.setItem(TOKEN_STORAGE_KEY, receivedToken);
+    setAuthToken(receivedToken);
     setToken(receivedToken);
     setUser(decoded.user);
   }, []);
@@ -97,13 +100,16 @@ export function AuthProvider({ children }: PropsWithChildren) {
           const decoded = readValidToken(savedToken);
 
           if (decoded?.user) {
+            setAuthToken(savedToken);
             setToken(savedToken);
             setUser(decoded.user);
           } else {
+            setAuthToken(null);
             await AsyncStorage.removeItem(TOKEN_STORAGE_KEY);
           }
         }
       } catch {
+        setAuthToken(null);
         await AsyncStorage.removeItem(TOKEN_STORAGE_KEY);
       } finally {
         setLoading(false);

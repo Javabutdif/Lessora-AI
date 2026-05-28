@@ -22,7 +22,10 @@ export function errorHandler(
     err instanceof Error ? err.message : "Unexpected server error";
   const status =
     message === "Invalid email or password" ||
-    message.includes("Account already exists")
+    message.includes("Account already exists") ||
+    message.includes("specialized only in helping create lesson plans") ||
+    message.includes("no AI responses remaining") ||
+    message.includes("OpenAI API key is not configured")
       ? 400
       : 500;
 
