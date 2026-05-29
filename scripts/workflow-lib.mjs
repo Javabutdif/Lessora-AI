@@ -122,16 +122,25 @@ function readTaskBrief(taskPath, repoRoot) {
     const fieldMatch = line.match(/^- ([^:]+):\s*(.*)$/u);
 
     if (fieldMatch) {
-      fields.set(fieldMatch[1].trim().toLowerCase(), cleanFieldValue(fieldMatch[2]));
+      fields.set(
+        fieldMatch[1].trim().toLowerCase(),
+        cleanFieldValue(fieldMatch[2]),
+      );
     }
 
-    if (currentSection === "validation" || currentSection.startsWith("validation ")) {
+    if (
+      currentSection === "validation" ||
+      currentSection.startsWith("validation ")
+    ) {
       const validationMatch = line.match(/^- (.+)$/u);
 
       if (validationMatch) {
         validationCommands.push(validationMatch[1].trim());
       }
-    } else if (currentSection === "relevant files" || currentSection.startsWith("relevant file")) {
+    } else if (
+      currentSection === "relevant files" ||
+      currentSection.startsWith("relevant file")
+    ) {
       const fileMatch = line.match(/^- (.+)$/u);
 
       if (fileMatch) {
@@ -141,9 +150,15 @@ function readTaskBrief(taskPath, repoRoot) {
           relevantFiles.push(fp);
         }
       }
-    } else if (currentSection === "handoff notes" || currentSection.startsWith("handoff note")) {
+    } else if (
+      currentSection === "handoff notes" ||
+      currentSection.startsWith("handoff note")
+    ) {
       const noteMatch = line.match(/^- (.+)$/u);
-      if (noteMatch && !noteMatch[1].trim().startsWith("anything the next agent")) {
+      if (
+        noteMatch &&
+        !noteMatch[1].trim().startsWith("anything the next agent")
+      ) {
         handoffNoteLines.push(noteMatch[1].trim());
       }
     }
@@ -157,7 +172,8 @@ function readTaskBrief(taskPath, repoRoot) {
     blockers: fields.get("blockers") ?? null,
     spec: fields.get("spec") ?? null,
     plan: fields.get("plan") ?? null,
-    handoffNotes: handoffNoteLines.length > 0 ? handoffNoteLines.join("; ") : null,
+    handoffNotes:
+      handoffNoteLines.length > 0 ? handoffNoteLines.join("; ") : null,
     validationCommands,
     relevantFiles,
   };
@@ -167,7 +183,9 @@ function listTaskBriefs(repoRoot) {
   const tasksRoot = path.join(repoRoot, TASKS_DIRECTORY);
 
   if (!fs.existsSync(tasksRoot)) {
-    throw new WorkflowError(`Task brief directory not found: ${toRepoPath(TASKS_DIRECTORY)}`);
+    throw new WorkflowError(
+      `Task brief directory not found: ${toRepoPath(TASKS_DIRECTORY)}`,
+    );
   }
 
   const taskFiles = fs
@@ -204,27 +222,30 @@ function resolveTaskBrief(repoRoot, taskArgument) {
   const taskBriefs = listTaskBriefs(repoRoot);
 
   if (taskBriefs.length === 0) {
-    throw new WorkflowError("No task briefs were found. Create a task brief or pass --task.");
+    throw new WorkflowError(
+      "No task briefs were found. Create a task brief or pass --task.",
+    );
   }
 
-  const activeTasks = taskBriefs.filter((task) => task.status?.toLowerCase() !== "completed");
+  const activeTasks = taskBriefs.filter(
+    (task) => task.status?.toLowerCase() !== "completed",
+  );
 
   if (activeTasks.length === 1) {
     return activeTasks[0];
   }
 
   if (activeTasks.length > 1) {
-    const taskList = activeTasks.map((task) => `- ${task.relativePath}`).join("\n");
-    throw new WorkflowError(
-      `Multiple active task briefs found:\n${taskList}\nUse --task to select one explicitly.`,
-    );
+    return activeTasks;
   }
 
   if (taskBriefs.length === 1) {
     return taskBriefs[0];
   }
 
-  throw new WorkflowError("No active task brief found. Use --task to select one explicitly.");
+  throw new WorkflowError(
+    "No active task brief found. Use --task to select one explicitly.",
+  );
 }
 
 function buildPrompt(taskBrief, target) {
@@ -264,9 +285,13 @@ function buildPrompt(taskBrief, target) {
   }
 
   if (taskBrief.relevantFiles && taskBrief.relevantFiles.length > 0) {
-    parts.push(`Restrict your context to the active task brief and ONLY these files: ${taskBrief.relevantFiles.join(", ")}. Do not scan the entire workspace.`);
+    parts.push(
+      `Restrict your context to the active task brief and ONLY these files: ${taskBrief.relevantFiles.join(", ")}. Do not scan the entire workspace.`,
+    );
   } else {
-    parts.push("Restrict your context to the active task brief and its listed relevant files. Do not scan the entire workspace.");
+    parts.push(
+      "Restrict your context to the active task brief and its listed relevant files. Do not scan the entire workspace.",
+    );
   }
 
   return parts.join(" ");
@@ -317,29 +342,47 @@ function validateTaskBrief(taskBrief, repoRoot) {
   const issues = [];
 
   if (!taskBrief.status) {
-    issues.push('Missing required field: status — add "- status: todo" under ## Current state');
+    issues.push(
+      'Missing required field: status — add "- status: todo" under ## Current state',
+    );
   }
 
   if (!taskBrief.nextAction) {
-    issues.push('Missing required field: next action — add "- next action: <description>" under ## Current state');
+    issues.push(
+      'Missing required field: next action — add "- next action: <description>" under ## Current state',
+    );
   }
 
   if (taskBrief.plan && !taskBrief.spec) {
-    issues.push("A linked plan requires a linked spec — add a spec link or change the plan to none");
+    issues.push(
+      "A linked plan requires a linked spec — add a spec link or change the plan to none",
+    );
   }
 
-  if (taskBrief.spec && !fs.existsSync(resolveLinkedPath(repoRoot, taskBrief.spec))) {
-    issues.push(`Linked spec does not exist: ${taskBrief.spec} — create the file or change spec to none`);
+  if (
+    taskBrief.spec &&
+    !fs.existsSync(resolveLinkedPath(repoRoot, taskBrief.spec))
+  ) {
+    issues.push(
+      `Linked spec does not exist: ${taskBrief.spec} — create the file or change spec to none`,
+    );
   }
 
-  if (taskBrief.plan && !fs.existsSync(resolveLinkedPath(repoRoot, taskBrief.plan))) {
-    issues.push(`Linked plan does not exist: ${taskBrief.plan} — create the file or change plan to none`);
+  if (
+    taskBrief.plan &&
+    !fs.existsSync(resolveLinkedPath(repoRoot, taskBrief.plan))
+  ) {
+    issues.push(
+      `Linked plan does not exist: ${taskBrief.plan} — create the file or change plan to none`,
+    );
   }
 
   if (taskBrief.relevantFiles && taskBrief.relevantFiles.length > 0) {
     for (const relFile of taskBrief.relevantFiles) {
       if (!fs.existsSync(resolveLinkedPath(repoRoot, relFile))) {
-        issues.push(`Listed relevant file or directory does not exist: ${relFile}`);
+        issues.push(
+          `Listed relevant file or directory does not exist: ${relFile}`,
+        );
       }
     }
   }
@@ -348,7 +391,10 @@ function validateTaskBrief(taskBrief, repoRoot) {
 }
 
 function renderValidationFailure(issues) {
-  return ["Workflow check failed:", ...issues.map((issue) => `- ${issue}`)].join("\n");
+  return [
+    "Workflow check failed:",
+    ...issues.map((issue) => `- ${issue}`),
+  ].join("\n");
 }
 
 function parseGitStatusLines(output) {
@@ -361,7 +407,9 @@ function parseGitStatusLines(output) {
 function readGitStatus(repoRoot, commandRunner) {
   try {
     return {
-      lines: parseGitStatusLines(commandRunner("git status --short", { cwd: repoRoot })),
+      lines: parseGitStatusLines(
+        commandRunner("git status --short", { cwd: repoRoot }),
+      ),
       error: null,
     };
   } catch (error) {
@@ -406,10 +454,18 @@ function renderListSection(title, items, emptyMessage) {
 
 function buildPackContent(
   taskBrief,
-  { repoRoot, target, commandRunner, includeDiff = false, generatedAt = new Date() },
+  {
+    repoRoot,
+    target,
+    commandRunner,
+    includeDiff = false,
+    generatedAt = new Date(),
+  },
 ) {
   const gitStatus = readGitStatus(repoRoot, commandRunner);
-  const gitDiff = includeDiff ? readGitDiff(repoRoot, commandRunner) : { text: "", error: null };
+  const gitDiff = includeDiff
+    ? readGitDiff(repoRoot, commandRunner)
+    : { text: "", error: null };
   const changedFiles = gitStatus.error
     ? [`unavailable: ${gitStatus.error}`]
     : gitStatus.lines.length > 0
@@ -431,8 +487,16 @@ function buildPackContent(
     `- Next action: ${taskBrief.nextAction ?? "missing"}`,
     `- Blockers: ${taskBrief.blockers ?? "none"}`,
     "",
-    ...renderListSection("Relevant Files", taskBrief.relevantFiles, "none listed"),
-    ...renderListSection("Validation", taskBrief.validationCommands, "none listed"),
+    ...renderListSection(
+      "Relevant Files",
+      taskBrief.relevantFiles,
+      "none listed",
+    ),
+    ...renderListSection(
+      "Validation",
+      taskBrief.validationCommands,
+      "none listed",
+    ),
     ...renderListSection("Changed Files", changedFiles, "none detected"),
     "## Prompt",
     "",
@@ -462,8 +526,13 @@ function resolvePackOutputPath(repoRoot, taskBrief, outputPath) {
       ? path.resolve(outputPath)
       : path.resolve(repoRoot, outputPath);
     const normalizedRoot = path.resolve(repoRoot);
-    if (!resolved.startsWith(normalizedRoot + path.sep) && resolved !== normalizedRoot) {
-      throw new WorkflowError(`--output path must be inside the repository: ${outputPath}`);
+    if (
+      !resolved.startsWith(normalizedRoot + path.sep) &&
+      resolved !== normalizedRoot
+    ) {
+      throw new WorkflowError(
+        `--output path must be inside the repository: ${outputPath}`,
+      );
     }
     return resolved;
   }
@@ -489,8 +558,14 @@ function buildScaffoldPaths(repoRoot, slug, artifacts, now) {
   const dateStamp = formatDateStamp(now);
   const basename = `${dateStamp}-${slug}.md`;
   const taskRelativePath = toRepoPath(path.join(TASKS_DIRECTORY, basename));
-  const specRelativePath = artifacts === "bundle" ? toRepoPath(path.join(SPECS_DIRECTORY, basename)) : null;
-  const planRelativePath = artifacts === "bundle" ? toRepoPath(path.join(PLANS_DIRECTORY, basename)) : null;
+  const specRelativePath =
+    artifacts === "bundle"
+      ? toRepoPath(path.join(SPECS_DIRECTORY, basename))
+      : null;
+  const planRelativePath =
+    artifacts === "bundle"
+      ? toRepoPath(path.join(PLANS_DIRECTORY, basename))
+      : null;
 
   return {
     basename,
@@ -665,7 +740,9 @@ function writeScaffoldFile(entry, content, createdEntries, repoRoot) {
     fs.closeSync(fd);
   } catch (error) {
     if (error.code === "EEXIST") {
-      throw new WorkflowError(`Scaffold destination already exists: ${entry.relativePath}`);
+      throw new WorkflowError(
+        `Scaffold destination already exists: ${entry.relativePath}`,
+      );
     }
     throw error;
   }
@@ -680,7 +757,7 @@ function scaffoldWorkflowArtifacts(repoRoot, { slug, artifacts, now }) {
 
   if (!normalizedSlug) {
     throw new WorkflowError(
-      'Missing or invalid value for --slug — try: workflow scaffold --slug <topic> --artifacts bundle',
+      "Missing or invalid value for --slug — try: workflow scaffold --slug <topic> --artifacts bundle",
     );
   }
 
@@ -762,9 +839,16 @@ function resolveTaskBundle(taskBrief, repoRoot) {
       label: "Task",
       sourcePath: taskBrief.absolutePath,
       sourceRelativePath: taskBrief.relativePath,
-      destPath: path.join(repoRoot, TASKS_ARCHIVE_DIRECTORY, path.basename(taskBrief.absolutePath)),
+      destPath: path.join(
+        repoRoot,
+        TASKS_ARCHIVE_DIRECTORY,
+        path.basename(taskBrief.absolutePath),
+      ),
       destRelativePath: toRepoPath(
-        path.join(TASKS_ARCHIVE_DIRECTORY, path.basename(taskBrief.absolutePath)),
+        path.join(
+          TASKS_ARCHIVE_DIRECTORY,
+          path.basename(taskBrief.absolutePath),
+        ),
       ),
     },
   ];
@@ -776,7 +860,11 @@ function resolveTaskBundle(taskBrief, repoRoot) {
       label: "Spec",
       sourcePath: specSourcePath,
       sourceRelativePath: toRepoPath(path.relative(repoRoot, specSourcePath)),
-      destPath: path.join(repoRoot, SPECS_ARCHIVE_DIRECTORY, path.basename(specSourcePath)),
+      destPath: path.join(
+        repoRoot,
+        SPECS_ARCHIVE_DIRECTORY,
+        path.basename(specSourcePath),
+      ),
       destRelativePath: toRepoPath(
         path.join(SPECS_ARCHIVE_DIRECTORY, path.basename(specSourcePath)),
       ),
@@ -790,7 +878,11 @@ function resolveTaskBundle(taskBrief, repoRoot) {
       label: "Plan",
       sourcePath: planSourcePath,
       sourceRelativePath: toRepoPath(path.relative(repoRoot, planSourcePath)),
-      destPath: path.join(repoRoot, PLANS_ARCHIVE_DIRECTORY, path.basename(planSourcePath)),
+      destPath: path.join(
+        repoRoot,
+        PLANS_ARCHIVE_DIRECTORY,
+        path.basename(planSourcePath),
+      ),
       destRelativePath: toRepoPath(
         path.join(PLANS_ARCHIVE_DIRECTORY, path.basename(planSourcePath)),
       ),
@@ -811,7 +903,11 @@ function rewriteArchivedTaskBriefContent(content, replacements) {
       currentSection = headingMatch[1].trim().toLowerCase();
     }
 
-    if (currentSection === "validation" && line.startsWith("- ") && line.includes("workflow finalize")) {
+    if (
+      currentSection === "validation" &&
+      line.startsWith("- ") &&
+      line.includes("workflow finalize")
+    ) {
       continue;
     }
 
@@ -825,8 +921,14 @@ function rewriteArchivedTaskBriefContent(content, replacements) {
   }
 
   for (const replacement of replacements) {
-    if (replacement.from && replacement.to && replacement.from !== replacement.to) {
-      rewrittenContent = rewrittenContent.split(replacement.from).join(replacement.to);
+    if (
+      replacement.from &&
+      replacement.to &&
+      replacement.from !== replacement.to
+    ) {
+      rewrittenContent = rewrittenContent
+        .split(replacement.from)
+        .join(replacement.to);
     }
   }
 
@@ -856,7 +958,9 @@ function moveFileSync(src, dest) {
 
 function archiveTaskBundle(taskBrief, repoRoot) {
   const bundleEntries = resolveTaskBundle(taskBrief, repoRoot);
-  const archiveDirectories = [...new Set(bundleEntries.map((entry) => path.dirname(entry.destPath)))];
+  const archiveDirectories = [
+    ...new Set(bundleEntries.map((entry) => path.dirname(entry.destPath))),
+  ];
 
   for (const archiveDirectory of archiveDirectories) {
     if (!fs.existsSync(archiveDirectory)) {
@@ -866,11 +970,15 @@ function archiveTaskBundle(taskBrief, repoRoot) {
 
   for (const entry of bundleEntries) {
     if (!fs.existsSync(entry.sourcePath)) {
-      throw new WorkflowError(`Linked bundle source does not exist: ${entry.sourceRelativePath}`);
+      throw new WorkflowError(
+        `Linked bundle source does not exist: ${entry.sourceRelativePath}`,
+      );
     }
 
     if (fs.existsSync(entry.destPath)) {
-      throw new WorkflowError(`Archive destination already exists: ${entry.destRelativePath}`);
+      throw new WorkflowError(
+        `Archive destination already exists: ${entry.destRelativePath}`,
+      );
     }
   }
 
@@ -882,7 +990,11 @@ function archiveTaskBundle(taskBrief, repoRoot) {
   }));
   const moveOrder = bundleEntries
     .slice()
-    .sort((left, right) => ["spec", "plan", "task"].indexOf(left.key) - ["spec", "plan", "task"].indexOf(right.key));
+    .sort(
+      (left, right) =>
+        ["spec", "plan", "task"].indexOf(left.key) -
+        ["spec", "plan", "task"].indexOf(right.key),
+    );
   const movedEntries = [];
   let tmpPath = null;
 
@@ -895,13 +1007,20 @@ function archiveTaskBundle(taskBrief, repoRoot) {
     // Write rewritten content atomically via a temp file so a partial write
     // doesn't corrupt the archive and the rollback can safely move the file back.
     tmpPath = taskEntry.destPath + ".tmp";
-    fs.writeFileSync(tmpPath, rewriteArchivedTaskBriefContent(taskContent, replacements));
+    fs.writeFileSync(
+      tmpPath,
+      rewriteArchivedTaskBriefContent(taskContent, replacements),
+    );
     fs.renameSync(tmpPath, taskEntry.destPath);
     tmpPath = null;
   } catch (error) {
     // Clean up temp file if it was created before the rename
     if (tmpPath) {
-      try { fs.unlinkSync(tmpPath); } catch { /* ignore */ }
+      try {
+        fs.unlinkSync(tmpPath);
+      } catch {
+        /* ignore */
+      }
     }
 
     for (const entry of movedEntries.slice().reverse()) {
@@ -915,7 +1034,10 @@ function archiveTaskBundle(taskBrief, repoRoot) {
       : new WorkflowError(`Archive bundle failed: ${error.message}`);
   }
 
-  return moveOrder.map((entry) => ({ label: entry.label, path: entry.destRelativePath }));
+  return moveOrder.map((entry) => ({
+    label: entry.label,
+    path: entry.destRelativePath,
+  }));
 }
 
 function runDoctor(repoRoot, commandRunner) {
@@ -925,9 +1047,16 @@ function runDoctor(repoRoot, commandRunner) {
   const nodeVersion = process.version;
   const nodeMajor = parseInt(nodeVersion.replace("v", "").split(".")[0], 10);
   if (nodeMajor >= 18) {
-    results.push({ status: "pass", label: `Node.js ${nodeVersion} (>=18 required)` });
+    results.push({
+      status: "pass",
+      label: `Node.js ${nodeVersion} (>=18 required)`,
+    });
   } else {
-    results.push({ status: "fail", label: `Node.js ${nodeVersion} is below required >=18`, hint: "upgrade Node.js to version 18 or later" });
+    results.push({
+      status: "fail",
+      label: `Node.js ${nodeVersion} is below required >=18`,
+      hint: "upgrade Node.js to version 18 or later",
+    });
   }
 
   // 2. git available
@@ -935,7 +1064,11 @@ function runDoctor(repoRoot, commandRunner) {
     commandRunner("git --version", { cwd: repoRoot });
     results.push({ status: "pass", label: "git available" });
   } catch {
-    results.push({ status: "fail", label: "git not found", hint: "install git and ensure it is on your PATH" });
+    results.push({
+      status: "fail",
+      label: "git not found",
+      hint: "install git and ensure it is on your PATH",
+    });
   }
 
   // 3. docs/ai/ directory
@@ -943,7 +1076,11 @@ function runDoctor(repoRoot, commandRunner) {
   if (fs.existsSync(docsAiDir) && fs.statSync(docsAiDir).isDirectory()) {
     results.push({ status: "pass", label: "docs/ai/ directory present" });
   } else {
-    results.push({ status: "fail", label: "docs/ai/ directory missing", hint: "run npx nimblco . to reinstall the workflow layer" });
+    results.push({
+      status: "fail",
+      label: "docs/ai/ directory missing",
+      hint: "run npx nimblco . to reinstall the workflow layer",
+    });
   }
 
   // 4. docs/ai/commands.md
@@ -951,7 +1088,11 @@ function runDoctor(repoRoot, commandRunner) {
   if (fs.existsSync(commandsFile)) {
     results.push({ status: "pass", label: "docs/ai/commands.md present" });
   } else {
-    results.push({ status: "fail", label: "docs/ai/commands.md missing", hint: "create it or run npx nimblco . to reinstall" });
+    results.push({
+      status: "fail",
+      label: "docs/ai/commands.md missing",
+      hint: "create it or run npx nimblco . to reinstall",
+    });
   }
 
   // 5. docs/ai/tasks/ directory
@@ -959,7 +1100,11 @@ function runDoctor(repoRoot, commandRunner) {
   if (fs.existsSync(tasksDir) && fs.statSync(tasksDir).isDirectory()) {
     results.push({ status: "pass", label: "docs/ai/tasks/ directory present" });
   } else {
-    results.push({ status: "fail", label: "docs/ai/tasks/ directory missing", hint: "run npx nimblco . to reinstall the workflow layer" });
+    results.push({
+      status: "fail",
+      label: "docs/ai/tasks/ directory missing",
+      hint: "run npx nimblco . to reinstall the workflow layer",
+    });
   }
 
   // 6. scripts/workflow.mjs
@@ -967,21 +1112,34 @@ function runDoctor(repoRoot, commandRunner) {
   if (fs.existsSync(workflowScript)) {
     results.push({ status: "pass", label: "scripts/workflow.mjs present" });
   } else {
-    results.push({ status: "fail", label: "scripts/workflow.mjs missing", hint: "run npx nimblco . to reinstall the workflow CLI" });
+    results.push({
+      status: "fail",
+      label: "scripts/workflow.mjs missing",
+      hint: "run npx nimblco . to reinstall the workflow CLI",
+    });
   }
 
   // 7. active task brief count
   let activeBriefs = [];
   try {
     const briefs = listTaskBriefs(repoRoot);
-    activeBriefs = briefs.filter((b) => b.status?.toLowerCase() !== "completed");
+    activeBriefs = briefs.filter(
+      (b) => b.status?.toLowerCase() !== "completed",
+    );
   } catch {
     // listTaskBriefs may throw if tasks dir missing; already reported above
   }
   if (activeBriefs.length <= 1) {
-    results.push({ status: "pass", label: `active task briefs: ${activeBriefs.length}` });
+    results.push({
+      status: "pass",
+      label: `active task briefs: ${activeBriefs.length}`,
+    });
   } else {
-    results.push({ status: "warn", label: `${activeBriefs.length} active task briefs found`, hint: "resolve or finalize existing tasks before scaffolding new work" });
+    results.push({
+      status: "warn",
+      label: `${activeBriefs.length} active task briefs found`,
+      hint: "resolve or finalize existing tasks before scaffolding new work",
+    });
   }
 
   return results;
@@ -994,7 +1152,8 @@ function renderDoctorReport(results) {
   const lines = [`Workflow doctor: ${total} checks`, ""];
 
   for (const result of results) {
-    const icon = result.status === "pass" ? "✓" : result.status === "warn" ? "⚠" : "✗";
+    const icon =
+      result.status === "pass" ? "✓" : result.status === "warn" ? "⚠" : "✗";
     if (result.hint) {
       lines.push(`${icon} ${result.label} — ${result.hint}`);
     } else {
@@ -1007,7 +1166,10 @@ function renderDoctorReport(results) {
   } else if (failCount === 0) {
     lines.push("", `${warnCount} warning(s). Repository is usable.`);
   } else {
-    lines.push("", `${failCount} check(s) failed. Fix the issues above before running workflow commands.`);
+    lines.push(
+      "",
+      `${failCount} check(s) failed. Fix the issues above before running workflow commands.`,
+    );
   }
 
   return { text: lines.join("\n"), hasFailures: failCount > 0 };
@@ -1016,11 +1178,16 @@ function renderDoctorReport(results) {
 function readRepomixSnapshot(repoRoot, commandRunner) {
   const tmpFile = path.join(os.tmpdir(), `nimblco-repomix-${Date.now()}.xml`);
   try {
-    commandRunner(`npx --yes repomix --compress --output "${tmpFile}"`, { cwd: repoRoot });
+    commandRunner(`npx --yes repomix --compress --output "${tmpFile}"`, {
+      cwd: repoRoot,
+    });
     const content = fs.readFileSync(tmpFile, "utf8");
     return { content, error: null };
   } catch (error) {
-    return { content: "", error: error instanceof Error ? error.message : String(error) };
+    return {
+      content: "",
+      error: error instanceof Error ? error.message : String(error),
+    };
   } finally {
     try {
       fs.unlinkSync(tmpFile);
@@ -1175,7 +1342,20 @@ function parseArguments(argv) {
     command = argument;
   }
 
-  return { command, task, target, slug, artifacts, output, stdoutMode, includeDiff, compress, help, copy, dryRun };
+  return {
+    command,
+    task,
+    target,
+    slug,
+    artifacts,
+    output,
+    stdoutMode,
+    includeDiff,
+    compress,
+    help,
+    copy,
+    dryRun,
+  };
 }
 
 function defaultClipboardWriter(text) {
@@ -1212,7 +1392,9 @@ function defaultClipboardWriter(text) {
   } catch (error) {
     throw new WorkflowError(`Clipboard command failed: ${error.message}`);
   }
-  throw new WorkflowError(`Clipboard support is not available for platform: ${platform}`);
+  throw new WorkflowError(
+    `Clipboard support is not available for platform: ${platform}`,
+  );
 }
 
 function defaultCommandRunner(command, argsOrOptions = {}, maybeOptions = {}) {
@@ -1256,11 +1438,23 @@ export function runCli(
       if (skillArgs.includes("--help") || skillArgs.includes("-h")) {
         return { exitCode: 0, stdout: renderHelp(), stderr: "" };
       }
-      const ALLOWED_SKILL_SUBCOMMANDS = new Set(["add", "list", "remove", "update"]);
-      if (skillArgs.length > 0 && !ALLOWED_SKILL_SUBCOMMANDS.has(skillArgs[0])) {
-        throw new WorkflowError(`Unknown skill subcommand: ${skillArgs[0]}. Allowed: ${[...ALLOWED_SKILL_SUBCOMMANDS].join(", ")}`);
+      const ALLOWED_SKILL_SUBCOMMANDS = new Set([
+        "add",
+        "list",
+        "remove",
+        "update",
+      ]);
+      if (
+        skillArgs.length > 0 &&
+        !ALLOWED_SKILL_SUBCOMMANDS.has(skillArgs[0])
+      ) {
+        throw new WorkflowError(
+          `Unknown skill subcommand: ${skillArgs[0]}. Allowed: ${[...ALLOWED_SKILL_SUBCOMMANDS].join(", ")}`,
+        );
       }
-      const skillOutput = commandRunner("npx", ["skills", ...skillArgs], { cwd: repoRoot });
+      const skillOutput = commandRunner("npx", ["skills", ...skillArgs], {
+        cwd: repoRoot,
+      });
       return { exitCode: 0, stdout: skillOutput ?? "", stderr: "" };
     }
 
@@ -1270,7 +1464,11 @@ export function runCli(
       }
       const results = runDoctor(repoRoot, commandRunner);
       const report = renderDoctorReport(results);
-      return { exitCode: report.hasFailures ? 1 : 0, stdout: report.text, stderr: "" };
+      return {
+        exitCode: report.hasFailures ? 1 : 0,
+        stdout: report.text,
+        stderr: "",
+      };
     }
 
     const {
@@ -1288,8 +1486,15 @@ export function runCli(
       dryRun,
     } = parseArguments(argv);
 
-    if (copy && command !== "handoff" && command !== "resume" && command !== "pack") {
-      throw new WorkflowError("--copy is only supported by handoff, resume, and pack commands.");
+    if (
+      copy &&
+      command !== "handoff" &&
+      command !== "resume" &&
+      command !== "pack"
+    ) {
+      throw new WorkflowError(
+        "--copy is only supported by handoff, resume, and pack commands.",
+      );
     }
 
     if (help || !command) {
@@ -1297,23 +1502,33 @@ export function runCli(
     }
 
     if (target && command !== "handoff" && command !== "pack") {
-      throw new WorkflowError("--to is only supported by the handoff and pack commands.");
+      throw new WorkflowError(
+        "--to is only supported by the handoff and pack commands.",
+      );
     }
 
     if (output && command !== "pack") {
-      throw new WorkflowError("--output is only supported by the pack command.");
+      throw new WorkflowError(
+        "--output is only supported by the pack command.",
+      );
     }
 
     if (stdoutMode && command !== "pack") {
-      throw new WorkflowError("--stdout is only supported by the pack command.");
+      throw new WorkflowError(
+        "--stdout is only supported by the pack command.",
+      );
     }
 
     if (includeDiff && command !== "pack") {
-      throw new WorkflowError("--include-diff is only supported by the pack command.");
+      throw new WorkflowError(
+        "--include-diff is only supported by the pack command.",
+      );
     }
 
     if (compress && command !== "pack") {
-      throw new WorkflowError("--compress is only supported by the pack command.");
+      throw new WorkflowError(
+        "--compress is only supported by the pack command.",
+      );
     }
 
     if (target && !(target in TARGET_ADAPTERS)) {
@@ -1324,7 +1539,9 @@ export function runCli(
 
     if (command === "scaffold") {
       if (task) {
-        throw new WorkflowError("--task is not supported by the scaffold command.");
+        throw new WorkflowError(
+          "--task is not supported by the scaffold command.",
+        );
       }
 
       const createdEntries = scaffoldWorkflowArtifacts(repoRoot, {
@@ -1382,7 +1599,11 @@ export function runCli(
 
       return {
         exitCode: 0,
-        stdout: renderPackSummary(toRepoPath(path.relative(repoRoot, outputPath)), copy, target ?? null),
+        stdout: renderPackSummary(
+          toRepoPath(path.relative(repoRoot, outputPath)),
+          copy,
+          target ?? null,
+        ),
         stderr: "",
       };
     }
@@ -1390,7 +1611,7 @@ export function runCli(
     if (command === "handoff") {
       const promptText = buildPrompt(taskBrief, target ?? null);
       let confirmation = "";
-      
+
       if (copy) {
         clipboardWriter(promptText);
         confirmation = "\nClipboard: copied prompt text\n";
@@ -1424,7 +1645,7 @@ export function runCli(
           `Selected task: ${taskBrief.relativePath}`,
           confirmation,
           "Prompt:",
-          promptText
+          promptText,
         ].join("\n"),
         stderr: "",
       };
@@ -1468,13 +1689,20 @@ export function runCli(
       }
 
       if (taskBrief.status?.toLowerCase() !== "completed") {
-        throw new WorkflowError(`Finalize requires a completed task brief: ${taskBrief.relativePath}`);
+        throw new WorkflowError(
+          `Finalize requires a completed task brief: ${taskBrief.relativePath}`,
+        );
       }
 
       const bundleEntries = resolveTaskBundle(taskBrief, repoRoot);
 
       if (dryRun) {
-        const lines = ["Dry run — finalize would move:", ...bundleEntries.map((e) => `  ${e.sourceRelativePath} → ${e.destRelativePath}`)];
+        const lines = [
+          "Dry run — finalize would move:",
+          ...bundleEntries.map(
+            (e) => `  ${e.sourceRelativePath} → ${e.destRelativePath}`,
+          ),
+        ];
         return { exitCode: 0, stdout: lines.join("\n"), stderr: "" };
       }
 
@@ -1489,13 +1717,20 @@ export function runCli(
 
     if (command === "archive") {
       if (taskBrief.status?.toLowerCase() !== "completed") {
-        throw new WorkflowError(`Cannot archive task because its status is not completed: ${taskBrief.relativePath}`);
+        throw new WorkflowError(
+          `Cannot archive task because its status is not completed: ${taskBrief.relativePath}`,
+        );
       }
 
       const bundleEntries = resolveTaskBundle(taskBrief, repoRoot);
 
       if (dryRun) {
-        const lines = ["Dry run — archive would move:", ...bundleEntries.map((e) => `  ${e.sourceRelativePath} → ${e.destRelativePath}`)];
+        const lines = [
+          "Dry run — archive would move:",
+          ...bundleEntries.map(
+            (e) => `  ${e.sourceRelativePath} → ${e.destRelativePath}`,
+          ),
+        ];
         return { exitCode: 0, stdout: lines.join("\n"), stderr: "" };
       }
 

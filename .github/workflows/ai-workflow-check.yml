@@ -16,4 +16,4 @@ jobs:
           node-version: "lts/*"
       - name: Validate AI Task Artifacts
         run: |
-          npm run workflow -- check --allow-multiple
+          npm run workflow -- check
