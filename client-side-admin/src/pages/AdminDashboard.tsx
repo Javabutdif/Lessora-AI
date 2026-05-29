@@ -165,6 +165,19 @@ export default function AdminDashboard() {
               {status === "online" ? "Backend online" : "Checking backend"}
             </div>
             <button
+              onClick={() => navigate("/users")}
+              style={{
+                borderRadius: "10px",
+                border: "1px solid rgba(96,165,250,0.4)",
+                background: "rgba(96,165,250,0.1)",
+                color: "#60a5fa",
+                cursor: "pointer",
+                padding: "9px 12px",
+              }}
+            >
+              Users
+            </button>
+            <button
               onClick={handleLogout}
               style={{
                 borderRadius: "10px",

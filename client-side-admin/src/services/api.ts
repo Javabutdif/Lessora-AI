@@ -82,3 +82,32 @@ export async function fetchAdminStats() {
     generationRate: number;
   }>("/api/admin/stats");
 }
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  status: "active" | "inactive" | "pending";
+  createdAt: string;
+  lastLoginAt?: string;
+}
+
+export async function fetchUsers() {
+  return apiRequest<User[]>("/api/admin/users");
+}
+
+export async function updateUser(
+  userId: string,
+  data: { name?: string; email?: string; status?: string },
+) {
+  return apiRequest<User>(`/api/admin/users/${userId}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function softDeleteUser(userId: string) {
+  return apiRequest<{ success: boolean }>(`/api/admin/users/${userId}`, {
+    method: "DELETE",
+  });
+}
