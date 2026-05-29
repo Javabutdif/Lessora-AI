@@ -236,7 +236,12 @@ function resolveTaskBrief(repoRoot, taskArgument) {
   }
 
   if (activeTasks.length > 1) {
-    return activeTasks;
+    const taskList = activeTasks
+      .map((task) => `- ${task.relativePath}`)
+      .join("\n");
+    throw new WorkflowError(
+      `Multiple active task briefs found:\n${taskList}\nUse --task to select one explicitly.`,
+    );
   }
 
   if (taskBriefs.length === 1) {
