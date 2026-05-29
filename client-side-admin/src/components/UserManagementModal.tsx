@@ -12,7 +12,11 @@ export default function UserManagementModal({
   onClose,
   onUserUpdated,
 }: UserManagementModalProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    email: string;
+    status: User["status"];
+  }>({
     name: user.name,
     email: user.email,
     status: user.status,
@@ -202,7 +206,10 @@ export default function UserManagementModal({
             <select
               value={formData.status}
               onChange={(e) =>
-                setFormData({ ...formData, status: e.target.value })
+                setFormData({
+                  ...formData,
+                  status: e.target.value as User["status"],
+                })
               }
               style={{
                 width: "100%",
