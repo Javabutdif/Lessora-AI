@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import {
-  exportLessonPlanDocumentSchema,
   generateLessonPlanSchema,
   refineLessonPlanSchema,
 } from "../schemas/ai.schema";
@@ -89,20 +88,6 @@ export async function getLessonPlanById(
       userId,
       req.params.lessonPlanId,
     );
-    res.json({ data: result, error: null });
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function exportLessonPlanDocument(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const input = exportLessonPlanDocumentSchema.parse(req.body);
-    const result = await openAIService.exportLessonPlanDocument(input.document);
     res.json({ data: result, error: null });
   } catch (error) {
     next(error);

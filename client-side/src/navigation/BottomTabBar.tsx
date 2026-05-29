@@ -2,17 +2,12 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import HomeScreen from "../screens/Dashboard/HomeScreen";
-import GeneratePlanScreen from "../screens/Dashboard/GeneratePlanScreen";
+import HistoryScreen from "../screens/Dashboard/HistoryScreen";
 import AnalyticsScreen from "../screens/Dashboard/AnalyticsScreen";
 import ProfileScreen from "../screens/Dashboard/ProfileScreen";
 import { View } from "react-native";
-
-type DashboardTabParamList = {
-  HomeTab: undefined;
-  Generate: { lessonPlanId?: string } | undefined;
-  Analytics: undefined;
-  Profile: undefined;
-};
+import DashboardStackNavigator from "./DashboardStackNavigator";
+import { DashboardTabParamList } from "./types";
 
 const Tab = createBottomTabNavigator<DashboardTabParamList>();
 
@@ -35,7 +30,7 @@ export default function BottomTabBar() {
           borderTopRightRadius: 24,
           position: "absolute",
         },
-        tabBarIcon: ({ focused, color }) => {
+        tabBarIcon: ({ focused }) => {
           let iconName: keyof typeof Ionicons.glyphMap = "home";
           let size = 24;
 
@@ -43,26 +38,37 @@ export default function BottomTabBar() {
             iconName = focused ? "home" : "home-outline";
           } else if (route.name === "Generate") {
             iconName = focused ? "sparkles" : "sparkles-outline";
+            size = 26; // Slightly larger for emphasis in the center
+          } else if (route.name === "History") {
+            iconName = focused ? "time" : "time-outline";
           } else if (route.name === "Analytics") {
             iconName = focused ? "bar-chart" : "bar-chart-outline";
           } else if (route.name === "Profile") {
             iconName = focused ? "person" : "person-outline";
           }
 
-          if (route.name === "Generate") {
-            return (
-              <View className="bg-electric w-14 h-14 rounded-full items-center justify-center -mt-6 shadow-lg shadow-electric/50">
-                <Ionicons name={iconName} size={28} color="#FFFFFF" />
-              </View>
-            );
-          }
-
-          return <Ionicons name={iconName} size={size} color={focused ? "#2F5BFF" : "#8E95B2"} />;
+          return (
+            <Ionicons
+              name={iconName}
+              size={size}
+              color={focused ? "#2F5BFF" : "#8E95B2"}
+            />
+          );
         },
       })}
     >
       <Tab.Screen name="HomeTab" component={HomeScreen} />
-      <Tab.Screen name="Generate" component={GeneratePlanScreen} />
+      <Tab.Screen name="History" component={HistoryScreen} />
+      <Tab.Screen
+        name="Generate"
+        component={DashboardStackNavigator}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            navigation.navigate("Generate", { screen: "Generate" });
+          },
+        })}
+      />
       <Tab.Screen name="Analytics" component={AnalyticsScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>

@@ -12,13 +12,7 @@ import {
   LessonPlanHistoryItem,
   listRecentLessonPlans,
 } from "../../services/api";
-
-type DashboardTabParamList = {
-  HomeTab: undefined;
-  Generate: { lessonPlanId?: string } | undefined;
-  Analytics: undefined;
-  Profile: undefined;
-};
+import { DashboardTabParamList } from "../../navigation/types";
 
 type Props = {
   navigation: BottomTabNavigationProp<DashboardTabParamList, "HomeTab">;
@@ -119,7 +113,7 @@ export default function HomeScreen({ navigation }: Props) {
           <TouchableOpacity
             className="bg-white/20 self-start px-4 py-2 rounded-xl flex-row items-center"
             activeOpacity={0.8}
-            onPress={() => navigation.navigate("Generate")}
+            onPress={() => navigation.navigate("Generate", { screen: "Generate" })}
           >
             <Text className="text-white font-poppins-semi mr-2">
               Try it now
@@ -132,9 +126,11 @@ export default function HomeScreen({ navigation }: Props) {
           <Text className="text-navy font-poppins-bold text-xl">
             Recent Plans
           </Text>
-          <Text className="text-royal font-poppins-semi text-sm">
-            {isLoadingRecentPlans ? "Loading" : "View All"}
-          </Text>
+          <TouchableOpacity onPress={() => navigation.navigate("History")}>
+            <Text className="text-royal font-poppins-semi text-sm">
+              {isLoadingRecentPlans ? "Loading" : "View All"}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {recentPlans.length ? (
@@ -148,7 +144,10 @@ export default function HomeScreen({ navigation }: Props) {
                 key={plan.id}
                 activeOpacity={0.85}
                 onPress={() =>
-                  navigation.navigate("Generate", { lessonPlanId: plan.id })
+                  navigation.navigate("Generate", {
+                    screen: "Preview",
+                    params: { lessonPlanId: plan.id },
+                  })
                 }
               >
                 <Card className="w-64 mr-4 p-4">

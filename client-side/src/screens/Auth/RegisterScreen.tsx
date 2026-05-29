@@ -89,7 +89,7 @@ export default function RegisterScreen({ navigation }: Props) {
             ) : null}
             <Input
               label="Full Name"
-              placeholder="Jane Doe"
+              placeholder="Jayno"
               autoCapitalize="words"
               icon="person-outline"
               value={name}

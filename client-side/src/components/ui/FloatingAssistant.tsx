@@ -11,12 +11,7 @@ import Animated, {
   withSequence,
 } from "react-native-reanimated";
 
-type DashboardTabParamList = {
-  HomeTab: undefined;
-  Generate: { lessonPlanId?: string } | undefined;
-  Analytics: undefined;
-  Profile: undefined;
-};
+import { DashboardTabParamList } from "../../navigation/types";
 
 export default function FloatingAssistant() {
   const navigation = useNavigation<BottomTabNavigationProp<DashboardTabParamList>>();
@@ -58,7 +53,7 @@ export default function FloatingAssistant() {
         className="items-center justify-center"
         accessibilityRole="button"
         accessibilityLabel="Generate lesson plan with AI"
-        onPress={() => navigation.navigate("Generate")}
+        onPress={() => navigation.navigate("Generate", { screen: "Generate" })}
       >
         <Animated.View
           style={[glowStyle]}

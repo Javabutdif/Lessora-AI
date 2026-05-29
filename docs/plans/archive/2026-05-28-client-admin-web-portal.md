@@ -15,16 +15,16 @@
 
 ## Steps
 
-- [ ] Scaffold the `client-side-admin` React TypeScript app with shared API configuration.
-- [ ] Add protected login and dashboard routes with token-based session handling.
-- [ ] Build statistics cards backed by the shared API.
-- [ ] Add `GET /api/admin/stats` to the backend and wire it into Express.
-- [ ] Validate the new admin app build and backend build.
+- [x] Scaffold the `client-side-admin` React TypeScript app with shared API configuration.
+- [x] Add protected login and dashboard routes with token-based session handling.
+- [x] Build statistics cards backed by the shared API.
+- [x] Add `GET /api/admin/stats` to the backend and wire it into Express.
+- [x] Validate the new admin app build and backend build.
 
 ## Validation
 
-- [ ] Run `npm run build` in `client-side-admin`.
-- [ ] Run `npm run build` in `server-side`.
+- [x] Run `npm run build` in `client-side-admin`.
+- [x] Run `npm run build` in `server-side`.
 
 ## Risks
 

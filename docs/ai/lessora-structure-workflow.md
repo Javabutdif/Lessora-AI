@@ -256,7 +256,7 @@ Use this workflow for the Generate Plan screen. Do not invent a new AI route, cl
 - endpoint: `POST /api/ai/lesson-plan/generate`
 - history list endpoint: `GET /api/ai/lesson-plan/history`
 - history detail endpoint: `GET /api/ai/lesson-plan/history/:lessonPlanId`
-- export endpoint: `POST /api/ai/lesson-plan/export`
+- client-side export helper: `client-side/src/utils/documentExport.ts`
 
 ### Client Field Mapping
 
@@ -356,9 +356,9 @@ The client must never send a system prompt, role prompt, or role override. The l
 - The canonical generated output is `data.document`, a text-only JSON document.
 - The Generate Plan screen should render `document.blocks` as a read-only preview by default.
 - Editing should be opt-in from the preview panel through the pencil icon, which toggles editable fields for the same `document.blocks`.
-- Export features should send the edited `document` to `POST /api/ai/lesson-plan/export`.
-- The current export endpoint returns a Word-compatible `.doc` payload as base64 plus plain text for mobile sharing.
-- The AI service itself should not generate media or binary files; document export is a deterministic server conversion from JSON blocks.
+- Export features build a local Word-compatible `.doc` file in the client and share it from the mobile app.
+- The client-side export helper converts `document.blocks` into HTML/plain-text content locally, then writes a temporary `.doc` file for sharing.
+- The AI service itself should not generate media or binary files; document export is now handled in the client.
 - AI media generation is disabled. Do not request or return images, audio, video, slides, charts, or other media from the lesson plan specialist.
 - `draftText` is a compatibility preview string, not the source of truth for editing or exporting.
 
@@ -406,7 +406,7 @@ The backend must reject incomplete generated documents that miss required headin
 - Tapping a recent plan should navigate to the `Generate` tab with `{ lessonPlanId }`.
 - The Generate Plan screen loads saved plan details from `GET /api/ai/lesson-plan/history/:lessonPlanId`.
 - Saved plans open in preview mode by default and can be edited locally with the pencil toggle.
-- Exporting a history plan uses the same `POST /api/ai/lesson-plan/export` endpoint with the currently loaded document.
+- Exporting a history plan uses the same client-side export helper with the currently loaded document.
 - Saved-plan edits are local only until a save/update endpoint is explicitly added.
 
 ### OpenAI And Quota Rules

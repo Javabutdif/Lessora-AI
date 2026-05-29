@@ -8,22 +8,22 @@
 
 ## Linked artifacts
 
-- spec: `docs/specs/2026-05-28-client-admin-web-portal.md`
-- plan: `docs/plans/2026-05-28-client-admin-web-portal.md`
+- spec: `docs/specs/archive/2026-05-28-client-admin-web-portal.md`
+- plan: `docs/plans/archive/2026-05-28-client-admin-web-portal.md`
 
 ## Current state
 
-- status: in progress
-- current owner: Copilot
-- next action: scaffold the admin web app and add backend admin stats aggregation
+- status: completed
+- current owner: Antigravity
+- next action: complete
 - blockers: none
 
 ## Progress checklist
 
-- [ ] Scaffold the `client-side-admin` React TypeScript app
-- [ ] Add login and protected dashboard routes
-- [ ] Add backend admin stats endpoint
-- [ ] Validate admin app and backend builds
+- [x] Scaffold the `client-side-admin` React TypeScript app
+- [x] Add login and protected dashboard routes
+- [x] Add backend admin stats endpoint
+- [x] Validate admin app and backend builds
 
 ## Scope
 
@@ -39,10 +39,10 @@
 
 ## Relevant files
 
-- file: `client-side-admin/`
-- file: `server-side/src/app.ts`
-- file: `server-side/src/controllers/admin.controller.ts`
-- file: `server-side/src/routes/admin.routes.ts`
+- `client-side-admin/`
+- `server-side/src/app.ts`
+- `server-side/src/controllers/admin.controller.ts`
+- `server-side/src/routes/admin.routes.ts`
 
 ## Acceptance criteria
 

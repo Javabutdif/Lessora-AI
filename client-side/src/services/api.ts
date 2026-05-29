@@ -109,18 +109,6 @@ export type LessonPlanHistoryDetail = LessonPlanHistoryItem & {
   model?: string;
 };
 
-export type ExportLessonPlanDocumentPayload = {
-  document: LessonPlanDocument;
-};
-
-export type ExportLessonPlanDocumentResponse = {
-  filename: string;
-  mimeType: "application/msword";
-  extension: "doc";
-  base64: string;
-  plainText: string;
-};
-
 const API_BASE =
   process.env.EXPO_PUBLIC_API_BASE?.trim() ||
   "https://worthy-joby-psits-fd575fc8.koyeb.app/api";
@@ -241,14 +229,5 @@ export async function listRecentLessonPlans() {
 export async function getLessonPlanById(lessonPlanId: string) {
   return requestGetData<LessonPlanHistoryDetail>(
     `/ai/lesson-plan/history/${lessonPlanId}`,
-  );
-}
-
-export async function exportLessonPlanDocument(
-  payload: ExportLessonPlanDocumentPayload,
-) {
-  return requestData<ExportLessonPlanDocumentResponse>(
-    "/ai/lesson-plan/export",
-    payload,
   );
 }

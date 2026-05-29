@@ -43,14 +43,6 @@ export interface LessonPlanDocument {
   exportTargets: string[];
 }
 
-export interface ExportLessonPlanDocumentResponse {
-  filename: string;
-  mimeType: "application/msword";
-  extension: "doc";
-  base64: string;
-  plainText: string;
-}
-
 export interface GenerateLessonPlanResponse {
   success: boolean;
   lessonPlanId: string;
@@ -260,22 +252,6 @@ class OpenAIService {
       },
       userId,
     );
-  }
-
-  async exportLessonPlanDocument(
-    document: LessonPlanDocument,
-  ): Promise<ExportLessonPlanDocumentResponse> {
-    const filename = `${this.slugify(document.title || "lesson-plan")}.doc`;
-    const html = this.buildWordCompatibleHtml(document);
-    const plainText = this.documentToPlainText(document);
-
-    return {
-      filename,
-      mimeType: "application/msword",
-      extension: "doc",
-      base64: Buffer.from(html, "utf8").toString("base64"),
-      plainText,
-    };
   }
 
   async listRecentLessonPlans(
@@ -873,81 +849,6 @@ class OpenAIService {
       ],
       exportTargets: OpenAIConfig.exportTargets,
     };
-  }
-
-  private buildWordCompatibleHtml(document: LessonPlanDocument) {
-    const body = document.blocks.map((block) => {
-      if (block.type === "heading") {
-        return `<div class="doc-block"><h${block.level}>${this.escapeHtml(block.text)}</h${block.level}></div>`;
-      }
-
-      if (block.type === "paragraph") {
-        return `<div class="doc-block"><p>${this.escapeHtml(block.text)}</p></div>`;
-      }
-
-      const tag = block.style === "numbered" ? "ol" : "ul";
-      const items = block.items
-        .map((item) => `<li>${this.escapeHtml(item)}</li>`)
-        .join("");
-
-      return `<div class="doc-block"><${tag}>${items}</${tag}></div>`;
-    });
-
-    return [
-      "<!DOCTYPE html>",
-      "<html>",
-      "<head>",
-      '<meta charset="utf-8" />',
-      `<title>${this.escapeHtml(document.title)}</title>`,
-      "<style>",
-      "body { font-family: Arial, sans-serif; line-height: 1.4; margin: 24px; color: #000; }",
-      ".doc-block { margin-bottom: 14px; }",
-      "h1 { font-size: 24px; margin: 0 0 12px 0; }",
-      "h2 { font-size: 18px; margin: 18px 0 10px 0; }",
-      "h3 { font-size: 16px; margin: 14px 0 8px 0; }",
-      "p { font-size: 12pt; margin: 0 0 10px 0; }",
-      "ul, ol { margin: 0 0 10px 20px; padding-left: 20px; }",
-      "li { font-size: 12pt; margin-bottom: 4px; }",
-      "</style>",
-      "</head>",
-      "<body>",
-      ...body,
-      "</body>",
-      "</html>",
-    ].join("");
-  }
-
-  private documentToPlainText(document: LessonPlanDocument) {
-    return document.blocks
-      .flatMap((block) => {
-        if (block.type === "heading" || block.type === "paragraph") {
-          return [block.text];
-        }
-
-        return block.items.map((item, index) =>
-          block.style === "numbered" ? `${index + 1}. ${item}` : `- ${item}`,
-        );
-      })
-      .join("\n");
-  }
-
-  private escapeHtml(value: string) {
-    return value
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
-  private slugify(value: string) {
-    return (
-      value
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "")
-        .slice(0, 80) || "lesson-plan"
-    );
   }
 }
 

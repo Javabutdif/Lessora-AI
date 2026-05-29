@@ -21,7 +21,7 @@ The `GeneratePlanScreen` collects Topic / Subject, Grade Level, Duration, and Sp
 
 The backend returns the existing `{ data, error }` envelope. The client renders the canonical `document.blocks` JSON document on the same screen and surfaces validation or server errors through toast messages. `draftText` may exist as a compatibility preview, but editing and export workflows should use `document`.
 
-The user sees a read-only preview by default. A pencil icon in the preview panel toggles editing for the generated document blocks. The edited JSON document is sent to `POST /api/ai/lesson-plan/export`, which returns a Word-compatible `.doc` payload and plain text fallback.
+The user sees a read-only preview by default. A pencil icon in the preview panel toggles editing for the generated document blocks. The edited JSON document is exported locally in the client by building a Word-compatible `.doc` file and sharing it from the mobile app.
 
 The dashboard entry points should route users into this workflow: the floating assistant icon and "Try it now" action navigate to the `Generate` tab.
 
@@ -34,7 +34,7 @@ The dashboard entry points should route users into this workflow: the floating a
 - [x] The generated JSON document blocks are readable in the client.
 - [x] Generated JSON document blocks are preview-only by default.
 - [x] Generated JSON document blocks can be edited after tapping the pencil icon.
-- [x] The edited JSON document can be sent to the backend export endpoint.
+- [x] The edited JSON document can be exported locally from the client.
 - [x] Dashboard floating assistant redirects to the Generate Plan workflow.
 - [x] The anti-hallucination workflow documents exact ownership, route, schema, service, and response shape.
 - [x] TypeScript validation passes.

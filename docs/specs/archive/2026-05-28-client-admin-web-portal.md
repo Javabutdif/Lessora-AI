@@ -23,13 +23,13 @@ The admin app stores the bearer token locally for session persistence, redirects
 
 ## Acceptance criteria
 
-- [ ] `client-side-admin` is scaffolded as a React + TypeScript web app.
-- [ ] The login page authenticates against the shared backend login endpoint.
-- [ ] The dashboard shows protected admin content after successful login.
-- [ ] The dashboard displays backend-backed statistics cards.
-- [ ] The admin app uses the same shared backend server as the main application.
-- [ ] The backend exposes `/api/admin/stats` to support the admin dashboard.
-- [ ] Validation passes for the new admin app and backend build.
+- [x] `client-side-admin` is scaffolded as a React + TypeScript web app.
+- [x] The login page authenticates against the shared backend login endpoint.
+- [x] The dashboard shows protected admin content after successful login.
+- [x] The dashboard displays backend-backed statistics cards.
+- [x] The admin app uses the same shared backend server as the main application.
+- [x] The backend exposes `/api/admin/stats` to support the admin dashboard.
+- [x] Validation passes for the new admin app and backend build.
 
 ## Constraints
 

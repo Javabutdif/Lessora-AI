@@ -52,17 +52,10 @@ export const lessonPlanDocumentSchema = z.object({
   exportTargets: z.array(z.string()).default(["doc"]),
 });
 
-export const exportLessonPlanDocumentSchema = z.object({
-  document: lessonPlanDocumentSchema,
-});
-
 export type GenerateLessonPlanPayload = z.infer<
   typeof generateLessonPlanSchema
 >;
 export type RefineLessonPlanPayload = z.infer<typeof refineLessonPlanSchema>;
 export type LessonPlanDocumentPayload = z.infer<
   typeof lessonPlanDocumentSchema
->;
-export type ExportLessonPlanDocumentPayload = z.infer<
-  typeof exportLessonPlanDocumentSchema
 >;

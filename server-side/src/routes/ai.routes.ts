@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {
-  exportLessonPlanDocument,
   generateLessonPlan,
   getLessonPlanById,
   getLessonPlanAIConfig,
@@ -13,9 +12,12 @@ const router = Router();
 
 router.get("/lesson-plan/config", getLessonPlanAIConfig);
 router.get("/lesson-plan/history", requireAuth, listRecentLessonPlans);
-router.get("/lesson-plan/history/:lessonPlanId", requireAuth, getLessonPlanById);
+router.get(
+  "/lesson-plan/history/:lessonPlanId",
+  requireAuth,
+  getLessonPlanById,
+);
 router.post("/lesson-plan/generate", requireAuth, generateLessonPlan);
 router.post("/lesson-plan/refine", requireAuth, refineLessonPlan);
-router.post("/lesson-plan/export", requireAuth, exportLessonPlanDocument);
 
 export { router as aiRouter };
