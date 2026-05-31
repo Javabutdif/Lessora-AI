@@ -1,5 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import LessoraLogo from "../assets/Transparent Logo.png";
+import LandingScreenshot from "../assets/Landing.png";
+import GenerationScreenshot1 from "../assets/generation1.png";
+import GenerationScreenshot2 from "../assets/generation2.png";
+import HistoryScreenshot from "../assets/history.png";
+import GenerateScreenshot from "../assets/generate.png";
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -316,7 +321,127 @@ export default function LandingPage() {
           ))}
         </div>
 
-        {/* Footer */}
+        {/* Mobile Screenshots Section */}
+        <div
+          style={{
+            width: "100%",
+            marginTop: "60px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "32px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "12px",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "28px",
+                fontWeight: "800",
+                margin: "0",
+                color: "#f3f4f6",
+              }}
+            >
+              Experience the App
+            </h2>
+            <p
+              style={{
+                fontSize: "16px",
+                color: "rgba(255,255,255,0.65)",
+                margin: "0",
+                fontWeight: "500",
+              }}
+            >
+              See how Lessora AI simplifies lesson planning
+            </p>
+          </div>
+
+          {/* Screenshots Grid */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+              gap: "20px",
+              width: "100%",
+            }}
+          >
+            {[
+              { img: LandingScreenshot, title: "Landing" },
+              { img: GenerationScreenshot1, title: "Generation" },
+              { img: GenerationScreenshot2, title: "Continuation" },
+              { img: HistoryScreenshot, title: "History" },
+              { img: GenerateScreenshot, title: "Generate" },
+            ].map((screenshot, idx) => (
+              <div
+                key={idx}
+                style={{
+                  position: "relative",
+                  borderRadius: "16px",
+                  overflow: "hidden",
+                  aspectRatio: "9/20",
+                  border: "1px solid rgba(59, 130, 246, 0.2)",
+                  boxShadow: "0 8px 32px rgba(59, 130, 246, 0.15)",
+                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  cursor: "pointer",
+                  group: "group",
+                }}
+                onMouseEnter={(e) => {
+                  const el = e.currentTarget as HTMLDivElement;
+                  el.style.transform = "translateY(-8px)";
+                  el.style.boxShadow = "0 16px 48px rgba(59, 130, 246, 0.25)";
+                  el.style.borderColor = "rgba(59, 130, 246, 0.4)";
+                }}
+                onMouseLeave={(e) => {
+                  const el = e.currentTarget as HTMLDivElement;
+                  el.style.transform = "translateY(0)";
+                  el.style.boxShadow = "0 8px 32px rgba(59, 130, 246, 0.15)";
+                  el.style.borderColor = "rgba(59, 130, 246, 0.2)";
+                }}
+              >
+                <img
+                  src={screenshot.img}
+                  alt={screenshot.title}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    transition: "transform 0.3s ease",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    background:
+                      "linear-gradient(to top, rgba(10, 14, 39, 0.8), transparent)",
+                    padding: "16px 12px 12px",
+                    textAlign: "center",
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: "12px",
+                      fontWeight: "700",
+                      color: "#f3f4f6",
+                      margin: "0",
+                      letterSpacing: "0.3px",
+                    }}
+                  >
+                    {screenshot.title}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
         <div
           style={{
             display: "flex",
