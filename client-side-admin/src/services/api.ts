@@ -132,6 +132,7 @@ export type RegisterPayload = {
   name: string;
   email: string;
   password: string;
+  school?: string;
 };
 
 export async function loginUser(email: string, password: string) {
