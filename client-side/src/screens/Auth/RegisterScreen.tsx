@@ -119,6 +119,7 @@ export default function RegisterScreen({ navigation }: Props) {
                 variant="glowing"
                 onPress={handleRegister}
                 disabled={isLoading}
+                isLoading={isLoading}
               />
             </View>
           </View>
