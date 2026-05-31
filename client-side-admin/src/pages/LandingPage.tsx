@@ -389,7 +389,6 @@ export default function LandingPage() {
                   boxShadow: "0 8px 32px rgba(59, 130, 246, 0.15)",
                   transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                   cursor: "pointer",
-                  group: "group",
                 }}
                 onMouseEnter={(e) => {
                   const el = e.currentTarget as HTMLDivElement;
