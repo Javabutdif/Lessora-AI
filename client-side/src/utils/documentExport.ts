@@ -1,4 +1,15 @@
+import * as FileSystem from "expo-file-system";
+import * as Print from "expo-print";
 import { File, Paths } from "expo-file-system";
+import {
+  Document,
+  Packer,
+  Paragraph,
+  TextRun,
+  HeadingLevel,
+  AlignmentType,
+  convertInchesToTwip,
+} from "docx";
 import { LessonPlanDocument } from "../services/api";
 
 export interface ExportedLessonPlanDocument {
@@ -97,4 +108,318 @@ export async function exportLessonPlanDocumentToCache(
     uri: file.uri,
     plainText,
   };
+}
+
+
+/**
+ * Build HTML template for PDF export with professional formatting
+ */
+function buildPDFHtml(document: LessonPlanDocument): string {
+  const body = document.blocks.map((block) => {
+    if (block.type === "heading") {
+      const level = block.level;
+      return `<h${level}>${escapeHtml(block.text)}</h${level}>`;
+    }
+
+    if (block.type === "paragraph") {
+      return `<p>${escapeHtml(block.text)}</p>`;
+    }
+
+    const tag = block.style === "numbered" ? "ol" : "ul";
+    const items = block.items
+      .map((item) => `<li>${escapeHtml(item)}</li>`)
+      .join("");
+
+    return `<${tag}>${items}</${tag}>`;
+  });
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>${escapeHtml(document.title)}</title>
+  <style>
+    @page {
+      size: letter;
+      margin: 72pt;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      color: #4B5563;
+      line-height: 1.5;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      font-size: 24pt;
+      font-weight: bold;
+      color: #1E3A8A;
+      margin: 0 0 24pt 0;
+      line-height: 1.3;
+    }
+    h2 {
+      font-size: 18pt;
+      font-weight: bold;
+      color: #1E3A8A;
+      margin: 18pt 0 12pt 0;
+      line-height: 1.3;
+    }
+    h3 {
+      font-size: 16pt;
+      font-weight: 600;
+      color: #1E3A8A;
+      margin: 14pt 0 10pt 0;
+      line-height: 1.3;
+    }
+    p {
+      font-size: 12pt;
+      margin: 0 0 12pt 0;
+      line-height: 1.5;
+    }
+    ul, ol {
+      font-size: 12pt;
+      margin: 0 0 12pt 0;
+      padding-left: 36pt;
+      line-height: 1.5;
+    }
+    li {
+      margin-bottom: 6pt;
+    }
+  </style>
+</head>
+<body>
+  ${body.join("\n  ")}
+</body>
+</html>
+  `.trim();
+}
+
+/**
+ * Export lesson plan as PDF using expo-print
+ */
+export async function exportLessonPlanToPDF(
+  document: LessonPlanDocument,
+): Promise<ExportedLessonPlanDocument> {
+  try {
+    const filename = `${slugify(document.title || "lesson-plan")}.pdf`;
+    const html = buildPDFHtml(document);
+    const plainText = documentToPlainText(document);
+
+    const { uri } = await Print.printToFileAsync({
+      html,
+      base64: false,
+    });
+
+    return {
+      filename,
+      uri,
+      plainText,
+    };
+  } catch (error: any) {
+    throw new Error(
+      error?.message || "Failed to generate PDF. Please try again.",
+    );
+  }
+}
+
+/**
+ * Build DOCX document with professional formatting
+ */
+function buildDOCXDocument(document: LessonPlanDocument): Document {
+  const sections: Paragraph[] = [];
+
+  document.blocks.forEach((block) => {
+    if (block.type === "heading") {
+      const headingLevel =
+        block.level === 1
+          ? HeadingLevel.HEADING_1
+          : block.level === 2
+            ? HeadingLevel.HEADING_2
+            : HeadingLevel.HEADING_3;
+
+      sections.push(
+        new Paragraph({
+          text: block.text,
+          heading: headingLevel,
+          spacing: {
+            before: block.level === 1 ? 0 : block.level === 2 ? 360 : 280,
+            after: block.level === 1 ? 480 : block.level === 2 ? 240 : 200,
+          },
+        }),
+      );
+    } else if (block.type === "paragraph") {
+      sections.push(
+        new Paragraph({
+          text: block.text,
+          spacing: {
+            after: 240,
+            line: 360,
+          },
+        }),
+      );
+    } else {
+      // List block
+      block.items.forEach((item, index) => {
+        sections.push(
+          new Paragraph({
+            text: item,
+            numbering: {
+              reference: block.style === "numbered" ? "numbered-list" : "bullet-list",
+              level: 0,
+            },
+            spacing: {
+              after: 120,
+              line: 360,
+            },
+          }),
+        );
+      });
+    }
+  });
+
+  return new Document({
+    sections: [
+      {
+        properties: {
+          page: {
+            margin: {
+              top: convertInchesToTwip(1),
+              right: convertInchesToTwip(1),
+              bottom: convertInchesToTwip(1),
+              left: convertInchesToTwip(1),
+            },
+          },
+        },
+        children: sections,
+      },
+    ],
+    styles: {
+      default: {
+        document: {
+          run: {
+            font: "Arial",
+            size: 24, // 12pt = 24 half-points
+            color: "4B5563",
+          },
+          paragraph: {
+            spacing: {
+              line: 360, // 1.5 line spacing
+            },
+          },
+        },
+        heading1: {
+          run: {
+            font: "Arial",
+            size: 48, // 24pt
+            bold: true,
+            color: "1E3A8A",
+          },
+          paragraph: {
+            spacing: {
+              line: 312, // 1.3 line spacing
+            },
+          },
+        },
+        heading2: {
+          run: {
+            font: "Arial",
+            size: 36, // 18pt
+            bold: true,
+            color: "1E3A8A",
+          },
+          paragraph: {
+            spacing: {
+              line: 312,
+            },
+          },
+        },
+        heading3: {
+          run: {
+            font: "Arial",
+            size: 32, // 16pt
+            bold: true,
+            color: "1E3A8A",
+          },
+          paragraph: {
+            spacing: {
+              line: 312,
+            },
+          },
+        },
+      },
+    },
+    numbering: {
+      config: [
+        {
+          reference: "numbered-list",
+          levels: [
+            {
+              level: 0,
+              format: "decimal",
+              text: "%1.",
+              alignment: AlignmentType.LEFT,
+              style: {
+                paragraph: {
+                  indent: {
+                    left: convertInchesToTwip(0.5),
+                    hanging: convertInchesToTwip(0.25),
+                  },
+                },
+              },
+            },
+          ],
+        },
+        {
+          reference: "bullet-list",
+          levels: [
+            {
+              level: 0,
+              format: "bullet",
+              text: "•",
+              alignment: AlignmentType.LEFT,
+              style: {
+                paragraph: {
+                  indent: {
+                    left: convertInchesToTwip(0.5),
+                    hanging: convertInchesToTwip(0.25),
+                  },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    },
+  });
+}
+
+/**
+ * Export lesson plan as DOCX using docx library
+ */
+export async function exportLessonPlanToDOCX(
+  document: LessonPlanDocument,
+): Promise<ExportedLessonPlanDocument> {
+  try {
+    const filename = `${slugify(document.title || "lesson-plan")}.docx`;
+    const plainText = documentToPlainText(document);
+    const doc = buildDOCXDocument(document);
+
+    // Generate DOCX as base64 string directly (works in React Native)
+    const base64 = await Packer.toBase64String(doc);
+
+    // Write to cache directory using File API
+    const file = new File(Paths.cache, filename);
+    file.write(base64);
+
+    return {
+      filename,
+      uri: file.uri,
+      plainText,
+    };
+  } catch (error: any) {
+    throw new Error(
+      error?.message || "Failed to generate DOCX. Please try again.",
+    );
+  }
 }

@@ -6,12 +6,19 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Toast from "react-native-toast-message";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import ExportFormatModal, {
+  ExportFormat,
+} from "../../components/ui/ExportFormatModal";
 import {
   getLessonPlanById,
   LessonPlanDocument,
   LessonPlanDocumentBlock,
 } from "../../services/api";
-import { exportLessonPlanDocumentToCache } from "../../utils/documentExport";
+import {
+  exportLessonPlanDocumentToCache,
+  exportLessonPlanToPDF,
+  exportLessonPlanToDOCX,
+} from "../../utils/documentExport";
 import { DashboardStackParamList } from "../../navigation/types";
 
 type Props = NativeStackScreenProps<DashboardStackParamList, "Preview">;
@@ -103,6 +110,8 @@ export default function LessonPlanPreviewScreen({ route, navigation }: Props) {
   );
   const [isEditingPreview, setIsEditingPreview] = React.useState(false);
   const [isExporting, setIsExporting] = React.useState(false);
+  const [showExportModal, setShowExportModal] = React.useState(false);
+  const [exportingFormat, setExportingFormat] = React.useState<string>("");
 
   React.useEffect(() => {
     let isActive = true;
@@ -179,13 +188,80 @@ export default function LessonPlanPreviewScreen({ route, navigation }: Props) {
     });
   };
 
-  const handleExport = async () => {
+  const handleExportPDF = async () => {
     if (!editableDocument) {
       return;
     }
 
     try {
       setIsExporting(true);
+      setExportingFormat("PDF");
+      const exportedDocument = await exportLessonPlanToPDF(editableDocument);
+
+      await Share.share({
+        title: exportedDocument.filename,
+        url: exportedDocument.uri,
+        message: exportedDocument.plainText,
+      });
+
+      Toast.show({
+        type: "success",
+        text1: "PDF export ready",
+        text2: exportedDocument.filename,
+      });
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: "PDF export failed",
+        text2: error?.message || "Please try again.",
+      });
+    } finally {
+      setIsExporting(false);
+      setExportingFormat("");
+    }
+  };
+
+  const handleExportDOCX = async () => {
+    if (!editableDocument) {
+      return;
+    }
+
+    try {
+      setIsExporting(true);
+      setExportingFormat("DOCX");
+      const exportedDocument = await exportLessonPlanToDOCX(editableDocument);
+
+      await Share.share({
+        title: exportedDocument.filename,
+        url: exportedDocument.uri,
+        message: exportedDocument.plainText,
+      });
+
+      Toast.show({
+        type: "success",
+        text1: "DOCX export ready",
+        text2: exportedDocument.filename,
+      });
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: "DOCX export failed",
+        text2: error?.message || "Please try again.",
+      });
+    } finally {
+      setIsExporting(false);
+      setExportingFormat("");
+    }
+  };
+
+  const handleExportDOC = async () => {
+    if (!editableDocument) {
+      return;
+    }
+
+    try {
+      setIsExporting(true);
+      setExportingFormat("DOC");
       const exportedDocument =
         await exportLessonPlanDocumentToCache(editableDocument);
 
@@ -203,11 +279,26 @@ export default function LessonPlanPreviewScreen({ route, navigation }: Props) {
     } catch (error: any) {
       Toast.show({
         type: "error",
-        text1: "Export failed",
+        text1: "DOC export failed",
         text2: error?.message || "Please try again.",
       });
     } finally {
       setIsExporting(false);
+      setExportingFormat("");
+    }
+  };
+
+  const handleSelectFormat = (format: ExportFormat) => {
+    switch (format) {
+      case "pdf":
+        handleExportPDF();
+        break;
+      case "docx":
+        handleExportDOCX();
+        break;
+      case "doc":
+        handleExportDOC();
+        break;
     }
   };
 
@@ -310,16 +401,27 @@ export default function LessonPlanPreviewScreen({ route, navigation }: Props) {
 
           <View className="mt-6">
             <Button
-              title={isExporting ? "Exporting..." : "Export DOC"}
+              title={
+                isExporting
+                  ? `Generating ${exportingFormat}...`
+                  : "Export"
+              }
               variant="outline"
               icon="download-outline"
               isLoading={isExporting}
               disabled={isExporting}
-              onPress={handleExport}
+              onPress={() => setShowExportModal(true)}
             />
           </View>
         </View>
       </ScrollView>
+
+      {/* Export Format Modal */}
+      <ExportFormatModal
+        visible={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        onSelectFormat={handleSelectFormat}
+      />
     </SafeAreaView>
   );
 }
