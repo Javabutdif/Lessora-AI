@@ -2,48 +2,269 @@
 
 <img src="./client-side/src/assets/LessoraLogo.png" alt="Lessora AI logo" width="300" />
 
-Lessora AI is an AI-powered lesson planning application for teachers. It helps educators turn a topic, grade level, class duration, and learning goals into organized lesson plans that are easier to prepare, review, and reuse.
+Lessora AI is an AI-powered educational platform designed to help teachers create organized, professional, and curriculum-ready lesson plans in minutes. By transforming simple teacher inputs into structured lesson plans, activities, objectives, and assessments, Lessora AI reduces preparation time and allows educators to focus more on teaching and student engagement.
 
-The project is built around a simple goal: reduce the time teachers spend preparing class materials so they can focus more on instruction, student engagement, and classroom outcomes.
+## 🎯 Overview
 
-## What the Application Does
+Lessora AI provides teachers with multiple ways to access AI-powered lesson planning:
+- **Mobile App**: React Native mobile application for iOS and Android
+- **Web Portal**: React-based web application for browser access
+- **Admin Dashboard**: Administrative interface for user management
 
-Lessora AI gives teachers a mobile-first workspace for creating and managing lesson plans. Teachers can sign up, log in, open a personalized dashboard, start a new AI-assisted lesson plan, review recent plans, and track teaching activity from one place.
+The platform uses OpenAI's GPT models to generate comprehensive, curriculum-aligned lesson plans from minimal teacher input.
 
-The current application includes an Expo React Native client and a Node.js API. The backend already supports user authentication and includes service and data-model groundwork for AI-generated lesson plans.
+## ✨ Key Features
 
-## Current Features
+### For Teachers
+- **AI-Powered Lesson Generation**: Create complete lesson plans from topic, grade level, duration, and learning goals
+- **Multiple Templates**: Support for various lesson plan formats including DepEd semi-detailed templates
+- **Lesson Plan History**: View, edit, and reuse previously generated lesson plans
+- **Document Export**: Export lesson plans in DOC, PDF, and DOCX formats
+- **User Authentication**: Secure account registration and login
+- **AI Response Credits**: Fair usage system with credit-based generation limits
+- **Mobile & Web Access**: Use the mobile app or web portal based on preference
 
-- Teacher onboarding with Lessora AI branding and app introduction
-- Account registration and login
-- Secure password hashing on the server
-- Personalized dashboard greeting using the logged-in teacher profile
-- Recent lesson plan preview area
-- AI suggestion preview card for improving lesson content
-- Lesson plan creation screen with inputs for:
-  - topic or subject
-  - grade level
-  - lesson duration
-  - specific goals or standards
-- Grade-level picker from preschool through senior high school
-- AI lesson generation service structure with placeholder generation logic
-- Teaching analytics screen with summary cards for plans created, time saved, and average rating
+### For Administrators
+- **User Management**: Create, view, and manage teacher accounts
+- **Admin Dashboard**: Monitor platform usage and user activity
+- **Separate Admin Portal**: Dedicated administrative interface
 
-## Product Direction
+## 🏗️ Architecture
 
-Lessora AI is intended to grow into a curriculum-ready planning assistant for educators. Planned and partially prepared areas include real OpenAI lesson generation, richer lesson plan management, saved plan history, refinement workflows, analytics charts, and classroom-ready exports.
+Lessora AI follows a client-server architecture with three main components:
 
-## Repository Overview
+### Client Applications
 
-- `client-side/` contains the Expo React Native mobile application.
-- `server-side/` contains the Node.js and Express API.
-- `assets/` contains shared image and logo assets.
-- `docs/` contains project notes, implementation plans, specs, and agent workflow documentation.
+#### Mobile App (`client-side/`)
+- **Technology**: React Native with Expo SDK 54.0.0
+- **UI Framework**: NativeWind (Tailwind CSS for React Native)
+- **Navigation**: React Navigation with bottom tabs
+- **Key Screens**:
+  - Onboarding and authentication
+  - Dashboard with recent plans
+  - Lesson plan generation
+  - History and preview
+  - Export functionality
 
-## License
+#### Web Portal (`client-side-admin/`)
+- **Technology**: React 18 + TypeScript + Vite
+- **Styling**: Tailwind CSS
+- **Features**:
+  - User portal for teachers (login, register, generate, history)
+  - Admin portal for user management
+  - Responsive design for desktop and mobile browsers
+
+### Server (`server-side/`)
+- **Technology**: Node.js + Express + TypeScript
+- **Database**: MongoDB with Mongoose ODM
+- **Authentication**: JWT tokens with bcrypt password hashing
+- **AI Integration**: OpenAI API (GPT-4o-mini)
+- **Architecture Pattern**: Routes → Controllers → Services → Schemas/Models
+
+#### API Structure
+```
+/api/auth          - User authentication (register, login)
+/api/admin         - Admin operations (user management)
+/api/ai            - AI lesson plan generation and history
+```
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ and npm
+- MongoDB instance (local or cloud)
+- OpenAI API key
+- Expo CLI (for mobile development)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd lessora-ai
+   ```
+
+2. **Install dependencies**
+   ```bash
+   # Install root dependencies
+   npm install
+
+   # Install server dependencies
+   cd server-side
+   npm install
+
+   # Install mobile app dependencies
+   cd ../client-side
+   npm install
+
+   # Install web portal dependencies
+   cd ../client-side-admin
+   npm install
+   ```
+
+3. **Configure environment variables**
+
+   Create `.env` files in the `server-side/`, `client-side/`, and `client-side-admin/` directories.
+   
+   See **[Environment Configuration](docs/ai/quickstart.md#environment-configuration)** for detailed setup instructions and security guidelines.
+
+4. **Start the development servers**
+
+   ```bash
+   # Terminal 1: Start the backend server
+   cd server-side
+   npm run dev
+
+   # Terminal 2: Start the mobile app
+   cd client-side
+   npm start
+
+   # Terminal 3: Start the web portal
+   cd client-side-admin
+   npm run dev
+   ```
+
+### Quick Start with Scripts
+
+The repository includes bootstrap scripts for quick setup:
+
+**PowerShell (Windows)**
+```powershell
+./scripts/bootstrap.ps1
+```
+
+**Bash (macOS/Linux)**
+```bash
+./scripts/bootstrap.sh
+```
+
+## 🛠️ Development Workflow
+
+### Project Structure
+```
+lessora-ai/
+├── client-side/          # React Native mobile app
+│   ├── src/
+│   │   ├── components/   # Reusable UI components
+│   │   ├── context/      # React contexts (Auth, Loading)
+│   │   ├── navigation/   # Navigation configuration
+│   │   ├── screens/      # Screen components
+│   │   ├── services/     # API service layer
+│   │   └── utils/        # Utility functions
+│   └── App.tsx           # App entry point
+├── client-side-admin/    # React web portal
+│   ├── src/
+│   │   ├── components/   # Shared components
+│   │   ├── pages/        # Page components
+│   │   └── services/     # API service layer
+│   └── index.html        # Web entry point
+├── server-side/          # Node.js backend
+│   ├── src/
+│   │   ├── controllers/  # Request handlers
+│   │   ├── middleware/   # Express middleware
+│   │   ├── routes/       # API routes
+│   │   ├── schemas/      # Mongoose & Zod schemas
+│   │   ├── services/     # Business logic
+│   │   └── config/       # Configuration files
+│   └── server.ts         # Server entry point
+├── docs/                 # Documentation
+│   ├── ai/              # AI agent documentation
+│   ├── specs/           # Feature specifications
+│   └── plans/           # Implementation plans
+└── scripts/             # Automation scripts
+```
+
+### Making Changes
+
+For any feature work involving client-server communication:
+
+1. **Read the documentation**
+   - `docs/ai/commands.md` - Available commands
+   - `docs/ai/standards.md` - Coding standards
+   - `docs/ai/lessora-structure-workflow.md` - API development workflow
+
+2. **Create task artifacts**
+   ```bash
+   npm run workflow -- scaffold --slug <topic> --artifacts bundle
+   ```
+
+3. **Follow the layer order**
+   - Server: Routes → Controllers → Services → Schemas/Models
+   - Client: Screens → Services → API
+
+4. **Validate your changes**
+   ```bash
+   # PowerShell
+   ./scripts/check.ps1
+
+   # Bash
+   ./scripts/check.sh
+   ```
+
+### Testing
+
+```bash
+# Run all validation checks
+npm run workflow -- check
+
+# Type checking
+cd client-side && npx tsc --noEmit
+cd server-side && npx tsc --noEmit
+
+# Run tests (when available)
+npm test
+```
+
+## 📚 Documentation
+
+- **[Project Context](docs/ai/project-context.md)** - Product overview and key facts
+- **[Architecture](docs/ai/architecture.md)** - System design and module boundaries
+- **[Quickstart](docs/ai/quickstart.md)** - Fastest path from idea to implementation
+- **[Commands](docs/ai/commands.md)** - Available CLI commands
+- **[Lessora Structure Workflow](docs/ai/lessora-structure-workflow.md)** - API development guidelines
+- **[Architecture Flows](docs/ai/architecture-flows.md)** - Data flows and interfaces
+- **[Standards](docs/ai/standards.md)** - Coding standards and conventions
+
+### Task Management
+
+The project uses a structured workflow for managing development tasks:
+
+- **Specs** (`docs/specs/`) - What should change and why
+- **Plans** (`docs/plans/`) - How the work will be carried out
+- **Tasks** (`docs/ai/tasks/`) - Current execution state
+
+Use the workflow CLI to manage these artifacts:
+```bash
+npm run workflow -- scaffold --slug <topic> --artifacts bundle
+npm run workflow -- check
+npm run workflow -- finalize
+```
+
+## 🔑 Key Technologies
+
+- **Frontend**: React Native (Expo), React, TypeScript, Tailwind CSS, NativeWind
+- **Backend**: Node.js, Express, TypeScript, MongoDB, Mongoose
+- **AI**: OpenAI API (GPT-4o-mini)
+- **Authentication**: JWT, bcrypt
+- **Validation**: Zod
+- **Development**: Vite, Metro bundler, ESLint, Prettier
+
+## 🤝 Contributing
+
+1. Read the documentation in `docs/ai/`
+2. Follow the structure workflow in `docs/ai/lessora-structure-workflow.md`
+3. Create task briefs for non-trivial changes
+4. Run validation checks before committing
+5. Keep changes focused and well-documented
+
+## 📄 License
 
 This project is licensed under the Apache License 2.0. See [LICENSE](./LICENSE) for the full license text.
 
-## Contributors
+## 👥 Contributors
 
 - Jims
+
+---
+
+**Note**: This is an active development project. Features and documentation are continuously evolving. Always refer to the latest documentation in the `docs/` directory for current implementation details.

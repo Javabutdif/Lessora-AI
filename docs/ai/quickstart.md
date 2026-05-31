@@ -48,3 +48,56 @@ When the work is complete:
 1. Make sure the task brief is marked complete and the final status is accurate.
 2. Confirm the linked spec and plan reflect the final outcome.
 3. Run `npm run workflow -- finalize --task <path-to-completed-task-brief>` or the matching fallback command from `docs/ai/commands.md` when more than one task brief exists.
+
+
+## Environment Configuration
+
+### Server Environment Variables
+
+Create a `.env` file in the `server-side/` directory with the following configuration:
+
+```env
+PORT=4000
+MONGODB_URI=mongodb://localhost:27017/lessora-ai
+JWT_SECRET=your-jwt-secret-here
+OPENAI_API_KEY=your-openai-api-key-here
+OPENAI_MODEL=gpt-4o-mini
+```
+
+**Configuration Details:**
+- `PORT`: The port number for the Express server (default: 4000)
+- `MONGODB_URI`: MongoDB connection string (local or cloud instance)
+- `JWT_SECRET`: Secret key for JWT token generation (use a strong, random string)
+- `OPENAI_API_KEY`: Your OpenAI API key from https://platform.openai.com/api-keys
+- `OPENAI_MODEL`: The OpenAI model to use (recommended: gpt-4o-mini for cost efficiency)
+
+### Mobile App Environment Variables
+
+Create a `.env` file in the `client-side/` directory:
+
+```env
+EXPO_PUBLIC_API_BASE=http://localhost:4000
+```
+
+**Configuration Details:**
+- `EXPO_PUBLIC_API_BASE`: The base URL for the backend API server
+- For production, replace with your deployed server URL (e.g., `https://api.yourdomain.com`)
+
+### Web Portal Environment Variables
+
+Create a `.env` file in the `client-side-admin/` directory:
+
+```env
+VITE_API_BASE=http://localhost:4000
+```
+
+**Configuration Details:**
+- `VITE_API_BASE`: The base URL for the backend API server
+- For production, replace with your deployed server URL (e.g., `https://api.yourdomain.com`)
+
+### Security Notes
+
+- **Never commit `.env` files to version control** - they are already in `.gitignore`
+- Use strong, unique values for `JWT_SECRET` in production
+- Keep your `OPENAI_API_KEY` secure and rotate it if compromised
+- Use environment-specific values for development, staging, and production
