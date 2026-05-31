@@ -1,0 +1,188 @@
+@import '../../styles/tokens.css';
+
+/* Base Button Styles */
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-semibold);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  white-space: nowrap;
+  user-select: none;
+  outline: none;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Variant Styles */
+.primary {
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: 1px solid transparent;
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  box-shadow: var(--shadow-glow-blue);
+}
+
+.primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.secondary {
+  background: transparent;
+  color: var(--color-gray-100);
+  border: 1px solid var(--color-border-input);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--color-bg-input);
+  border-color: var(--color-border-focus);
+}
+
+.secondary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.danger {
+  background: var(--color-error);
+  color: var(--color-white);
+  border: 1px solid transparent;
+}
+
+.danger:hover:not(:disabled) {
+  background: #dc2626;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+.danger:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--color-gray-100);
+  border: 1px solid transparent;
+}
+
+.ghost:hover:not(:disabled) {
+  background: var(--color-bg-input);
+}
+
+.ghost:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Size Styles */
+.small {
+  height: 32px;
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-sm);
+}
+
+.medium {
+  height: 40px;
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--font-size-base);
+}
+
+.large {
+  height: 44px;
+  padding: var(--spacing-3) var(--spacing-5);
+  font-size: var(--font-size-lg);
+}
+
+/* Mobile touch target optimization */
+@media (max-width: 768px) {
+  .button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Full Width */
+.fullWidth {
+  width: 100%;
+}
+
+/* Loading State */
+.loading {
+  pointer-events: none;
+}
+
+.loading .content {
+  opacity: 0.6;
+}
+
+/* Spinner */
+.spinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner svg {
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Icon */
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.small .icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.large .icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Content */
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Made with Bob */

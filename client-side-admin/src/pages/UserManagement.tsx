@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchUsers, softDeleteUser, User } from "../services/api";
 import UserManagementModal from "../components/UserManagementModal";
+import { Button, Table, Toast, ConfirmationModal, Badge } from "../components/ui";
+import { TableColumn, TableAction } from "../types/components";
+import styles from "./UserManagement.module.css";
 
 export default function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
@@ -9,6 +12,12 @@ export default function UserManagement() {
   const [error, setError] = useState("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [toast, setToast] = useState<{
+    variant: "success" | "error" | "warning" | "info";
+    message: string;
+  } | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,20 +37,26 @@ export default function UserManagement() {
     }
   }
 
-  async function handleDelete(userId: string) {
-    if (
-      !window.confirm(
-        "Are you sure you want to soft delete this user? This action cannot be undone.",
-      )
-    ) {
-      return;
-    }
+  function handleDeleteClick(userId: string) {
+    setDeleteUserId(userId);
+  }
+
+  async function handleDeleteConfirm() {
+    if (!deleteUserId) return;
 
     try {
-      await softDeleteUser(userId);
-      setUsers(users.filter((u) => u.id !== userId));
+      setIsDeleting(true);
+      await softDeleteUser(deleteUserId);
+      setUsers(users.filter((u) => u.id !== deleteUserId));
+      setDeleteUserId(null);
+      setToast({ variant: "success", message: "User deleted successfully" });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete user");
+      setToast({
+        variant: "error",
+        message: err instanceof Error ? err.message : "Failed to delete user",
+      });
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -58,305 +73,106 @@ export default function UserManagement() {
   function handleUserUpdated(updatedUser: User) {
     setUsers(users.map((u) => (u.id === updatedUser.id ? updatedUser : u)));
     handleCloseModal();
+    setToast({ variant: "success", message: "User updated successfully" });
   }
 
-  const getStatusColor = (status: string) => {
+  const getStatusVariant = (
+    status: string
+  ): "success" | "warning" | "error" | "info" | "neutral" => {
     switch (status) {
       case "active":
-        return "#22c55e";
+        return "success";
       case "inactive":
-        return "#ef4444";
+        return "error";
       case "pending":
-        return "#f59e0b";
+        return "warning";
       default:
-        return "#94a3b8";
+        return "neutral";
     }
   };
 
+  // Define table columns
+  const columns: TableColumn[] = [
+    {
+      key: "name",
+      label: "Name",
+      width: "20%",
+    },
+    {
+      key: "email",
+      label: "Email",
+      width: "25%",
+    },
+    {
+      key: "status",
+      label: "Status",
+      width: "15%",
+      render: (value: string) => (
+        <Badge variant={getStatusVariant(value)} size="sm">
+          {value.charAt(0).toUpperCase() + value.slice(1)}
+        </Badge>
+      ),
+    },
+    {
+      key: "createdAt",
+      label: "Created",
+      width: "20%",
+      render: (value: string) => new Date(value).toLocaleDateString(),
+    },
+  ];
+
+  // Define table actions
+  const actions: TableAction[] = [
+    {
+      label: "Edit",
+      onClick: (row: User) => handleEdit(row),
+      variant: "primary",
+    },
+    {
+      label: "Delete",
+      onClick: (row: User) => handleDeleteClick(row.id),
+      variant: "danger",
+    },
+  ];
+
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        color: "#fff",
-        padding: "24px",
-        background: "linear-gradient(180deg, #020817, #040b18 35%, #01060f)",
-      }}
-    >
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+    <div className={styles.page}>
+      <div className={styles.container}>
         {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: "24px",
-            borderRadius: "24px",
-            padding: "18px 20px",
-            background: "rgba(5,11,22,0.86)",
-            border: "1px solid rgba(96,165,250,0.22)",
-          }}
-        >
-          <div>
-            <p
-              style={{
-                margin: "0 0 6px",
-                color: "#60a5fa",
-                fontSize: "12px",
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-              }}
-            >
-              User Management
-            </p>
-            <h1 style={{ margin: 0, fontSize: "30px" }}>Manage users</h1>
-            <p style={{ margin: "8px 0 0", color: "rgba(255,255,255,0.68)" }}>
+        <div className={styles.header}>
+          <div className={styles.headerContent}>
+            <p className={styles.headerLabel}>User Management</p>
+            <h1 className={styles.headerTitle}>Manage users</h1>
+            <p className={styles.headerDescription}>
               View, edit, and manage platform users.
             </p>
           </div>
 
-          <button
+          <Button
+            variant="secondary"
+            size="medium"
             onClick={() => navigate("/admin/dashboard")}
-            style={{
-              borderRadius: "10px",
-              border: "1px solid rgba(148,163,184,0.4)",
-              background: "#020817",
-              color: "#fff",
-              cursor: "pointer",
-              padding: "9px 12px",
-            }}
           >
             Back to Dashboard
-          </button>
+          </Button>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div
-            style={{
-              borderRadius: "12px",
-              padding: "12px 14px",
-              background: "rgba(239,68,68,0.16)",
-              color: "#fecdd3",
-              border: "1px solid rgba(248,113,113,0.26)",
-              marginBottom: "16px",
-            }}
-          >
+          <div className={styles.errorBanner} role="alert">
             {error}
           </div>
         )}
 
         {/* Users Table */}
-        <div
-          style={{
-            borderRadius: "24px",
-            padding: "18px",
-            background: "rgba(5,11,22,0.86)",
-            border: "1px solid rgba(148,163,184,0.18)",
-            overflowX: "auto",
-          }}
-        >
-          {loading ? (
-            <div style={{ textAlign: "center", padding: "40px 20px" }}>
-              Loading users...
-            </div>
-          ) : users.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "40px 20px" }}>
-              No users found.
-            </div>
-          ) : (
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-              }}
-            >
-              <thead>
-                <tr
-                  style={{ borderBottom: "1px solid rgba(148,163,184,0.18)" }}
-                >
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "12px",
-                      color: "rgba(255,255,255,0.7)",
-                      fontSize: "12px",
-                      fontWeight: 600,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                    }}
-                  >
-                    Name
-                  </th>
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "12px",
-                      color: "rgba(255,255,255,0.7)",
-                      fontSize: "12px",
-                      fontWeight: 600,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                    }}
-                  >
-                    Email
-                  </th>
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "12px",
-                      color: "rgba(255,255,255,0.7)",
-                      fontSize: "12px",
-                      fontWeight: 600,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                    }}
-                  >
-                    Status
-                  </th>
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "12px",
-                      color: "rgba(255,255,255,0.7)",
-                      fontSize: "12px",
-                      fontWeight: 600,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                    }}
-                  >
-                    Created
-                  </th>
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "12px",
-                      color: "rgba(255,255,255,0.7)",
-                      fontSize: "12px",
-                      fontWeight: 600,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                    }}
-                  >
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => (
-                  <tr
-                    key={user.id}
-                    style={{
-                      borderBottom: "1px solid rgba(148,163,184,0.1)",
-                    }}
-                  >
-                    <td
-                      style={{
-                        padding: "12px",
-                        color: "#fff",
-                      }}
-                    >
-                      {user.name}
-                    </td>
-                    <td
-                      style={{
-                        padding: "12px",
-                        color: "rgba(255,255,255,0.8)",
-                        fontSize: "14px",
-                      }}
-                    >
-                      {user.email}
-                    </td>
-                    <td
-                      style={{
-                        padding: "12px",
-                      }}
-                    >
-                      <span
-                        style={{
-                          display: "inline-block",
-                          padding: "4px 8px",
-                          borderRadius: "6px",
-                          fontSize: "12px",
-                          fontWeight: 600,
-                          textTransform: "capitalize",
-                          background: `${getStatusColor(user.status)}22`,
-                          color: getStatusColor(user.status),
-                          border: `1px solid ${getStatusColor(user.status)}44`,
-                        }}
-                      >
-                        {user.status}
-                      </span>
-                    </td>
-                    <td
-                      style={{
-                        padding: "12px",
-                        color: "rgba(255,255,255,0.6)",
-                        fontSize: "13px",
-                      }}
-                    >
-                      {new Date(user.createdAt).toLocaleDateString()}
-                    </td>
-                    <td
-                      style={{
-                        padding: "12px",
-                        display: "flex",
-                        gap: "8px",
-                      }}
-                    >
-                      <button
-                        onClick={() => handleEdit(user)}
-                        style={{
-                          borderRadius: "6px",
-                          border: "1px solid rgba(96,165,250,0.4)",
-                          background: "rgba(96,165,250,0.1)",
-                          color: "#60a5fa",
-                          cursor: "pointer",
-                          padding: "6px 12px",
-                          fontSize: "12px",
-                          fontWeight: 600,
-                          transition: "all 0.2s",
-                        }}
-                        onMouseOver={(e) => {
-                          const btn = e.currentTarget;
-                          btn.style.background = "rgba(96,165,250,0.2)";
-                        }}
-                        onMouseOut={(e) => {
-                          const btn = e.currentTarget;
-                          btn.style.background = "rgba(96,165,250,0.1)";
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(user.id)}
-                        style={{
-                          borderRadius: "6px",
-                          border: "1px solid rgba(239,68,68,0.4)",
-                          background: "rgba(239,68,68,0.1)",
-                          color: "#ef4444",
-                          cursor: "pointer",
-                          padding: "6px 12px",
-                          fontSize: "12px",
-                          fontWeight: 600,
-                          transition: "all 0.2s",
-                        }}
-                        onMouseOver={(e) => {
-                          const btn = e.currentTarget;
-                          btn.style.background = "rgba(239,68,68,0.2)";
-                        }}
-                        onMouseOut={(e) => {
-                          const btn = e.currentTarget;
-                          btn.style.background = "rgba(239,68,68,0.1)";
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+        <div className={styles.tableContainer}>
+          <Table
+            columns={columns}
+            data={users}
+            actions={actions}
+            loading={loading}
+            emptyMessage="No users found."
+          />
         </div>
 
         {/* User Management Modal */}
@@ -367,7 +183,34 @@ export default function UserManagement() {
             onUserUpdated={handleUserUpdated}
           />
         )}
+
+        {/* Delete Confirmation Modal */}
+        <ConfirmationModal
+          isOpen={deleteUserId !== null}
+          onClose={() => setDeleteUserId(null)}
+          onConfirm={handleDeleteConfirm}
+          title="Delete User"
+          message="Are you sure you want to delete this user? This action cannot be undone."
+          confirmText="Delete User"
+          cancelText="Cancel"
+          variant="danger"
+          loading={isDeleting}
+        />
+
+        {/* Toast Notifications */}
+        {toast && (
+          <div className={styles.toastContainer}>
+            <Toast
+              variant={toast.variant}
+              message={toast.message}
+              onClose={() => setToast(null)}
+              duration={4000}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
+// Made with Bob

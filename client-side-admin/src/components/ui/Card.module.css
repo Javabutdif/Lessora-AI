@@ -1,0 +1,95 @@
+@import '../../styles/tokens.css';
+
+/* Base Card Styles */
+.card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--radius-3xl);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all var(--transition-base);
+}
+
+/* Padding Variants */
+.padding-sm {
+  padding: var(--spacing-4);
+}
+
+.padding-md {
+  padding: var(--spacing-6);
+}
+
+.padding-lg {
+  padding: var(--spacing-8);
+}
+
+/* Responsive padding adjustments */
+@media (max-width: 768px) {
+  .padding-sm {
+    padding: var(--spacing-3);
+  }
+
+  .padding-md {
+    padding: var(--spacing-5);
+  }
+
+  .padding-lg {
+    padding: var(--spacing-6);
+  }
+}
+
+/* Variant Styles */
+.default {
+  /* Base styles already applied */
+}
+
+.highlighted {
+  border-left-width: 3px;
+  border-left-style: solid;
+}
+
+.interactive {
+  cursor: pointer;
+}
+
+/* Hoverable State */
+.hoverable:hover {
+  background: var(--color-bg-card-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Clickable State */
+.clickable {
+  cursor: pointer;
+  outline: none;
+}
+
+.clickable:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.clickable:active {
+  transform: scale(0.99);
+}
+
+/* Hover effect for interactive cards */
+.interactive:hover {
+  background: var(--color-bg-card-hover);
+  border-color: var(--color-border-primary);
+}
+
+/* Mobile touch optimization */
+@media (max-width: 768px) {
+  .hoverable:hover,
+  .interactive:hover {
+    transform: none;
+  }
+
+  .clickable:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Made with Bob */

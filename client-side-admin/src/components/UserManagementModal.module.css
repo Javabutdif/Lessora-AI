@@ -1,0 +1,54 @@
+/**
+ * UserManagementModal Component Styles
+ * Reference: Admin Dashboard Redesign Specification - Phase 4
+ */
+
+/* Modal Content */
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+/* Error Banner */
+.errorBanner {
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-3) var(--spacing-4);
+  background: rgba(239, 68, 68, 0.16);
+  color: var(--color-error-light);
+  border: 1px solid rgba(248, 113, 113, 0.26);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  margin-bottom: var(--spacing-2);
+}
+
+/* Form */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-5);
+}
+
+/* Action Buttons */
+.actions {
+  display: flex;
+  gap: var(--spacing-3);
+  justify-content: flex-end;
+  margin-top: var(--spacing-2);
+}
+
+/* Responsive Styles */
+
+/* Mobile (<768px) */
+@media (max-width: 767px) {
+  .actions {
+    flex-direction: column-reverse;
+    gap: var(--spacing-2);
+  }
+
+  .form {
+    gap: var(--spacing-4);
+  }
+}
+
+/* Made with Bob */

@@ -1,0 +1,360 @@
+@import '../styles/tokens.css';
+
+/* ========================================
+   PAGE CONTAINER
+   ======================================== */
+
+.page {
+  min-height: 100vh;
+  color: var(--color-white);
+  padding: var(--spacing-6);
+  background: linear-gradient(180deg, var(--color-bg-primary), var(--color-bg-secondary) 35%, var(--color-bg-tertiary));
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ========================================
+   HEADER SECTION
+   ======================================== */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-5);
+  border-radius: var(--radius-4xl);
+  padding: var(--spacing-6) var(--spacing-5);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-primary);
+  gap: var(--spacing-4);
+}
+
+.headerContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.headerLabel {
+  margin: 0 0 var(--spacing-2);
+  color: var(--color-primary);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  font-weight: var(--font-weight-bold);
+}
+
+.headerTitle {
+  margin: 0;
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-extrabold);
+  line-height: var(--line-height-tight);
+}
+
+.headerDescription {
+  margin: var(--spacing-2) 0 0;
+  color: var(--color-gray-300);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  flex-shrink: 0;
+}
+
+/* ========================================
+   INFO CARDS GRID
+   ======================================== */
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+}
+
+.infoCard {
+  /* Card component handles base styles */
+}
+
+.infoCardLabel {
+  margin: 0 0 var(--spacing-2);
+  color: var(--color-gray-300);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.infoCardTitle {
+  margin: 0;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-extrabold);
+  line-height: var(--line-height-tight);
+}
+
+.infoCardDescription {
+  margin: var(--spacing-3) 0 0;
+  color: var(--color-gray-300);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+/* ========================================
+   STATISTICS SECTION
+   ======================================== */
+
+.statsSection {
+  /* Card component handles base styles */
+}
+
+.statsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-4);
+  gap: var(--spacing-4);
+}
+
+.statsHeaderContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.statsLabel {
+  margin: 0 0 var(--spacing-2);
+  color: var(--color-primary);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  font-weight: var(--font-weight-bold);
+}
+
+.statsTitle {
+  margin: 0;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-extrabold);
+}
+
+.statsStatus {
+  color: var(--color-gray-400);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  flex-shrink: 0;
+}
+
+/* ========================================
+   ERROR BANNER
+   ======================================== */
+
+.errorBanner {
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-3) var(--spacing-4);
+  background: rgba(239, 68, 68, 0.16);
+  color: var(--color-error-light);
+  border: 1px solid rgba(248, 113, 113, 0.26);
+  margin-bottom: var(--spacing-4);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+/* ========================================
+   METRICS GRID
+   ======================================== */
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-4);
+}
+
+.metricCard {
+  border-radius: var(--radius-2xl);
+  padding: var(--spacing-4);
+  background: rgba(2, 8, 23, 0.88);
+  transition: all var(--transition-base);
+}
+
+.metricCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.metricHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-3);
+}
+
+.metricLabel {
+  color: var(--color-gray-200);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  font-weight: var(--font-weight-semibold);
+}
+
+.metricDot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.metricValue {
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-extrabold);
+  margin-bottom: var(--spacing-2);
+  line-height: var(--line-height-tight);
+}
+
+.metricHelper {
+  color: var(--color-gray-300);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+/* ========================================
+   SKELETON LOADING STATES
+   ======================================== */
+
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-4);
+}
+
+/* ========================================
+   RESPONSIVE BREAKPOINTS
+   ======================================== */
+
+/* Tablet: 768px - 1199px (2-column layout) */
+@media (max-width: 1199px) and (min-width: 768px) {
+  .infoGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .metricsGrid,
+  .skeletonGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .headerTitle {
+    font-size: var(--font-size-3xl);
+  }
+}
+
+/* Mobile: < 768px (single column layout) */
+@media (max-width: 767px) {
+  .page {
+    padding: var(--spacing-4);
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--spacing-5);
+  }
+
+  .headerContent {
+    width: 100%;
+  }
+
+  .headerTitle {
+    font-size: var(--font-size-2xl);
+  }
+
+  .headerDescription {
+    font-size: var(--font-size-sm);
+  }
+
+  .headerActions {
+    width: 100%;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .headerActions > * {
+    width: 100%;
+  }
+
+  .infoGrid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-3);
+  }
+
+  .infoCardTitle {
+    font-size: var(--font-size-2xl);
+  }
+
+  .statsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .statsTitle {
+    font-size: var(--font-size-xl);
+  }
+
+  .metricsGrid,
+  .skeletonGrid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-3);
+  }
+
+  .metricValue {
+    font-size: var(--font-size-4xl);
+  }
+
+  .metricCard {
+    padding: var(--spacing-5);
+  }
+}
+
+/* Extra small mobile: < 375px */
+@media (max-width: 374px) {
+  .page {
+    padding: var(--spacing-3);
+  }
+
+  .header {
+    padding: var(--spacing-4);
+  }
+
+  .headerTitle {
+    font-size: var(--font-size-xl);
+  }
+
+  .metricValue {
+    font-size: var(--font-size-3xl);
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+
+/* Focus visible styles for keyboard navigation */
+.header:focus-visible,
+.infoCard:focus-visible,
+.metricCard:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Reduced motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .metricCard {
+    transition: none;
+  }
+
+  .metricCard:hover {
+    transform: none;
+  }
+}
+
+/* Made with Bob */
