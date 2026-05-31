@@ -16,7 +16,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
-import { generateLessonPlan } from "../../services/api";
+import TemplateSelectionModal from "../../components/ui/TemplateSelectionModal";
+import { generateLessonPlan, LessonPlanTemplate } from "../../services/api";
 import { DashboardStackParamList } from "../../navigation/types";
 
 type Props = NativeStackScreenProps<DashboardStackParamList, "Generate">;
@@ -52,14 +53,17 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
   const [selectedGrade, setSelectedGrade] = React.useState("");
   const [duration, setDuration] = React.useState("");
   const [goalsStandards, setGoalsStandards] = React.useState("");
+  const [selectedTemplate, setSelectedTemplate] = React.useState<LessonPlanTemplate>("lessora-ai");
   const [isGenerating, setIsGenerating] = React.useState(false);
   const [isPickerVisible, setIsPickerVisible] = React.useState(false);
+  const [isTemplateModalVisible, setIsTemplateModalVisible] = React.useState(false);
 
   const resetDraftState = React.useCallback(() => {
     setTopicSubject("");
     setSelectedGrade("");
     setDuration("");
     setGoalsStandards("");
+    setSelectedTemplate("lessora-ai");
   }, []);
 
   useFocusEffect(
@@ -108,6 +112,7 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
         numberOfSessions: 1,
         userDraftText: trimmedGoalsStandards || undefined,
         templateNotes: trimmedGoalsStandards || undefined,
+        templateId: selectedTemplate,
       });
 
       console.log("Generated lesson plan response", {
@@ -160,6 +165,43 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
           </View>
 
           <View className="bg-white p-6 rounded-3xl shadow-sm shadow-navy/5 mb-8 space-y-4">
+            {/* Template Selection */}
+            <View className="mb-4">
+              <Text className="text-secondary font-poppins-semi text-sm mb-2">
+                Lesson Plan Template
+              </Text>
+              <TouchableOpacity
+                onPress={() => setIsTemplateModalVisible(true)}
+                className="flex-row items-center rounded-2xl px-4"
+                style={{
+                  height: 50,
+                  backgroundColor: "#FFFFFF",
+                  borderColor: "#E5E7EB",
+                  borderWidth: 1,
+                  justifyContent: "space-between",
+                }}
+              >
+                <View className="flex-row items-center flex-1">
+                  <Ionicons
+                    name={selectedTemplate === "lessora-ai" ? "sparkles" : "document-text"}
+                    size={20}
+                    color="#8E95B2"
+                    style={{ marginRight: 10 }}
+                  />
+                  <Text
+                    className="font-poppins text-base flex-1"
+                    numberOfLines={1}
+                    style={{ color: "#111827" }}
+                  >
+                    {selectedTemplate === "lessora-ai"
+                      ? "Lessora AI Template"
+                      : "DepEd Semi-Detailed"}
+                  </Text>
+                </View>
+                <Ionicons name="chevron-down-outline" size={16} color="#8E95B2" />
+              </TouchableOpacity>
+            </View>
+
             <Input
               label="Topic / Subject"
               placeholder="e.g. The Solar System"
@@ -287,6 +329,14 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
           </View>
         </TouchableOpacity>
       </Modal>
+
+      {/* Template Selection Modal */}
+      <TemplateSelectionModal
+        visible={isTemplateModalVisible}
+        onClose={() => setIsTemplateModalVisible(false)}
+        onSelectTemplate={setSelectedTemplate}
+        selectedTemplate={selectedTemplate}
+      />
     </SafeAreaView>
   );
 }

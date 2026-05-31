@@ -1,4 +1,3 @@
-import * as FileSystem from "expo-file-system";
 import * as Print from "expo-print";
 import { File, Paths } from "expo-file-system";
 import {
@@ -101,7 +100,7 @@ export async function exportLessonPlanDocumentToCache(
   const plainText = documentToPlainText(document);
   const file = new File(Paths.cache, filename);
 
-  file.write(html);
+  file.write(html, { encoding: "utf8" });
 
   return {
     filename,
@@ -410,7 +409,7 @@ export async function exportLessonPlanToDOCX(
 
     // Write to cache directory using File API
     const file = new File(Paths.cache, filename);
-    file.write(base64);
+    file.write(base64, { encoding: "base64" });
 
     return {
       filename,

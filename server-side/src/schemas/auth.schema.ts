@@ -8,6 +8,7 @@ export const registerSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Valid email is required"),
   password: passwordRules,
+  school: z.string().optional(),
 });
 
 export const loginSchema = z.object({

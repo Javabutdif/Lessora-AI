@@ -19,6 +19,7 @@ export const generateLessonPlanSchema = z.object({
     .default(1),
   userDraftText: z.string().max(12000).optional(),
   templateNotes: z.string().max(4000).optional(),
+  templateId: z.enum(["lessora-ai", "deped-semi-detailed"]).default("lessora-ai"),
 });
 
 export const refineLessonPlanSchema = z.object({

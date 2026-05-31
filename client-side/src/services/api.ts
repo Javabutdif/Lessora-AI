@@ -21,6 +21,8 @@ export type LoginResponse = {
   user: AuthUser;
 };
 
+export type LessonPlanTemplate = "lessora-ai" | "deped-semi-detailed";
+
 export type GenerateLessonPlanPayload = {
   title: string;
   subject: string;
@@ -29,6 +31,7 @@ export type GenerateLessonPlanPayload = {
   numberOfSessions: number;
   userDraftText?: string;
   templateNotes?: string;
+  templateId?: LessonPlanTemplate;
 };
 
 export type GeneratedLessonPlanSections = {

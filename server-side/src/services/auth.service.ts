@@ -21,7 +21,7 @@ function signAuthToken(user: AuthUser) {
   return jwt.sign({ user }, getJwtSecret(), { expiresIn: JWT_EXPIRES_IN });
 }
 
-export async function registerUser({ name, email, password }: RegisterPayload) {
+export async function registerUser({ name, email, password, school }: RegisterPayload) {
   const existing = await User.findOne({ email });
 
   if (existing) {
@@ -41,6 +41,7 @@ export async function registerUser({ name, email, password }: RegisterPayload) {
     passwordHash,
     firstName,
     lastName,
+    school: school || "",
   });
 
   return true;

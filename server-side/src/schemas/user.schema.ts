@@ -15,6 +15,7 @@ export interface IUser extends Document {
   passwordHash: string;
   firstName: string;
   lastName: string;
+  school?: string;
   avatar?: string;
   bio?: string;
   role: "teacher";
@@ -56,6 +57,11 @@ const UserSchema = new Schema<IUser>(
     lastName: {
       type: String,
       required: true,
+    },
+    school: {
+      type: String,
+      default: "",
+      trim: true,
     },
     avatar: {
       type: String,

@@ -16,6 +16,7 @@ export interface GenerateLessonPlanRequest {
   numberOfSessions: number;
   userDraftText?: string;
   templateNotes?: string;
+  templateId?: "lessora-ai" | "deped-semi-detailed";
 }
 
 export type LessonPlanDocumentBlock =
@@ -150,10 +151,17 @@ class OpenAIService {
     }
 
     const creditedUser = await this.reserveResponseCredit(userId);
+    
+    // Fetch full user data for DepEd template
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    
     let document: LessonPlanDocument;
 
     try {
-      document = await this.createDocumentWithOpenAI(request);
+      document = await this.createDocumentWithOpenAI(request, user);
     } catch (error) {
       await this.refundResponseCredit(userId);
       throw error;
@@ -364,6 +372,7 @@ class OpenAIService {
 
   private async createDocumentWithOpenAI(
     request: GenerateLessonPlanRequest,
+    user: any,
   ): Promise<LessonPlanDocument> {
     const requestBody = {
       model: OpenAIConfig.model,
@@ -376,7 +385,7 @@ class OpenAIService {
         },
         {
           role: "user",
-          content: this.buildTeacherPrompt(request),
+          content: this.buildTeacherPrompt(request, user),
         },
       ],
       text: {
@@ -409,7 +418,7 @@ class OpenAIService {
 
     const parsed = JSON.parse(rawText);
     const normalizedBlocks = this.normalizeDocumentBlocks(parsed, request);
-    this.assertCompleteLessonPlan(normalizedBlocks);
+    this.assertCompleteLessonPlan(normalizedBlocks, request.templateId);
 
     return {
       ...parsed,
@@ -422,7 +431,17 @@ class OpenAIService {
     };
   }
 
-  private buildTeacherPrompt(request: GenerateLessonPlanRequest) {
+  private buildTeacherPrompt(request: GenerateLessonPlanRequest, user: any) {
+    const templateId = request.templateId || "lessora-ai";
+    
+    if (templateId === "deped-semi-detailed") {
+      return this.buildDepEdPrompt(request, user);
+    }
+    
+    return this.buildLessoraAIPrompt(request);
+  }
+
+  private buildLessoraAIPrompt(request: GenerateLessonPlanRequest) {
     return [
       `Topic / Subject: ${request.title}`,
       `Subject: ${request.subject}`,
@@ -498,6 +517,139 @@ class OpenAIService {
     ].join("\n");
   }
 
+  private buildDepEdPrompt(request: GenerateLessonPlanRequest, user: any) {
+    const teacherName = `${user.firstName} ${user.lastName}`.trim();
+    const schoolName = user.school || "Not specified";
+    const currentDate = new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
+    return [
+      `Generate a DepEd Semi-Detailed Lesson Plan following the Philippine Department of Education format.`,
+      ``,
+      `CRITICAL ANTI-HALLUCINATION RULES:`,
+      `1. DO NOT invent or make up any information`,
+      `2. DO NOT leave any section blank or with placeholder text`,
+      `3. DO NOT use brackets like [specify], [insert], [add here]`,
+      `4. ONLY use the actual data provided below`,
+      `5. Generate REAL, SPECIFIC, DETAILED content for every section`,
+      `6. All procedure steps must be COMPLETE and ACTIONABLE`,
+      `7. All assessment questions must be REAL and GRADE-APPROPRIATE`,
+      ``,
+      `ACTUAL DATA TO USE:`,
+      `Topic / Subject: ${request.title}`,
+      `Subject: ${request.subject}`,
+      `Grade Level: ${request.gradeLevel}`,
+      `Duration: ${request.duration} minutes`,
+      `Date: ${currentDate}`,
+      `Teacher: ${teacherName}`,
+      `School: ${schoolName}`,
+      request.userDraftText
+        ? `Teacher's Specific Goals / Standards: ${request.userDraftText}`
+        : "",
+      request.templateNotes
+        ? `Additional Notes: ${request.templateNotes}`
+        : "",
+      ``,
+      `Return only valid JSON. Do not include markdown, explanation, or media.`,
+      `Generate a complete DepEd-compliant semi-detailed lesson plan with ALL required sections FULLY POPULATED.`,
+      ``,
+      `REQUIRED: Every section must have REAL, SPECIFIC content. No placeholders allowed.`,
+      ``,
+      `Use exactly this structure with blocks array:`,
+      JSON.stringify({
+        type: "lesson_plan_document",
+        format: "json",
+        version: 1,
+        title: request.title,
+        blocks: [
+          { type: "heading", level: 1, text: request.title },
+          { type: "heading", level: 2, text: "I. Metadata" },
+          { type: "paragraph", text: `Grade Level: ${request.gradeLevel}` },
+          { type: "paragraph", text: `Subject: ${request.subject}` },
+          { type: "paragraph", text: `Date: ${currentDate}` },
+          { type: "paragraph", text: `Duration: ${request.duration} minutes` },
+          { type: "paragraph", text: `Teacher: ${teacherName}` },
+          { type: "paragraph", text: `School: ${schoolName}` },
+          
+          { type: "heading", level: 2, text: "II. Learning Competencies" },
+          { type: "paragraph", text: "Generate specific MELCs code and detailed competency description for this grade level and subject" },
+          
+          { type: "heading", level: 2, text: "III. Objectives" },
+          { type: "paragraph", text: "Knowledge: Write specific knowledge objectives for this topic" },
+          { type: "paragraph", text: "Skills: Write specific skills students will develop" },
+          { type: "paragraph", text: "Attitude: Write specific values and attitudes to develop" },
+          
+          { type: "heading", level: 2, text: "IV. Content" },
+          { type: "paragraph", text: "Write detailed content description for this specific topic" },
+          
+          { type: "heading", level: 2, text: "V. Learning Resources" },
+          { type: "heading", level: 3, text: "References" },
+          { type: "list", style: "bullet", items: ["List specific textbooks, modules, or curriculum guides for this grade and subject"] },
+          { type: "heading", level: 3, text: "Materials" },
+          { type: "list", style: "bullet", items: ["List specific physical materials needed for this lesson"] },
+          { type: "heading", level: 3, text: "Digital Resources" },
+          { type: "list", style: "bullet", items: ["List specific websites, videos, or digital tools if applicable"] },
+          
+          { type: "heading", level: 2, text: "VI. Procedure" },
+          { type: "heading", level: 3, text: "A. Preliminary Activities (5 minutes)" },
+          { type: "list", style: "numbered", items: ["Prayer", "Greetings", "Checking of Attendance", "Review: Write specific review questions about previous lesson"] },
+          
+          { type: "heading", level: 3, text: "B. Motivation (5-7 minutes)" },
+          { type: "paragraph", text: "Write a specific, engaging activity to introduce this topic. Include exact questions or activities." },
+          
+          { type: "heading", level: 3, text: "C. Lesson Proper" },
+          { type: "heading", level: 3, text: "1. Presentation (5-7 minutes)" },
+          { type: "paragraph", text: "Write specific steps to introduce the topic with examples" },
+          { type: "heading", level: 3, text: "2. Discussion (10-15 minutes)" },
+          { type: "paragraph", text: "Write detailed discussion points, questions, and explanations for this specific topic" },
+          { type: "heading", level: 3, text: "3. Guided Practice (7-10 minutes)" },
+          { type: "paragraph", text: "Write specific guided practice activities with examples" },
+          { type: "heading", level: 3, text: "4. Independent Practice (5-7 minutes)" },
+          { type: "paragraph", text: "Write specific independent work tasks for students" },
+          
+          { type: "heading", level: 3, text: "D. Generalization (3-5 minutes)" },
+          { type: "paragraph", text: "Write specific summary questions and key takeaways for this topic" },
+          
+          { type: "heading", level: 3, text: "E. Application (5 minutes)" },
+          { type: "paragraph", text: "Write specific real-world application activity or scenario" },
+          
+          { type: "heading", level: 2, text: "VII. Assessment" },
+          { type: "paragraph", text: "Type: Choose Formative or Summative and explain why" },
+          { type: "paragraph", text: "Instructions: Write clear, specific instructions for students" },
+          { type: "list", style: "numbered", items: ["Write 3-5 specific, grade-appropriate assessment questions for this topic"] },
+          
+          { type: "heading", level: 2, text: "VIII. Assignment" },
+          { type: "paragraph", text: "Write specific homework or follow-up task related to this lesson" },
+          
+          { type: "heading", level: 2, text: "IX. Remarks" },
+          { type: "paragraph", text: "Leave blank - teacher will fill after lesson delivery" },
+          
+          { type: "heading", level: 2, text: "X. Reflection" },
+          { type: "paragraph", text: "Number of students who mastered the lesson: (To be filled after lesson)" },
+          { type: "paragraph", text: "Number of students who need remediation: (To be filled after lesson)" },
+          { type: "paragraph", text: "Teaching effectiveness: (To be filled after lesson - reflection on what worked and what needs improvement)" },
+        ],
+        exportTargets: ["doc", "pdf", "docx"],
+      }),
+      ``,
+      `CRITICAL FINAL INSTRUCTIONS:`,
+      `1. Replace ALL instructional text in the example above with REAL content`,
+      `2. Every paragraph must contain SPECIFIC information about "${request.title}"`,
+      `3. Every list must contain REAL, ACTIONABLE items - minimum 3 items per list`,
+      `4. Procedure sections must have DETAILED, STEP-BY-STEP instructions`,
+      `5. Assessment questions must be COMPLETE, SPECIFIC questions for ${request.gradeLevel}`,
+      `6. NO placeholders, NO brackets, NO generic text`,
+      `7. Make it classroom-ready for ${request.gradeLevel} students learning about "${request.title}"`,
+      `8. Use the teacher name "${teacherName}" and school "${schoolName}" exactly as provided`,
+      `9. Use the date "${currentDate}" exactly as provided`,
+      ``,
+      `Generate the complete lesson plan now with ALL sections fully populated.`,
+    ].filter(Boolean).join("\n");
+  }
+
   private extractOpenAIText(payload: any) {
     if (typeof payload.output_text === "string") {
       return payload.output_text;
@@ -566,7 +718,20 @@ class OpenAIService {
     return blocks;
   }
 
-  private assertCompleteLessonPlan(blocks: LessonPlanDocumentBlock[]) {
+  private assertCompleteLessonPlan(
+    blocks: LessonPlanDocumentBlock[],
+    templateId?: "lessora-ai" | "deped-semi-detailed"
+  ) {
+    // Skip validation for DepEd template as it has different structure
+    if (templateId === "deped-semi-detailed") {
+      // Just check that we have some blocks
+      if (!blocks.length) {
+        throw new Error("OpenAI returned an empty lesson plan.");
+      }
+      return;
+    }
+
+    // Validate Lessora AI template
     const requiredHeadings = [
       "Lesson Overview",
       "Learning Objectives",
