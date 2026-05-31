@@ -17,7 +17,7 @@ export default function LoginPage() {
 
     try {
       await loginAdmin(email, password);
-      navigate("/dashboard");
+      navigate("/admin/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Authentication failed");
     } finally {

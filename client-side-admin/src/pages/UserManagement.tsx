@@ -115,7 +115,7 @@ export default function UserManagement() {
           </div>
 
           <button
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/admin/dashboard")}
             style={{
               borderRadius: "10px",
               border: "1px solid rgba(148,163,184,0.4)",

@@ -104,7 +104,7 @@ export default function AdminDashboard() {
   function handleLogout() {
     localStorage.removeItem("lessora-admin-token");
     localStorage.removeItem("lessora-admin-user");
-    navigate("/login");
+    navigate("/admin/login");
   }
 
   return (
@@ -165,7 +165,7 @@ export default function AdminDashboard() {
               {status === "online" ? "Backend online" : "Checking backend"}
             </div>
             <button
-              onClick={() => navigate("/users")}
+              onClick={() => navigate("/admin/users")}
               style={{
                 borderRadius: "10px",
                 border: "1px solid rgba(96,165,250,0.4)",
