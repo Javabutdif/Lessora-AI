@@ -20,6 +20,7 @@ type Props = {
 
 export default function RegisterScreen({ navigation }: Props) {
   const [name, setName] = useState("");
+  const [school, setSchool] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -34,7 +35,7 @@ export default function RegisterScreen({ navigation }: Props) {
     try {
       setIsLoading(true);
       setErrorMessage("");
-      const res = await register({ name, email, password });
+      const res = await register({ name, email, password, school });
 
       if (res) {
         Toast.show({
@@ -89,11 +90,19 @@ export default function RegisterScreen({ navigation }: Props) {
             ) : null}
             <Input
               label="Full Name"
-              placeholder="Jayno"
+              placeholder="Jane Doe"
               autoCapitalize="words"
               icon="person-outline"
               value={name}
               onChangeText={setName}
+            />
+            <Input
+              label="School"
+              placeholder="School Name (Optional)"
+              autoCapitalize="words"
+              icon="school-outline"
+              value={school}
+              onChangeText={setSchool}
             />
             <Input
               label="Email Address"

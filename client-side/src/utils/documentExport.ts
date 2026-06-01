@@ -425,10 +425,10 @@ export async function exportLessonPlanToDOCX(
     const filename = `${slugify(document.title || "lesson-plan")}.docx`;
     const plainText = documentToPlainText(document);
     const doc = buildDOCXDocument(document);
+    const file = new File(Paths.cache, filename);
 
     // Generate DOCX as blob
     const blob = await Packer.toBlob(doc);
-    const file = new File(Paths.cache, filename);
     
     // Convert blob to array buffer then to Uint8Array
     const arrayBuffer = await blob.arrayBuffer();

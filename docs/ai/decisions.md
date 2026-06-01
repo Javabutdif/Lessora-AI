@@ -4,6 +4,14 @@ Use this file for durable decisions that affect how the product or repository sh
 
 Keep entries short, specific, and ordered with the newest decision at the top.
 
+### PDF and DOCX export using expo-print and docx libraries
+
+- date: 2026-06-01
+- status: implemented and verified
+- context: Lesson plan export functionality needed professional document formats (PDF and DOCX) in addition to the existing HTML-based DOC export. The solution must work in Expo managed workflow without custom native code.
+- decision: Use `expo-print` v13.0.1 for PDF generation and `docx` v8.5.0 for DOCX generation. Both libraries work without polyfills or Metro bundler configuration changes.
+- consequences: Build compiles successfully. Both export formats work on iOS and Android. No breaking changes to existing DOC export. Professional document formatting maintained. Font embedding limited to system fonts (Poppins falls back to Arial). Files saved to cache directory and distributed via share sheet. Bundle size impact is minimal (~500KB for docx library).
+
 ### Client auth context owns JWT session state
 
 - date: 2026-05-24
