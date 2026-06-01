@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, TouchableOpacity, Share } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -196,18 +196,12 @@ export default function LessonPlanPreviewScreen({ route, navigation }: Props) {
     try {
       setIsExporting(true);
       setExportingFormat("PDF");
-      const exportedDocument = await exportLessonPlanToPDF(editableDocument);
-
-      await Share.share({
-        title: exportedDocument.filename,
-        url: exportedDocument.uri,
-        message: exportedDocument.plainText,
-      });
+      await exportLessonPlanToPDF(editableDocument);
 
       Toast.show({
         type: "success",
-        text1: "PDF export ready",
-        text2: exportedDocument.filename,
+        text1: "PDF exported successfully",
+        text2: "Check your share options",
       });
     } catch (error: any) {
       Toast.show({
@@ -229,18 +223,12 @@ export default function LessonPlanPreviewScreen({ route, navigation }: Props) {
     try {
       setIsExporting(true);
       setExportingFormat("DOCX");
-      const exportedDocument = await exportLessonPlanToDOCX(editableDocument);
-
-      await Share.share({
-        title: exportedDocument.filename,
-        url: exportedDocument.uri,
-        message: exportedDocument.plainText,
-      });
+      await exportLessonPlanToDOCX(editableDocument);
 
       Toast.show({
         type: "success",
-        text1: "DOCX export ready",
-        text2: exportedDocument.filename,
+        text1: "DOCX exported successfully",
+        text2: "Check your share options",
       });
     } catch (error: any) {
       Toast.show({
@@ -262,19 +250,12 @@ export default function LessonPlanPreviewScreen({ route, navigation }: Props) {
     try {
       setIsExporting(true);
       setExportingFormat("DOC");
-      const exportedDocument =
-        await exportLessonPlanDocumentToCache(editableDocument);
-
-      await Share.share({
-        title: exportedDocument.filename,
-        url: exportedDocument.uri,
-        message: exportedDocument.plainText,
-      });
+      await exportLessonPlanDocumentToCache(editableDocument);
 
       Toast.show({
         type: "success",
-        text1: "DOC export prepared",
-        text2: exportedDocument.filename,
+        text1: "DOC exported successfully",
+        text2: "Check your share options",
       });
     } catch (error: any) {
       Toast.show({

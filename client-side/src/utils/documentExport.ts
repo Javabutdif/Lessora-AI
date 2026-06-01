@@ -1,4 +1,5 @@
 import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
 import { File, Paths } from "expo-file-system";
 import {
   Document,
@@ -15,6 +16,7 @@ export interface ExportedLessonPlanDocument {
   filename: string;
   uri: string;
   plainText: string;
+  mimeType?: string;
 }
 
 function escapeHtml(value: string) {
@@ -102,10 +104,20 @@ export async function exportLessonPlanDocumentToCache(
 
   file.write(html, { encoding: "utf8" });
 
+  // Share the file using expo-sharing
+  if (await Sharing.isAvailableAsync()) {
+    await Sharing.shareAsync(file.uri, {
+      mimeType: "application/msword",
+      dialogTitle: "Export Lesson Plan",
+      UTI: "com.microsoft.word.doc",
+    });
+  }
+
   return {
     filename,
     uri: file.uri,
     plainText,
+    mimeType: "application/msword",
   };
 }
 
@@ -210,10 +222,20 @@ export async function exportLessonPlanToPDF(
       base64: false,
     });
 
+    // Share the PDF file using expo-sharing
+    if (await Sharing.isAvailableAsync()) {
+      await Sharing.shareAsync(uri, {
+        mimeType: "application/pdf",
+        dialogTitle: "Export Lesson Plan as PDF",
+        UTI: "com.adobe.pdf",
+      });
+    }
+
     return {
       filename,
       uri,
       plainText,
+      mimeType: "application/pdf",
     };
   } catch (error: any) {
     throw new Error(
@@ -411,10 +433,20 @@ export async function exportLessonPlanToDOCX(
     const file = new File(Paths.cache, filename);
     file.write(base64, { encoding: "base64" });
 
+    // Share the DOCX file using expo-sharing
+    if (await Sharing.isAvailableAsync()) {
+      await Sharing.shareAsync(file.uri, {
+        mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        dialogTitle: "Export Lesson Plan as DOCX",
+        UTI: "org.openxmlformats.wordprocessingml.document",
+      });
+    }
+
     return {
       filename,
       uri: file.uri,
       plainText,
+      mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     };
   } catch (error: any) {
     throw new Error(
