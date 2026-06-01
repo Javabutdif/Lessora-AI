@@ -137,7 +137,7 @@ export default function HelpSupportModal({ visible, onClose }: HelpSupportModalP
 
               <View className="bg-soft-blue rounded-xl p-3 flex-row items-center justify-between">
                 <Text className="text-royal font-poppins-semi text-sm flex-1">
-                  jamesgenabio90@gmail.com
+                  support.lessoraai@gmail.com
 
                 </Text>
                 <TouchableOpacity
