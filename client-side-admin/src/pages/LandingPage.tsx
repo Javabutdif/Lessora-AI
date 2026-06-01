@@ -182,7 +182,7 @@ export default function LandingPage() {
           <button
             onClick={() =>
               window.open(
-                "https://drive.google.com/drive/folders/1LqnpBme9KCPY48f4spqxNGvRE8IGwCcu?usp=sharing",
+                "https://drive.google.com/file/d/1TUuA2d4tPZgIRkVijq2JUuDn7CO_W3Z_/view?usp=drivesdk",
                 "_blank",
               )
             }
