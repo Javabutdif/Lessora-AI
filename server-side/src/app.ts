@@ -3,6 +3,7 @@ import cors from "cors";
 import { authRouter } from "./routes/auth.routes";
 import { aiRouter } from "./routes/ai.routes";
 import { adminRouter } from "./routes/admin.routes";
+import { userRouter } from "./routes/user.routes";
 import { errorHandler } from "./middleware/errorHandler";
 import mongoose from "mongoose";
 import { config } from "dotenv";
@@ -36,6 +37,7 @@ app.use(express.json());
 app.use("/api/auth", authRouter);
 app.use("/api/ai", aiRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/user", userRouter);
 
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });

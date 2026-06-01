@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { z } from "zod";
 
 /**
  * User Schema
@@ -7,6 +8,14 @@ import mongoose, { Schema, Document } from "mongoose";
  * - Includes schemaVersion for future migrations
  * - Email is indexed for fast lookups and uniqueness
  */
+
+export interface IUserSettings {
+  notifications: {
+    email: boolean;
+  };
+  language: string;
+  theme: string;
+}
 
 export interface IUser extends Document {
   _id: mongoose.Types.ObjectId;
@@ -22,6 +31,7 @@ export interface IUser extends Document {
   isVerified: boolean;
   isActive: boolean;
   aiResponseCredits: number;
+  settings?: IUserSettings;
   lastLogin?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -93,6 +103,20 @@ const UserSchema = new Schema<IUser>(
       default: 5,
       min: 0,
     },
+    settings: {
+      type: {
+        notifications: {
+          email: { type: Boolean, default: true },
+        },
+        language: { type: String, default: "en" },
+        theme: { type: String, default: "light" },
+      },
+      default: {
+        notifications: { email: true },
+        language: "en",
+        theme: "light",
+      },
+    },
     lastLogin: {
       type: Date,
       default: null,
@@ -114,3 +138,24 @@ UserSchema.index({ email: 1, role: 1 });
 UserSchema.index({ isActive: 1, isVerified: 1 });
 
 export const User = mongoose.model<IUser>("User", UserSchema);
+
+
+// Zod validation schemas for user routes
+export const updateProfileSchema = z.object({
+  firstName: z.string().min(1, "First name is required").max(100),
+  lastName: z.string().min(1, "Last name is required").max(100),
+  email: z.string().email("Valid email is required"),
+  school: z.string().max(200).optional(),
+  bio: z.string().max(500).optional(),
+});
+
+export const updateSettingsSchema = z.object({
+  notifications: z.object({
+    email: z.boolean(),
+  }),
+  language: z.string().optional(),
+  theme: z.string().optional(),
+});
+
+export type UpdateProfilePayload = z.infer<typeof updateProfileSchema>;
+export type UpdateSettingsPayload = z.infer<typeof updateSettingsSchema>;

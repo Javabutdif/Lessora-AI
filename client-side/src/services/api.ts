@@ -113,6 +113,31 @@ export type LessonPlanHistoryDetail = LessonPlanHistoryItem & {
   model?: string;
 };
 
+export type UserAnalytics = {
+  totalTokens: number;
+  tokensRemaining: number;
+  tokensUsed: number;
+  plansCreated: number;
+  subscriptionStatus: string;
+  accountType: string;
+};
+
+export type UpdateProfilePayload = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  school?: string;
+  bio?: string;
+};
+
+export type UpdateSettingsPayload = {
+  notifications: {
+    email: boolean;
+  };
+  language: string;
+  theme: string;
+};
+
 const API_BASE =
   process.env.EXPO_PUBLIC_API_BASE?.trim() ||
   "https://worthy-joby-psits-fd575fc8.koyeb.app/api";
@@ -234,4 +259,44 @@ export async function getLessonPlanById(lessonPlanId: string) {
   return requestGetData<LessonPlanHistoryDetail>(
     `/ai/lesson-plan/history/${lessonPlanId}`,
   );
+}
+
+export async function getUserAnalytics() {
+  return requestGetData<UserAnalytics>("/user/analytics");
+}
+
+export async function updateUserProfile(payload: UpdateProfilePayload) {
+  return trackRequest(async () => {
+    const response = await fetch(`${API_BASE}/user/profile`, {
+      method: "PUT",
+      headers: getJsonHeaders(),
+      body: JSON.stringify(payload),
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData?.error?.message || "Request failed");
+    }
+
+    return responseData.data;
+  });
+}
+
+export async function updateUserSettings(payload: UpdateSettingsPayload) {
+  return trackRequest(async () => {
+    const response = await fetch(`${API_BASE}/user/settings`, {
+      method: "PUT",
+      headers: getJsonHeaders(),
+      body: JSON.stringify(payload),
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData?.error?.message || "Request failed");
+    }
+
+    return responseData.data;
+  });
 }

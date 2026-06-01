@@ -6,11 +6,11 @@ import { useFocusEffect } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
 import Card from "../../components/ui/Card";
 import { useAuth } from "../../context/AuthContext";
-import { listRecentLessonPlans } from "../../services/api";
+import { getUserAnalytics, UserAnalytics } from "../../services/api";
 
 export default function AnalyticsScreen() {
   const { user } = useAuth();
-  const [planCount, setPlanCount] = React.useState(0);
+  const [analytics, setAnalytics] = React.useState<UserAnalytics | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const loadStats = React.useCallback(async (showLoading = true) => {
@@ -18,8 +18,8 @@ export default function AnalyticsScreen() {
       if (showLoading) {
         setIsLoading(true);
       }
-      const plans = await listRecentLessonPlans();
-      setPlanCount(plans.length);
+      const data = await getUserAnalytics();
+      setAnalytics(data);
     } catch (error: any) {
       Toast.show({
         type: "error",
@@ -37,9 +37,11 @@ export default function AnalyticsScreen() {
     }, [loadStats])
   );
 
-  const remainingTokens = user?.aiResponseCredits ?? 5;
-  const usedTokens = Math.max(0, 5 - remainingTokens);
-  const subscribeStatus = remainingTokens > 5 ? "Premium Subscriber" : "Active (Free Trial)";
+  const remainingTokens = analytics?.tokensRemaining ?? user?.aiResponseCredits ?? 5;
+  const usedTokens = analytics?.tokensUsed ?? 0;
+  const planCount = analytics?.plansCreated ?? 0;
+  const subscribeStatus = analytics?.subscriptionStatus ?? "Active (Free Trial)";
+  const accountType = analytics?.accountType ?? "Teacher Profile";
 
   return (
     <SafeAreaView className="flex-1 bg-soft-gray" edges={["top", "left", "right"]}>
@@ -68,7 +70,7 @@ export default function AnalyticsScreen() {
             </View>
           </View>
           <Text className="text-white font-poppins text-sm mt-3 opacity-90">
-            Account Type: Teacher Profile
+            Account Type: {accountType}
           </Text>
         </Card>
 
