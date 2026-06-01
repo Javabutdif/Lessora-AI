@@ -102,7 +102,7 @@ export async function exportLessonPlanDocumentToCache(
   const plainText = documentToPlainText(document);
   const file = new File(Paths.cache, filename);
 
-  file.write(html, { encoding: "utf8" });
+  await file.write(html);
 
   // Share the file using expo-sharing
   if (await Sharing.isAvailableAsync()) {
@@ -426,12 +426,16 @@ export async function exportLessonPlanToDOCX(
     const plainText = documentToPlainText(document);
     const doc = buildDOCXDocument(document);
 
-    // Generate DOCX as base64 string directly (works in React Native)
-    const base64 = await Packer.toBase64String(doc);
-
-    // Write to cache directory using File API
+    // Generate DOCX as blob
+    const blob = await Packer.toBlob(doc);
     const file = new File(Paths.cache, filename);
-    file.write(base64, { encoding: "base64" });
+    
+    // Convert blob to array buffer then to Uint8Array
+    const arrayBuffer = await blob.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    
+    // Write to file
+    await file.write(uint8Array);
 
     // Share the DOCX file using expo-sharing
     if (await Sharing.isAvailableAsync()) {
