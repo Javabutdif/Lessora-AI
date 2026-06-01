@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  Image,
-  useWindowDimensions,
-} from "react-native";
+import { View, Text, Image, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
@@ -24,7 +19,7 @@ export default function OnboardingScreen({ navigation }: Props) {
         <View className="flex-1 justify-center items-center w-full">
           {/* Logo */}
           <Image
-            source={require("../assets/LessoraLogo.png")}
+            source={require("../assets/Transparent Logo.png")}
             style={{ width: logoSize, height: logoSize, marginBottom: 40 }}
             resizeMode="contain"
             accessibilityLabel="Lessora AI logo"
