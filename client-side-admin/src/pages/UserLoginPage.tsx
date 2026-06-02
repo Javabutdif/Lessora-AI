@@ -243,6 +243,25 @@ export default function UserLoginPage() {
 
         <div
           style={{
+            marginTop: "16px",
+            textAlign: "center",
+            fontSize: "14px",
+          }}
+        >
+          <Link
+            to="/forgot-password"
+            style={{
+              color: "#60a5fa",
+              textDecoration: "none",
+              fontWeight: "600",
+            }}
+          >
+            Forgot password?
+          </Link>
+        </div>
+
+        <div
+          style={{
             marginTop: "24px",
             textAlign: "center",
             fontSize: "14px",

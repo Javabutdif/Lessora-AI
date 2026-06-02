@@ -146,6 +146,13 @@
   flex-shrink: 0;
 }
 
+.dashboardMetricsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-5);
+}
+
 /* ========================================
    ERROR BANNER
    ======================================== */
@@ -239,6 +246,7 @@
   }
 
   .metricsGrid,
+  .dashboardMetricsGrid,
   .skeletonGrid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -301,6 +309,7 @@
   }
 
   .metricsGrid,
+  .dashboardMetricsGrid,
   .skeletonGrid {
     grid-template-columns: 1fr;
     gap: var(--spacing-3);

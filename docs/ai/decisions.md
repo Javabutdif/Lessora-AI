@@ -4,6 +4,14 @@ Use this file for durable decisions that affect how the product or repository sh
 
 Keep entries short, specific, and ordered with the newest decision at the top.
 
+### Daily scheduler and admin metrics dependencies
+
+- date: 2026-06-02
+- status: accepted
+- context: The user-auth-credits-admin feature needs a reliable daily server job and a web admin dashboard that refetches metrics on a steady cadence.
+- decision: Use `node-cron` in the Express server for the midnight UTC credit refresh, and use `@tanstack/react-query` in the Vite admin client for dashboard metrics polling and cache state.
+- consequences: The scheduler stays in-process with the existing server deployment, so it is simple but depends on the server process being online at midnight UTC. React Query adds a small admin-client dependency while avoiding hand-rolled polling and loading state management.
+
 ### PDF and DOCX export using expo-print and docx libraries
 
 - date: 2026-06-01

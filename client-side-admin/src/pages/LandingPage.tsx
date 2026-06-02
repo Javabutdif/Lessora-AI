@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import LessoraLogo from "../assets/Transparent Logo.png";
 import LandingScreenshot from "../assets/Landing.png";
@@ -5,9 +6,34 @@ import GenerationScreenshot1 from "../assets/generation1.png";
 import GenerationScreenshot2 from "../assets/generation2.png";
 import HistoryScreenshot from "../assets/history.png";
 import GenerateScreenshot from "../assets/generate.png";
+import { fetchLandingMetrics } from "../services/api";
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const {
+    data: landingMetrics,
+    isLoading: metricsLoading,
+    error: metricsError,
+  } = useQuery({
+    queryKey: ["landingMetrics"],
+    queryFn: fetchLandingMetrics,
+    refetchInterval: 60_000,
+    staleTime: 30_000,
+    retry: 1,
+  });
+  const numberFormatter = new Intl.NumberFormat();
+  const metrics = [
+    {
+      label: "Active educators",
+      value: landingMetrics?.activeUsers,
+      helper: "Educators using Lessora",
+    },
+    {
+      label: "Lesson plans created",
+      value: landingMetrics?.totalLessonPlans,
+      helper: "Generated plans saved on the platform",
+    },
+  ];
 
   return (
     <div
@@ -246,6 +272,76 @@ export default function LandingPage() {
           >
             Login
           </button>
+        </div>
+
+        {/* Metrics Section */}
+        <div
+          style={{
+            width: "100%",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "16px",
+            marginTop: "-8px",
+          }}
+        >
+          {metrics.map((metric) => (
+            <div
+              key={metric.label}
+              style={{
+                padding: "24px",
+                minHeight: "132px",
+                borderRadius: "12px",
+                background: "rgba(8, 15, 32, 0.72)",
+                border: "1px solid rgba(96, 165, 250, 0.22)",
+                boxShadow: "0 16px 44px rgba(2, 8, 23, 0.28)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <p
+                style={{
+                  margin: "0 0 10px",
+                  color: "#60a5fa",
+                  fontSize: "12px",
+                  fontWeight: "800",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {metric.label}
+              </p>
+              <p
+                style={{
+                  margin: "0",
+                  color: "#f8fafc",
+                  fontSize: "42px",
+                  fontWeight: "900",
+                  lineHeight: "1",
+                }}
+              >
+                {metricsLoading
+                  ? "--"
+                  : metricsError
+                    ? "Live"
+                    : numberFormatter.format(metric.value ?? 0)}
+              </p>
+              <p
+                style={{
+                  margin: "12px 0 0",
+                  color: "rgba(255,255,255,0.66)",
+                  fontSize: "13px",
+                  fontWeight: "600",
+                  lineHeight: "1.45",
+                }}
+              >
+                {metricsError
+                  ? "Metrics refresh when the API is online"
+                  : metric.helper}
+              </p>
+            </div>
+          ))}
         </div>
 
         {/* Features Grid */}

@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import { config } from "dotenv";
 import path from "path";
 import { ensureSeedAdmin } from "./bootstrap/admin.bootstrap";
+import { CreditRefreshScheduler } from "./services/credit-refresh.scheduler";
 
 config({ path: path.resolve(__dirname, "../.env") });
 
@@ -24,6 +25,7 @@ if (!mongoUri) {
     .then(async () => {
       console.log("MongoDB connected successfully");
       await ensureSeedAdmin();
+      CreditRefreshScheduler.initialize();
     })
     .catch((error) => {
       console.error("MongoDB connection failed:", error);

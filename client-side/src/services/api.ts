@@ -10,6 +10,26 @@ export type RegisterPayload = {
   school?: string;
 };
 
+export type ForgotPasswordPayload = {
+  email: string;
+};
+
+export type ResetPasswordPayload = {
+  token: string;
+  newPassword: string;
+};
+
+export type VerifyResetTokenResponse = {
+  success: boolean;
+  message: string;
+  expiresAt: string;
+};
+
+export type ResetPasswordResponse = {
+  success: boolean;
+  message: string;
+};
+
 export type AuthUser = {
   id: string;
   name: string;
@@ -242,6 +262,48 @@ export async function login(payload: LoginPayload) {
 
 export async function register(payload: RegisterPayload) {
   return requestMessage("/auth/register", payload);
+}
+
+export async function forgotPassword(payload: ForgotPasswordPayload) {
+  return requestMessage("/auth/forgot-password", payload);
+}
+
+export async function verifyResetToken(token: string) {
+  return trackRequest(async () => {
+    const response = await fetch(
+      `${API_BASE}/auth/verify-reset-token/${token}`,
+      {
+        method: "GET",
+        headers: getJsonHeaders(),
+      },
+    );
+
+    const payload = await response.json();
+
+    if (!response.ok) {
+      throw new Error(payload?.message || "Invalid token");
+    }
+
+    return payload as VerifyResetTokenResponse;
+  });
+}
+
+export async function resetPassword(payload: ResetPasswordPayload) {
+  return trackRequest(async () => {
+    const response = await fetch(`${API_BASE}/auth/reset-password`, {
+      method: "POST",
+      headers: getJsonHeaders(),
+      body: JSON.stringify(payload),
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData?.message || "Password reset failed");
+    }
+
+    return responseData as ResetPasswordResponse;
+  });
 }
 
 export async function generateLessonPlan(payload: GenerateLessonPlanPayload) {

@@ -8,6 +8,7 @@ import {
   updateUser,
   softDeleteUser,
 } from "../services/admin-users.service";
+import { getDashboardMetrics } from "../services/admin.service";
 
 export async function loginAdminController(
   req: Request,
@@ -60,6 +61,46 @@ export async function getAdminStats(
         publishedLessonPlans,
         generatedLast7Days,
         generationRate: Number(generatedPerDay.toFixed(1)),
+      },
+      error: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getDashboardMetricsController(
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const metrics = await getDashboardMetrics();
+
+    res.json({
+      success: true,
+      data: metrics,
+      error: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getLandingMetricsController(
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const metrics = await getDashboardMetrics();
+
+    res.json({
+      success: true,
+      data: {
+        activeUsers: metrics.activeUsers,
+        totalLessonPlans: metrics.totalLessonPlans,
+        lastUpdated: metrics.lastUpdated,
       },
       error: null,
     });

@@ -103,6 +103,40 @@ export async function fetchAdminStats() {
   }>("/api/admin/stats");
 }
 
+export type DashboardMetrics = {
+  activeUsers: number;
+  totalLessonPlans: number;
+  lastUpdated: string;
+  timestamp: string;
+};
+
+export async function fetchDashboardMetrics() {
+  return apiRequest<DashboardMetrics>("/api/admin/metrics/dashboard");
+}
+
+export async function fetchLandingMetrics() {
+  const response = await fetch(`${API_BASE}/api/admin/metrics/landing`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const payload = (await response.json()) as {
+    data?: Pick<
+      DashboardMetrics,
+      "activeUsers" | "totalLessonPlans" | "lastUpdated"
+    >;
+    error?: { message?: string } | null;
+  };
+
+  if (!response.ok || !payload.data) {
+    throw new Error(payload.error?.message || "Unable to load landing metrics");
+  }
+
+  return payload.data;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -133,6 +167,26 @@ export type RegisterPayload = {
   email: string;
   password: string;
   school?: string;
+};
+
+export type ForgotPasswordPayload = {
+  email: string;
+};
+
+export type ResetPasswordPayload = {
+  token: string;
+  newPassword: string;
+};
+
+export type VerifyResetTokenResponse = {
+  success: boolean;
+  message: string;
+  expiresAt: string;
+};
+
+export type ResetPasswordResponse = {
+  success: boolean;
+  message: string;
 };
 
 export async function loginUser(email: string, password: string) {
@@ -197,6 +251,72 @@ export function getCurrentUser(): AuthUser | null {
   } catch {
     return null;
   }
+}
+
+// ============================================
+// PASSWORD RESET APIs
+// ============================================
+
+export async function forgotPassword(email: string) {
+  const response = await fetch(`${API_BASE}/api/auth/forgot-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  const payload = (await response.json()) as {
+    success?: boolean;
+    message?: string;
+    error?: { message?: string } | null;
+  };
+
+  if (!response.ok) {
+    throw new Error(
+      payload.error?.message || payload.message || "Request failed",
+    );
+  }
+
+  return payload.message || "Reset email sent";
+}
+
+export async function verifyResetToken(token: string) {
+  const response = await fetch(
+    `${API_BASE}/api/auth/verify-reset-token/${token}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  const payload = (await response.json()) as VerifyResetTokenResponse;
+
+  if (!response.ok) {
+    throw new Error(payload.message || "Invalid token");
+  }
+
+  return payload;
+}
+
+export async function resetPassword(token: string, newPassword: string) {
+  const response = await fetch(`${API_BASE}/api/auth/reset-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ token, newPassword }),
+  });
+
+  const payload = (await response.json()) as ResetPasswordResponse;
+
+  if (!response.ok) {
+    throw new Error(payload.message || "Password reset failed");
+  }
+
+  return payload;
 }
 
 // ============================================

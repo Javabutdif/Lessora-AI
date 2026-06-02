@@ -1,5 +1,7 @@
 import { Router } from "express";
 import {
+  getDashboardMetricsController,
+  getLandingMetricsController,
   getAdminStats,
   loginAdminController,
   listUsersController,
@@ -11,7 +13,9 @@ import { requireAdmin } from "../middleware/auth.middleware";
 const router = Router();
 
 router.post("/login", loginAdminController);
+router.get("/metrics/landing", getLandingMetricsController);
 router.get("/stats", requireAdmin, getAdminStats);
+router.get("/metrics/dashboard", requireAdmin, getDashboardMetricsController);
 
 // User management routes
 router.get("/users", requireAdmin, listUsersController);

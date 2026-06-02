@@ -1,7 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { API_BASE, fetchAdminStats } from "../services/api";
+import {
+  API_BASE,
+  fetchAdminStats,
+  fetchDashboardMetrics,
+} from "../services/api";
 import { Button, Card, Badge, Skeleton } from "../components/ui";
+import MetricCard from "../components/MetricCard";
 import styles from "./AdminDashboard.module.css";
 
 interface StatCard {
@@ -24,6 +30,19 @@ export default function AdminDashboard() {
   const [serverMessage, setServerMessage] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const {
+    data: dashboardMetrics,
+    isLoading: metricsLoading,
+    isFetching: metricsFetching,
+    error: metricsError,
+  } = useQuery({
+    queryKey: ["dashboardMetrics"],
+    queryFn: fetchDashboardMetrics,
+    refetchInterval: 60_000,
+    staleTime: 30_000,
+    gcTime: 5 * 60_000,
+    retry: 3,
+  });
 
   useEffect(() => {
     let mounted = true;
@@ -102,6 +121,16 @@ export default function AdminDashboard() {
       },
     ];
   }, [stats]);
+
+  const metricsLastUpdated = dashboardMetrics?.lastUpdated
+    ? new Date(dashboardMetrics.lastUpdated).toLocaleTimeString()
+    : undefined;
+  const metricsErrorMessage =
+    metricsError instanceof Error
+      ? metricsError.message
+      : metricsError
+        ? "Unable to load dashboard metrics"
+        : undefined;
 
   function handleLogout() {
     localStorage.removeItem("lessora-admin-token");
@@ -182,8 +211,29 @@ export default function AdminDashboard() {
               <h2 className={styles.statsTitle}>Platform metrics</h2>
             </div>
             <div className={styles.statsStatus}>
-              {stats ? "Live backend metrics" : "Loading metrics…"}
+              {metricsFetching ? "Updating metrics..." : "Refreshes every 60s"}
             </div>
+          </div>
+
+          <div className={styles.dashboardMetricsGrid}>
+            <MetricCard
+              title="Active users"
+              value={dashboardMetrics?.activeUsers ?? 0}
+              helper="Active verified teacher accounts"
+              icon="AU"
+              loading={metricsLoading}
+              error={metricsErrorMessage}
+              lastUpdated={metricsLastUpdated}
+            />
+            <MetricCard
+              title="Lesson plans generated"
+              value={dashboardMetrics?.totalLessonPlans ?? 0}
+              helper="Total plans stored across the platform"
+              icon="LP"
+              loading={metricsLoading}
+              error={metricsErrorMessage}
+              lastUpdated={metricsLastUpdated}
+            />
           </div>
 
           {error && (

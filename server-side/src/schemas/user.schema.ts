@@ -33,6 +33,8 @@ export interface IUser extends Document {
   aiResponseCredits: number;
   settings?: IUserSettings;
   lastLogin?: Date;
+  passwordResetToken?: string | null;
+  passwordResetTokenExpires?: Date | null;
   createdAt: Date;
   updatedAt: Date;
   schemaVersion: number;
@@ -84,7 +86,7 @@ const UserSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-     
+
       default: "teacher",
       index: true,
     },
@@ -121,6 +123,15 @@ const UserSchema = new Schema<IUser>(
       type: Date,
       default: null,
     },
+    passwordResetToken: {
+      type: String,
+      default: null,
+      select: false, // Exclude by default in queries
+    },
+    passwordResetTokenExpires: {
+      type: Date,
+      default: null,
+    },
     schemaVersion: {
       type: Number,
       default: 1,
@@ -139,7 +150,6 @@ UserSchema.index({ isActive: 1, isVerified: 1 });
 
 export const User = mongoose.model<IUser>("User", UserSchema);
 
-
 // Zod validation schemas for user routes
 export const updateProfileSchema = z.object({
   firstName: z.string().min(1, "First name is required").max(100),
@@ -157,5 +167,30 @@ export const updateSettingsSchema = z.object({
   theme: z.string().optional(),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Valid email is required"),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, "Reset token is required"),
+  newPassword: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain an uppercase letter")
+    .regex(/[a-z]/, "Password must contain a lowercase letter")
+    .regex(/[0-9]/, "Password must contain a number")
+    .regex(
+      /[!@#$%^&*]/,
+      "Password must contain a special character (!@#$%^&*)",
+    ),
+});
+
+export const verifyResetTokenSchema = z.object({
+  token: z.string().min(1, "Reset token is required"),
+});
+
 export type UpdateProfilePayload = z.infer<typeof updateProfileSchema>;
 export type UpdateSettingsPayload = z.infer<typeof updateSettingsSchema>;
+export type ForgotPasswordPayload = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordPayload = z.infer<typeof resetPasswordSchema>;
+export type VerifyResetTokenPayload = z.infer<typeof verifyResetTokenSchema>;

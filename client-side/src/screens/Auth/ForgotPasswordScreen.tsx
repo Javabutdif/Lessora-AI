@@ -11,52 +11,52 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../navigation/AppNavigator";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
-import { login as loginRequest } from "../../services/api";
+import { forgotPassword } from "../../services/api";
 import Toast from "react-native-toast-message";
-import { useAuth } from "../../context/AuthContext";
 import { useSuppressGlobalRequestOverlay } from "../../context/RequestLoadingContext";
 
 type Props = {
-  navigation: NativeStackNavigationProp<RootStackParamList, "Login">;
+  navigation: NativeStackNavigationProp<RootStackParamList, "ForgotPassword">;
 };
 
-export default function LoginScreen({ navigation }: Props) {
+export default function ForgotPasswordScreen({ navigation }: Props) {
   const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const { login } = useAuth();
-  const isLoginLoading = isSubmitting;
 
   useSuppressGlobalRequestOverlay();
 
-  const handleLogin = async () => {
+  const handleForgotPassword = async () => {
     if (isSubmitting) {
       return;
     }
 
-    if (!email || !password) {
+    if (!email) {
       Toast.show({
         type: "error",
         text1: "Validation Error",
-        text2: "Please fill in all fields.",
+        text2: "Please enter your email address.",
       });
       return;
     }
 
     try {
       setIsSubmitting(true);
-      const session = await loginRequest({ email, password });
-      await login(session.token);
+      await forgotPassword({ email });
       Toast.show({
         type: "success",
-        text1: `Welcome back, ${session.user.name}!`,
-        text2: "You have successfully logged in.",
+        text1: "Email Sent",
+        text2: "Check your email for password reset instructions.",
       });
+      // Navigate back to login after successful submission
+      setTimeout(() => {
+        navigation.navigate("Login");
+      }, 1500);
     } catch (error: any) {
-      const msg = error.message || "An error occurred during login.";
+      const msg =
+        error.message || "Failed to process request. Please try again.";
       Toast.show({
         type: "error",
-        text1: "Login Failed",
+        text1: "Request Failed",
         text2: msg,
       });
     } finally {
@@ -78,11 +78,12 @@ export default function LoginScreen({ navigation }: Props) {
           }}
         >
           <View className="mb-10">
-            <Text className="text-navy font-poppins-bold text-4xl mb-2">
-              Welcome Back
+            <Text className="text-navy font-poppins-bold text-3xl mb-2">
+              Reset Password
             </Text>
             <Text className="text-secondary font-poppins text-base">
-              Sign in to continue planning with Lessora AI.
+              Enter your email address and we'll send you a link to reset your
+              password.
             </Text>
           </View>
 
@@ -95,42 +96,27 @@ export default function LoginScreen({ navigation }: Props) {
               icon="mail-outline"
               value={email}
               onChangeText={setEmail}
-              editable={!isLoginLoading}
+              editable={!isSubmitting}
             />
-            <Input
-              label="Password"
-              placeholder="••••••••"
-              isPassword
-              icon="lock-closed-outline"
-              value={password}
-              onChangeText={setPassword}
-              editable={!isLoginLoading}
-            />
-            <Text
-              className="text-royal font-poppins-semi text-sm text-right mt-2 mb-6"
-              onPress={() => navigation.navigate("ForgotPassword")}
-            >
-              Forgot Password?
-            </Text>
 
             <Button
-              title={isLoginLoading ? "Signing in..." : "Log In"}
+              title={isSubmitting ? "Sending..." : "Send Reset Link"}
               variant="primary"
-              onPress={() => handleLogin()}
-              disabled={isLoginLoading}
-              isLoading={isLoginLoading}
+              onPress={() => handleForgotPassword()}
+              disabled={isSubmitting}
+              isLoading={isSubmitting}
             />
           </View>
 
-          <View className="flex-row justify-center mt-4">
+          <View className="flex-row justify-center">
             <Text className="text-secondary font-poppins text-sm">
-              Don't have an account?{" "}
+              Remember your password?{" "}
             </Text>
             <Text
               className="text-royal font-poppins-semi text-sm"
-              onPress={() => navigation.navigate("Register")}
+              onPress={() => navigation.navigate("Login")}
             >
-              Sign Up
+              Back to Login
             </Text>
           </View>
         </ScrollView>
