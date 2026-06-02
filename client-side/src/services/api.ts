@@ -1,3 +1,4 @@
+import * as Application from "expo-application";
 export type LoginPayload = {
   email: string;
   password: string;
@@ -188,6 +189,8 @@ export function setAuthToken(token: string | null) {
 function getJsonHeaders() {
   return {
     "Content-Type": "application/json",
+    "X-App-Version": Application.nativeApplicationVersion ?? "0.0.0",
+    "X-Build-Number": Application.nativeBuildVersion ?? "0",
     ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
   };
 }
@@ -215,6 +218,10 @@ async function requestData<T>(path: string, body: unknown): Promise<T> {
     const payload = await response.json();
 
     if (!response.ok) {
+       if (response.status === 426) {
+         throw new Error("UPDATE_REQUIRED");
+       }
+
       throw new Error(payload?.error?.message || "Request failed");
     }
 

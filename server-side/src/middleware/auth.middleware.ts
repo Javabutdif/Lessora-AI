@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { AppConfig } from "../schemas/app.config.schema";
 
 export type AuthenticatedUser = {
   id: string;
@@ -73,4 +74,31 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction) {
       },
     });
   }
+}
+
+export async function checkAppVersion(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  const buildNumber = Number(req.headers["x-build-number"] || 0);
+
+  const config = await AppConfig.findOne({
+    key: "app_config",
+  }).lean();
+
+  if (!config) {
+    return next();
+  }
+
+  if (buildNumber < config.minimumBuildNumber) {
+    return res.status(426).json({
+      success: false,
+      code: "UPDATE_REQUIRED",
+      message: `Please update Lessora AI to version ${config.latestVersion}`,
+      latestVersion: config.latestVersion,
+    });
+  }
+
+  next();
 }

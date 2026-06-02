@@ -8,8 +8,8 @@ import { errorHandler } from "./middleware/errorHandler";
 import mongoose from "mongoose";
 import { config } from "dotenv";
 import path from "path";
-import { ensureSeedAdmin } from "./bootstrap/admin.bootstrap";
 import { CreditRefreshScheduler } from "./services/credit-refresh.scheduler";
+import { checkAppVersion } from "./middleware/auth.middleware";
 
 config({ path: path.resolve(__dirname, "../.env") });
 
@@ -24,7 +24,7 @@ if (!mongoUri) {
     })
     .then(async () => {
       console.log("MongoDB connected successfully");
-      await ensureSeedAdmin();
+
       CreditRefreshScheduler.initialize();
     })
     .catch((error) => {
@@ -35,6 +35,8 @@ const app = express();
 
 app.use(cors({ origin: true }));
 app.use(express.json());
+
+app.use(checkAppVersion);
 
 app.use("/api/auth", authRouter);
 app.use("/api/ai", aiRouter);

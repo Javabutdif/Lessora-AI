@@ -24,6 +24,12 @@ export default function LoginScreen({ navigation }: Props) {
       await login({ email, password });
       navigation.replace("Main");
     } catch (error) {
+      if (error instanceof Error && error.message === "UPDATE_REQUIRED") {
+        Alert.alert("Update Required", "Please update Lessora AI to continue.");
+
+        return;
+      }
+
       Alert.alert(
         "Login failed",
         error instanceof Error ? error.message : "Unable to sign in",
