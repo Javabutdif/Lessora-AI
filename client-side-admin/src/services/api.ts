@@ -69,6 +69,7 @@ export async function loginAdmin(email: string, password: string) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "X-Client-Type": "web",
     },
     body: JSON.stringify({ email, password }),
   });
@@ -194,6 +195,7 @@ export async function loginUser(email: string, password: string) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "X-Client-Type": "web",
     },
     body: JSON.stringify({ email, password }),
   });
@@ -222,6 +224,7 @@ export async function registerUser(data: RegisterPayload) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "X-Client-Type": "web",
     },
     body: JSON.stringify(data),
   });
@@ -262,6 +265,7 @@ export async function forgotPassword(email: string) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "X-Client-Type": "web",
     },
     body: JSON.stringify({ email }),
   });
@@ -306,6 +310,7 @@ export async function resetPassword(token: string, newPassword: string) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "X-Client-Type": "web",
     },
     body: JSON.stringify({ token, newPassword }),
   });

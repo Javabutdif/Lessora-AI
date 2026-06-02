@@ -83,12 +83,15 @@ export async function checkAppVersion(
 ) {
   const clientType = req.headers["x-client-type"];
 
-  if (clientType !== "mobile") {
+  if (clientType === "web") {
     return next();
   }
 
   const buildNumber = Number(req.headers["x-build-number"] || 0);
-
+  console.log({
+    clientType,
+    buildNumber: req.header("X-Build-Number"),
+  });
   const config = await AppConfig.findOne({
     key: "app_config",
   }).lean();
