@@ -52,6 +52,7 @@ export type GenerateLessonPlanPayload = {
   numberOfSessions: number;
   userDraftText?: string;
   templateNotes?: string;
+  language?: string;
   templateId?: LessonPlanTemplate;
 };
 

@@ -47,22 +47,31 @@ const gradeOptions = [
 function getGradeLabel(value: string) {
   return gradeOptions.find((grade) => grade.value === value)?.label ?? value;
 }
-
+const languageOptions = [
+  { label: "English", value: "english" },
+  { label: "Tagalog", value: "tagalog" },
+];
 export default function GeneratePlanScreen({ route, navigation }: Props) {
   const [topicSubject, setTopicSubject] = React.useState("");
   const [selectedGrade, setSelectedGrade] = React.useState("");
   const [duration, setDuration] = React.useState("");
   const [goalsStandards, setGoalsStandards] = React.useState("");
-  const [selectedTemplate, setSelectedTemplate] = React.useState<LessonPlanTemplate>("lessora-ai");
+  const [selectedLanguage, setSelectedLanguage] = React.useState("english");
+  const [selectedTemplate, setSelectedTemplate] =
+    React.useState<LessonPlanTemplate>("lessora-ai");
   const [isGenerating, setIsGenerating] = React.useState(false);
   const [isPickerVisible, setIsPickerVisible] = React.useState(false);
-  const [isTemplateModalVisible, setIsTemplateModalVisible] = React.useState(false);
+  const [isLanguagePickerVisible, setIsLanguagePickerVisible] =
+    React.useState(false);
+  const [isTemplateModalVisible, setIsTemplateModalVisible] =
+    React.useState(false);
 
   const resetDraftState = React.useCallback(() => {
     setTopicSubject("");
     setSelectedGrade("");
     setDuration("");
     setGoalsStandards("");
+    setSelectedLanguage("english");
     setSelectedTemplate("lessora-ai");
   }, []);
 
@@ -104,6 +113,7 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
 
     try {
       setIsGenerating(true);
+
       const result = await generateLessonPlan({
         title: trimmedTopicSubject,
         subject: trimmedTopicSubject,
@@ -112,13 +122,8 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
         numberOfSessions: 1,
         userDraftText: trimmedGoalsStandards || undefined,
         templateNotes: trimmedGoalsStandards || undefined,
+        language: selectedLanguage,
         templateId: selectedTemplate,
-      });
-
-      console.log("Generated lesson plan response", {
-        hasDocument: !!result.document,
-        blockCount: result.document?.blocks?.length ?? 0,
-        keys: Object.keys(result ?? {}),
       });
 
       if (!result.document?.blocks?.length) {
@@ -183,7 +188,11 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
               >
                 <View className="flex-row items-center flex-1">
                   <Ionicons
-                    name={selectedTemplate === "lessora-ai" ? "sparkles" : "document-text"}
+                    name={
+                      selectedTemplate === "lessora-ai"
+                        ? "sparkles"
+                        : "document-text"
+                    }
                     size={20}
                     color="#8E95B2"
                     style={{ marginRight: 10 }}
@@ -198,7 +207,11 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
                       : "DepEd Semi-Detailed"}
                   </Text>
                 </View>
-                <Ionicons name="chevron-down-outline" size={16} color="#8E95B2" />
+                <Ionicons
+                  name="chevron-down-outline"
+                  size={16}
+                  color="#8E95B2"
+                />
               </TouchableOpacity>
             </View>
 
@@ -209,7 +222,46 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
               value={topicSubject}
               onChangeText={setTopicSubject}
             />
-
+            <View className="flex-1 mr-2 mb-4">
+              <Text className="text-secondary font-poppins-semi text-sm mb-2">
+                Language
+              </Text>
+              <TouchableOpacity
+                onPress={() => setIsLanguagePickerVisible(true)}
+                className="flex-row items-center rounded-2xl px-4"
+                style={{
+                  height: 50,
+                  backgroundColor: "#FFFFFF",
+                  borderColor: "#E5E7EB",
+                  borderWidth: 1,
+                  justifyContent: "space-between",
+                }}
+              >
+                <View className="flex-row items-center flex-1">
+                  <Ionicons
+                    name="school-outline"
+                    size={20}
+                    color="#8E95B2"
+                    style={{ marginRight: 10 }}
+                  />
+                  <Text
+                    className="font-poppins text-base flex-1"
+                    numberOfLines={1}
+                    style={{ color: selectedLanguage ? "#111827" : "#8E95B2" }}
+                  >
+                    {selectedLanguage
+                      ? selectedLanguage.charAt(0).toUpperCase() +
+                        selectedLanguage.slice(1)
+                      : "Select Language"}
+                  </Text>
+                </View>
+                <Ionicons
+                  name="chevron-down-outline"
+                  size={16}
+                  color="#8E95B2"
+                />
+              </TouchableOpacity>
+            </View>
             <View className="flex-row space-x-4">
               <View className="flex-1 mr-2 mb-4">
                 <Text className="text-secondary font-poppins-semi text-sm mb-2">
@@ -238,10 +290,16 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
                       numberOfLines={1}
                       style={{ color: selectedGrade ? "#111827" : "#8E95B2" }}
                     >
-                      {selectedGrade ? getGradeLabel(selectedGrade) : "Select Grade"}
+                      {selectedGrade
+                        ? getGradeLabel(selectedGrade)
+                        : "Select Grade"}
                     </Text>
                   </View>
-                  <Ionicons name="chevron-down-outline" size={16} color="#8E95B2" />
+                  <Ionicons
+                    name="chevron-down-outline"
+                    size={16}
+                    color="#8E95B2"
+                  />
                 </TouchableOpacity>
               </View>
               <View className="flex-1 ml-2">
@@ -294,7 +352,9 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
         >
           <View className="bg-white rounded-t-3xl max-h-[60%] px-6 pt-6 pb-8">
             <View className="flex-row justify-between items-center mb-6">
-              <Text className="text-navy font-poppins-bold text-xl">Select Grade Level</Text>
+              <Text className="text-navy font-poppins-bold text-xl">
+                Select Grade Level
+              </Text>
               <TouchableOpacity onPress={() => setIsPickerVisible(false)}>
                 <Ionicons name="close" size={24} color="#8E95B2" />
               </TouchableOpacity>
@@ -315,12 +375,69 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
                 >
                   <Text
                     className={`font-poppins text-base ${
-                      selectedGrade === item.value ? "text-royal font-poppins-semi" : "text-primary"
+                      selectedGrade === item.value
+                        ? "text-royal font-poppins-semi"
+                        : "text-primary"
                     }`}
                   >
                     {item.label}
                   </Text>
                   {selectedGrade === item.value && (
+                    <Ionicons name="checkmark" size={20} color="#2F5BFF" />
+                  )}
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </TouchableOpacity>
+      </Modal>
+      {/* Language Selection Modal */}
+      <Modal
+        visible={isLanguagePickerVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setIsLanguagePickerVisible(false)}
+      >
+        <TouchableOpacity
+          className="flex-1 bg-black/50 justify-end"
+          activeOpacity={1}
+          onPress={() => setIsLanguagePickerVisible(false)}
+        >
+          <View className="bg-white rounded-t-3xl max-h-[60%] px-6 pt-6 pb-8">
+            <View className="flex-row justify-between items-center mb-6">
+              <Text className="text-navy font-poppins-bold text-xl">
+                Select Language
+              </Text>
+              <TouchableOpacity
+                onPress={() => setIsLanguagePickerVisible(false)}
+              >
+                <Ionicons name="close" size={24} color="#8E95B2" />
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              data={languageOptions}
+              keyExtractor={(item) => item.value}
+              contentContainerStyle={{ paddingBottom: 20 }}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() => {
+                    setSelectedLanguage(item.value);
+                    setIsLanguagePickerVisible(false);
+                  }}
+                  className={`py-4 px-4 rounded-xl mb-2 flex-row justify-between items-center ${
+                    selectedLanguage === item.value ? "bg-soft-blue" : ""
+                  }`}
+                >
+                  <Text
+                    className={`font-poppins text-base ${
+                      selectedLanguage === item.value
+                        ? "text-royal font-poppins-semi"
+                        : "text-primary"
+                    }`}
+                  >
+                    {item.label}
+                  </Text>
+                  {selectedLanguage === item.value && (
                     <Ionicons name="checkmark" size={20} color="#2F5BFF" />
                   )}
                 </TouchableOpacity>

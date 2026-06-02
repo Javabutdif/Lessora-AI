@@ -18,8 +18,11 @@ export const generateLessonPlanSchema = z.object({
     .max(20, "Number of sessions must be 20 or less")
     .default(1),
   userDraftText: z.string().max(12000).optional(),
+  language: z.string().min(2).max(50).default("english"),
   templateNotes: z.string().max(4000).optional(),
-  templateId: z.enum(["lessora-ai", "deped-semi-detailed"]).default("lessora-ai"),
+  templateId: z
+    .enum(["lessora-ai", "deped-semi-detailed"])
+    .default("lessora-ai"),
 });
 
 export const refineLessonPlanSchema = z.object({

@@ -12,6 +12,7 @@ export async function generateLessonPlan(
 ) {
   try {
     const input = generateLessonPlanSchema.parse(req.body);
+    console.log("Received generate lesson plan request with input:", input);
     const userId = req.authUser?.id;
 
     if (!userId) {

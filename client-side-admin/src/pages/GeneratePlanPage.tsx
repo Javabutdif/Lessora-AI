@@ -25,7 +25,11 @@ const gradeOptions = [
   { label: "Senior High School", value: "seniorhigh" },
 ];
 
-const templateOptions: { label: string; value: LessonPlanTemplate; description: string }[] = [
+const templateOptions: {
+  label: string;
+  value: LessonPlanTemplate;
+  description: string;
+}[] = [
   {
     label: "Lessora AI Template",
     value: "lessora-ai",
@@ -38,13 +42,20 @@ const templateOptions: { label: string; value: LessonPlanTemplate; description: 
   },
 ];
 
+const languageOptions = [
+  { label: "English", value: "english" },
+  { label: "Tagalog", value: "tagalog" },
+];
+
 export default function GeneratePlanPage() {
   const [topicSubject, setTopicSubject] = useState("");
   const [selectedGrade, setSelectedGrade] = useState("");
   const [duration, setDuration] = useState("");
   const [numberOfSessions, setNumberOfSessions] = useState("1");
   const [goalsStandards, setGoalsStandards] = useState("");
-  const [selectedTemplate, setSelectedTemplate] = useState<LessonPlanTemplate>("lessora-ai");
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<LessonPlanTemplate>("lessora-ai");
+  const [selectedLanguage, setSelectedLanguage] = useState("english");
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -85,12 +96,15 @@ export default function GeneratePlanPage() {
         numberOfSessions: parsedSessions,
         userDraftText: goalsStandards.trim() || undefined,
         templateId: selectedTemplate,
+        language: selectedLanguage,
       });
 
       console.log("Lesson plan generated:", response.lessonPlanId);
       navigate(`/preview/${response.lessonPlanId}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate lesson plan");
+      setError(
+        err instanceof Error ? err.message : "Failed to generate lesson plan",
+      );
     } finally {
       setIsGenerating(false);
     }
@@ -105,7 +119,8 @@ export default function GeneratePlanPage() {
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1425 100%)",
+        background:
+          "linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1425 100%)",
         color: "#fff",
       }}
     >
@@ -198,9 +213,13 @@ export default function GeneratePlanPage() {
             padding: "32px",
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "24px" }}
+          >
             {/* Topic/Subject */}
-            <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <label
+              style={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            >
               <span style={{ fontSize: "14px", fontWeight: "600" }}>
                 Topic/Subject <span style={{ color: "#ef4444" }}>*</span>
               </span>
@@ -224,7 +243,9 @@ export default function GeneratePlanPage() {
             </label>
 
             {/* Grade Level */}
-            <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <label
+              style={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            >
               <span style={{ fontSize: "14px", fontWeight: "600" }}>
                 Grade Level <span style={{ color: "#ef4444" }}>*</span>
               </span>
@@ -252,9 +273,48 @@ export default function GeneratePlanPage() {
               </select>
             </label>
 
+            {/* Grade Level */}
+            <label
+              style={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            >
+              <span style={{ fontSize: "14px", fontWeight: "600" }}>
+                Language <span style={{ color: "#ef4444" }}>*</span>
+              </span>
+              <select
+                value={selectedLanguage}
+                onChange={(e) => setSelectedLanguage(e.target.value)}
+                disabled={isGenerating}
+                required
+                style={{
+                  padding: "12px 14px",
+                  borderRadius: "10px",
+                  border: "1px solid rgba(148,163,184,0.28)",
+                  background: "#020817",
+                  color: "#fff",
+                  fontSize: "14px",
+                  outline: "none",
+                }}
+              >
+                <option value="">Select language</option>
+                {languageOptions.map((language) => (
+                  <option key={language.value} value={language.value}>
+                    {language.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
             {/* Duration and Sessions Row */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-              <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "16px",
+              }}
+            >
+              <label
+                style={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              >
                 <span style={{ fontSize: "14px", fontWeight: "600" }}>
                   Duration (minutes) <span style={{ color: "#ef4444" }}>*</span>
                 </span>
@@ -278,7 +338,9 @@ export default function GeneratePlanPage() {
                 />
               </label>
 
-              <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <label
+                style={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              >
                 <span style={{ fontSize: "14px", fontWeight: "600" }}>
                   Number of Sessions
                 </span>
@@ -303,9 +365,19 @@ export default function GeneratePlanPage() {
             </div>
 
             {/* Template Selection */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <span style={{ fontSize: "14px", fontWeight: "600" }}>Template</span>
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            >
+              <span style={{ fontSize: "14px", fontWeight: "600" }}>
+                Template
+              </span>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "12px",
+                }}
+              >
                 {templateOptions.map((template) => (
                   <label
                     key={template.value}
@@ -333,7 +405,9 @@ export default function GeneratePlanPage() {
                       value={template.value}
                       checked={selectedTemplate === template.value}
                       onChange={(e) =>
-                        setSelectedTemplate(e.target.value as LessonPlanTemplate)
+                        setSelectedTemplate(
+                          e.target.value as LessonPlanTemplate,
+                        )
                       }
                       disabled={isGenerating}
                       style={{ marginTop: "2px" }}
@@ -357,7 +431,9 @@ export default function GeneratePlanPage() {
             </div>
 
             {/* Goals/Standards (Optional) */}
-            <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <label
+              style={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            >
               <span style={{ fontSize: "14px", fontWeight: "600" }}>
                 Learning Goals/Standards (Optional)
               </span>
