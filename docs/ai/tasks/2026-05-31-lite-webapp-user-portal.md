@@ -7,6 +7,7 @@
 ## Objective
 
 Create a lite web app version in client-side-admin for regular users (teachers) with:
+
 - User authentication (login/register)
 - Lesson plan generation page
 - History page to view past lesson plans
@@ -20,9 +21,16 @@ This is an alternative to the mobile app, providing web access to core features.
 - Should reuse existing server-side APIs for auth and lesson plan generation
 - Keep it lightweight and focused on core features
 
+## Current state
+
+- status: completed
+- next action: none
+- blockers: none
+
 ## Scope
 
 ### In Scope
+
 1. User login page (`/login`)
 2. User registration page (`/register`)
 3. Lesson plan generation page (`/generate`)
@@ -33,6 +41,7 @@ This is an alternative to the mobile app, providing web access to core features.
 8. Basic navigation between pages
 
 ### Out of Scope
+
 - Admin features (keep separate)
 - Advanced analytics
 - Profile management (can be added later)
