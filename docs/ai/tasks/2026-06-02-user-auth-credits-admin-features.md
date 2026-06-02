@@ -20,7 +20,7 @@
 
 ## Current state
 
-- status: in progress (implementation complete, manual database/browser verification pending)
+- status: complete
 - current owner: development
 - next action: run manual database/browser verification against a configured local backend
 - blockers: none identified
