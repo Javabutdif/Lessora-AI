@@ -35,7 +35,7 @@ export async function apiRequest<T>(
   if (!headers.has("Content-Type") && !(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
-
+  headers.set("X-Client-Type", "web");
   const response = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers,
@@ -120,6 +120,7 @@ export async function fetchLandingMetrics() {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      "X-Client-Type": "web",
     },
   });
 
@@ -292,6 +293,7 @@ export async function verifyResetToken(token: string) {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        "X-Client-Type": "web",
       },
     },
   );
