@@ -567,7 +567,16 @@ export default function LandingPage() {
               letterSpacing: "0.2px",
             }}
           >
-            Developed by <span style={{ color: "#60a5fa" }}>Javabutdif</span>
+            Developed by{" "}
+            <span style={{ color: "#60a5fa" }}>
+              <a
+                href="https://www.portfolio.ajgenabio.me/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Javabutdif
+              </a>
+            </span>
           </p>
         </div>
       </div>
