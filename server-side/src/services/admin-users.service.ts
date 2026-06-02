@@ -10,11 +10,7 @@ export interface UserResponse {
 }
 
 function mapUserToResponse(user: IUser): UserResponse {
-  const status = !user.isActive
-    ? "inactive"
-    : user.isVerified
-      ? "active"
-      : "pending";
+  const status = !user.isActive ? "inactive" : "active";
 
   return {
     id: user._id.toString(),

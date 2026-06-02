@@ -10,17 +10,14 @@ export type DashboardMetrics = {
   timestamp: Date;
 };
 
-let cachedDashboardMetrics:
-  | {
-      data: DashboardMetrics;
-      expiresAt: number;
-    }
-  | null = null;
+let cachedDashboardMetrics: {
+  data: DashboardMetrics;
+  expiresAt: number;
+} | null = null;
 
 export async function getActiveUserCount() {
   return User.countDocuments({
     isActive: true,
-    isVerified: true,
   });
 }
 
