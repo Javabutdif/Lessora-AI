@@ -13,6 +13,7 @@ import UserRegisterPage from "./pages/UserRegisterPage";
 import GeneratePlanPage from "./pages/GeneratePlanPage";
 import HistoryPage from "./pages/HistoryPage";
 import PreviewPage from "./pages/PreviewPage";
+import InfoPage from "./pages/InfoPage";
 
 function App() {
   return (
@@ -20,6 +21,12 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
+        <Route path="/privacy-policy" element={<InfoPage page="privacy" />} />
+        <Route
+          path="/terms-and-conditions"
+          element={<InfoPage page="terms" />}
+        />
+        <Route path="/about" element={<InfoPage page="about" />} />
 
         {/* User Routes */}
         <Route path="/login" element={<UserLoginPage />} />

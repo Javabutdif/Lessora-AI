@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LessoraLogo from "../assets/Transparent Logo.png";
 import LandingScreenshot from "../assets/Landing.png";
 import GenerationScreenshot1 from "../assets/generation1.png";
@@ -86,6 +86,35 @@ export default function LandingPage() {
               "radial-gradient(circle, rgba(124, 58, 237, 0.12), transparent 70%)",
           }}
         />
+      </div>
+
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "960px",
+          display: "flex",
+          justifyContent: "center",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        <header
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            gap: "18px",
+            flexWrap: "wrap",
+            padding: "0 0 20px",
+            fontSize: "14px",
+            fontWeight: "700",
+          }}
+        >
+          <Link to="/about">About</Link>
+          <Link to="/privacy-policy">Privacy Policy</Link>
+          <Link to="/terms-and-conditions">Terms & Conditions</Link>
+        </header>
       </div>
 
       <div
