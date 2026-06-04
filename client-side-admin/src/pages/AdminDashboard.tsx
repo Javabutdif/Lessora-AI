@@ -54,7 +54,11 @@ export default function AdminDashboard() {
 
         setStats(statsPayload);
 
-        const healthResponse = await fetch(`${API_BASE}/api/health`);
+        const healthResponse = await fetch(`${API_BASE}/api/health`, {
+          headers: {
+            "X-Client-Type": "web",
+          },
+        });
         const healthPayload = await healthResponse.json();
         setStatus(healthPayload.status === "ok" ? "online" : "degraded");
         setServerMessage(

@@ -444,6 +444,8 @@ class OpenAIService {
   }
 
   private buildLessoraAIPrompt(request: GenerateLessonPlanRequest) {
+    const procedureSteps =
+      request.duration <= 30 ? 6 : request.duration <= 60 ? 8 : 10;
     return [
       `CRITICAL LANGUAGE REQUIREMENT:
 
@@ -476,8 +478,21 @@ Do NOT leave any instructional content in English unless it is a proper noun, te
       "Return only valid JSON. Do not include markdown, explanation, or media.",
       "Generate a complete classroom-ready lesson plan with every required section.",
       "Do not stop after the overview or objectives.",
-      "Minimum detail: 3 learning objectives, 3 materials, 5 procedure steps, 2 assessment methods, and 2 teacher notes.",
+      `Minimum detail: 3 learning objectives, 3 materials, ${procedureSteps} procedure steps depends on the duration where in it is 30 minutes while less than 60 minutes of duration is 8 procedure steps else it will be 10, 2 assessment methods, and 2 teacher notes.`,
       "Use exactly this top-level shape:",
+      "Procedure requirements:",
+      "- The Procedure section is the MOST IMPORTANT part of the lesson plan.",
+      "- Generate detailed teacher-facing classroom procedures, not short labels.",
+      "- Each procedure step must explain exactly what the teacher will do and what learners will do.",
+      "- Include sample teacher questions, discussion prompts, instructions, and expected learner responses when appropriate.",
+      "- Procedures must follow a logical progression: motivation, lesson presentation, guided practice, collaborative activity, independent practice, checking for understanding, reflection, and closure.",
+      "- Each procedure step should contain 2-5 complete sentences.",
+      "- Avoid generic steps such as 'Discuss the lesson' or 'Do an activity'.",
+      "- Every procedure must be classroom-ready and actionable.",
+      "- The Procedure section should contain approximately 50% of the lesson plan's total content.",
+      "- Procedures should be significantly more detailed than objectives, materials, and assessments.",
+      `- The procedure section should contain at least ${procedureSteps} detailed numbered steps.`,
+      "- Procedures should demonstrate active learning and student participation.",
 
       JSON.stringify({
         type: "lesson_plan_document",
@@ -512,11 +527,14 @@ Do NOT leave any instructional content in English unless it is a proper noun, te
             type: "list",
             style: "numbered",
             items: [
-              "opening activity",
-              "direct instruction",
-              "guided practice",
-              "independent or group activity",
-              "closure",
+              "Begin the lesson with a motivating activity that activates prior knowledge and encourages participation.",
+              "Present the lesson content through guided discussion, examples, and questioning strategies.",
+              "Facilitate guided practice where learners apply the concept with teacher support and feedback.",
+              "Provide a collaborative activity that allows learners to discuss and demonstrate understanding.",
+              "Assign an independent task that requires learners to apply the new learning.",
+              "Check for understanding through questioning and observation.",
+              "Lead a reflection activity where learners summarize key insights.",
+              "Conclude the lesson with an exit activity and lesson synthesis.",
             ],
           },
           { type: "heading", level: 2, text: "Assessment" },
@@ -596,7 +614,7 @@ Do NOT leave any instructional content in English unless it is a proper noun, te
           { type: "heading", level: 2, text: "II. Learning Competencies" },
           {
             type: "paragraph",
-            text: "Generate specific MELCs code and detailed competency description for this grade level and subject",
+            text: "Generate an appropriate competency description based on the provided topic and grade level. Do not invent official MELC codes unless explicitly provided by the teacher.",
           },
 
           { type: "heading", level: 2, text: "III. Objectives" },
