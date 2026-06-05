@@ -462,6 +462,14 @@ This includes:
 - assessments
 - teacher notes
 
+Grade-Level Adaptation Requirement
+
+Adjust activities based on learner age and developmental level.
+
+Younger learners should receive more games, movement, visuals, storytelling, and guided activities.
+
+Older learners should receive more discussions, problem-solving, investigations, projects, analysis, and real-world applications.
+
 Do NOT leave any instructional content in English unless it is a proper noun, technical term, or curriculum code.`,
       `Topic / Subject: ${request.title}`,
       `Subject: ${request.subject}`,
@@ -478,15 +486,21 @@ Do NOT leave any instructional content in English unless it is a proper noun, te
       "Return only valid JSON. Do not include markdown, explanation, or media.",
       "Generate a complete classroom-ready lesson plan with every required section.",
       "Do not stop after the overview or objectives.",
-      `Minimum detail: 3 learning objectives, 3 materials, ${procedureSteps} procedure steps depends on the duration where in it is 30 minutes while less than 60 minutes of duration is 8 procedure steps else it will be 10, 2 assessment methods, and 2 teacher notes.`,
+      `Minimum detail: 3 to 5 learning objectives, 3 to 5 materials, ${procedureSteps} procedure steps depends on the duration where in it is 30 minutes while less than 60 minutes of duration is 8 procedure steps else it will be 10, 2 assessment methods, and 2 teacher notes.`,
       "Use exactly this top-level shape:",
       "Procedure requirements:",
       "- The Procedure section is the MOST IMPORTANT part of the lesson plan.",
       "- Generate detailed teacher-facing classroom procedures, not short labels.",
       "- Each procedure step must explain exactly what the teacher will do and what learners will do.",
       "- Include sample teacher questions, discussion prompts, instructions, and expected learner responses when appropriate.",
-      "- Procedures must follow a logical progression: motivation, lesson presentation, guided practice, collaborative activity, independent practice, checking for understanding, reflection, and closure.",
-      "- Each procedure step should contain 2-5 complete sentences.",
+      "- Design activities appropriate for the grade level, subject, topic, and lesson duration.",
+      "- Activities should be engaging, practical, and age-appropriate.",
+      "- Avoid repeating the same instructional sequence across different lesson plans.",
+      "- Select teaching strategies that naturally fit the topic being taught.",
+      "- At least 60% of procedure steps should involve active learner participation.",
+      "- Avoid generic phrases such as 'Discuss the lesson' or 'Conduct an activity'.",
+      "- Describe specific classroom actions, learner tasks, questions, or outputs.",
+      "- Each procedure step should contain 2-4 complete sentences.",
       "- Avoid generic steps such as 'Discuss the lesson' or 'Do an activity'.",
       "- Every procedure must be classroom-ready and actionable.",
       "- The Procedure section should contain approximately 50% of the lesson plan's total content.",
@@ -526,22 +540,17 @@ Do NOT leave any instructional content in English unless it is a proper noun, te
           {
             type: "list",
             style: "numbered",
-            items: [
-              "Begin the lesson with a motivating activity that activates prior knowledge and encourages participation.",
-              "Present the lesson content through guided discussion, examples, and questioning strategies.",
-              "Facilitate guided practice where learners apply the concept with teacher support and feedback.",
-              "Provide a collaborative activity that allows learners to discuss and demonstrate understanding.",
-              "Assign an independent task that requires learners to apply the new learning.",
-              "Check for understanding through questioning and observation.",
-              "Lead a reflection activity where learners summarize key insights.",
-              "Conclude the lesson with an exit activity and lesson synthesis.",
-            ],
+            items: ["string"],
           },
           { type: "heading", level: 2, text: "Assessment" },
           {
             type: "list",
             style: "bullet",
-            items: ["formative assessment", "summative or exit assessment"],
+            items: [
+              "formative assessment",
+              "summative or exit assessment",
+              "quiz assessment",
+            ],
           },
           { type: "heading", level: 2, text: "Teacher Notes" },
           {

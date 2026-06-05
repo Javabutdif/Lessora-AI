@@ -23,7 +23,9 @@ if (!mongoUri) {
       dbName: process.env.MONGODB_DBNAME,
     })
     .then(async () => {
-      console.log("MongoDB connected successfully");
+      console.log(
+        `MongoDB [${process.env.MONGODB_DBNAME}] connected successfully`,
+      );
 
       CreditRefreshScheduler.initialize();
     })
