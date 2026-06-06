@@ -354,6 +354,10 @@ function resolveLinkedPath(repoRoot, relativeOrAbsolutePath) {
 function validateTaskBrief(taskBrief, repoRoot) {
   const issues = [];
 
+  if (taskBrief.isAdHoc) {
+    return issues;
+  }
+
   if (!taskBrief.status) {
     issues.push(
       'Missing required field: status — add "- status: todo" under ## Current state',
