@@ -221,8 +221,16 @@ function resolveTaskBrief(repoRoot, taskArgument) {
 
   const taskBriefs = listTaskBriefs(repoRoot);
 
+  const fallbackTask = {
+    title: "Ad-hoc Task",
+    status: "active",
+    relativePath: "(no task brief)",
+    content: "",
+    isAdHoc: true,
+  };
+
   if (taskBriefs.length === 0) {
-    return null;
+    return fallbackTask;
   }
 
   const activeTasks = taskBriefs.filter(
@@ -237,20 +245,20 @@ function resolveTaskBrief(repoRoot, taskArgument) {
     console.warn(
       [
         "Multiple active task briefs found.",
-        "Proceeding without automatically selecting one.",
-        "Use --task to choose a specific task:",
+        "Proceeding in ad-hoc mode.",
+        "Use --task to select one explicitly:",
         ...activeTasks.map((task) => `- ${task.relativePath}`),
       ].join("\n"),
     );
 
-    return null;
+    return fallbackTask;
   }
 
   if (taskBriefs.length === 1) {
     return taskBriefs[0];
   }
 
-  return null;
+  return fallbackTask;
 }
 
 function buildPrompt(taskBrief, target) {
