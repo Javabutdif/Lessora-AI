@@ -1,65 +1,69 @@
-# Agent Index
+# AGENTS.md
 
-This file is the shared entrypoint for coding agents in this repository.
+This file is the primary instruction set for coding agents working in this repository.
 
-## Always read
+## Start Here
 
-- `docs/ai/commands.md`
-- `docs/ai/standards.md`
+Before making any changes, read:
 
-## Read when relevant
+1. `README.md` (source of truth for project context)
+2. `docs/ai/standards.md` (if it exists)
+3. Any files explicitly mentioned in the current task
 
-- `docs/ai/project-context.md` for product or business context
-- `docs/ai/architecture.md` for system shape and module boundaries
-- `docs/ai/future-work.md` for known gaps and deferred repo or product improvements
-- `docs/specs/` for approved behavior, architecture, or workflow specs
-- `docs/plans/` for approved implementation plans
-- `docs/ai/tasks/` for the current task brief and in-flight execution state
-- `docs/ai/subagents/README.md` when splitting work across roles
-- `docs/ai/decisions.md`
+Do not scan the entire repository unless necessary.
 
-## Core workflow
+## Working Principles
 
-1. Inspect the active task brief and its listed relevant files. Do not scan the entire workspace.
-2. Create or update a task brief in `docs/ai/tasks/` for every non-trivial change.
-3. Create or update a matching spec in `docs/specs/` and plan in `docs/plans/` before implementation when work changes behavior, architecture, workflow, or spans multiple steps.
-4. Automatically append an Architecture Decision Record (ADR) to `docs/ai/decisions.md` when introducing a new framework, dependency, or design pattern.
-5. Make the smallest change that solves the task clearly.
-6. Update docs when behavior, architecture, or workflow changes.
-7. Run the best available validation command from `docs/ai/commands.md`.
-8. Call out assumptions, blockers, and follow-up risks explicitly.
+- Keep solutions simple.
+- Do not overengineer.
+- Make the smallest change that solves the problem.
+- Prefer existing patterns over introducing new abstractions.
+- Avoid adding frameworks, dependencies, or architecture layers unless clearly justified.
+- Ask for clarification when requirements are unclear.
+- Do not invent requirements.
+
+## Implementation Workflow
+
+1. Read `README.md`.
+2. Understand the requested task.
+3. Inspect only the relevant files.
+4. Implement the simplest working solution.
+5. Run validation or tests if available.
+6. Summarize what changed.
+
+## Documentation
+
+Update documentation only when:
+
+- behavior changes
+- setup steps change
+- architecture changes
+- API contracts change
+
+Do not create extra documentation unless it provides clear value.
 
 ## Rules
 
-- do not overwrite user changes without approval
-- prefer clarity over cleverness
-- add or update tests when behavior changes
-- keep the task brief current so another tool or agent can resume work without hidden context
-- for behavior, architecture, workflow, or multi-step work, keep spec, plan, and task brief filenames aligned around the same date and topic when practical
-- use markdown checklists for multi-step plans and for in-flight task tracking when progress needs to be resumed by another tool or agent
-- keep commands reproducible and easy to run locally
-- record meaningful tradeoffs in `docs/ai/decisions.md`
+- Do not overwrite user changes without approval.
+- Preserve existing code style.
+- Keep code readable.
+- Prefer explicit code over clever code.
+- Add tests when modifying behavior that can reasonably be tested.
+- Call out assumptions and risks.
 
-## Subagent model
+## Architecture Guidance
 
-- use the role definitions in `docs/ai/subagents/` only when the task benefits from role splitting
-- split work by responsibility and file ownership
-- planner produces the required artifacts before parallel work starts
-- implementer, reviewer, and tester reference the same brief and linked spec or plan
-- if multiple agents work in parallel, give each a disjoint write scope
-- use `docs/ai/subagents/handoff-contract.md` for task handoffs
+When choosing between options:
 
-## Tool-specific adapters
+- Choose the simpler solution.
+- Choose fewer files over more files.
+- Choose fewer abstractions over more abstractions.
+- Introduce complexity only when there is a demonstrated need.
 
-- Claude Code: `CLAUDE.md`, `.claude/rules/`
-- Gemini CLI and Gemini-compatible tools: `GEMINI.md`
-- GitHub Copilot: `.github/copilot-instructions.md`, `.github/instructions/`, `.github/prompts/`
-- Antigravity: `.agent/`
-- Cursor: `.cursor/rules/`
-- Windsurf: `.windsurfrules`
-- Aider: `.aider.conf.yml`
-- Continue: `.continue/config.json`
-- OpenAI Codex: reads `AGENTS.md` natively
-- Agent skills (all tools that support agentskills.io): `skills/`, `.claude-plugin/marketplace.json`
+## Tool Adapters
 
-If a tool-specific file conflicts with this file, update the adapter so the shared guidance stays aligned here.
+If tool-specific instruction files exist (Claude, Cursor, Copilot, Gemini, Aider, etc.), keep them aligned with this file.
+
+When in doubt, follow:
+
+README.md → AGENTS.md → Tool-specific instructions

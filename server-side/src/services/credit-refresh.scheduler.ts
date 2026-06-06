@@ -49,7 +49,7 @@ export class CreditRefreshScheduler {
     if (now < refreshStartDate) {
       const delayMs = refreshStartDate.getTime() - now.getTime();
       console.log(
-        `Credit refresh scheduler will start on ${refreshStartDate.toISOString()}`,
+        `Credit refresh scheduler will start on ${refreshStartDate.toISOString().slice(0, 10)} UTC (in ${Math.round(delayMs / 1000)} seconds)`,
       );
       this.startTimeout = setTimeout(() => {
         this.startTimeout = null;

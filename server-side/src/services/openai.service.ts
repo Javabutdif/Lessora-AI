@@ -7,6 +7,7 @@
 import OpenAIConfig from "../config/openai.config";
 import { LessonPlan } from "../schemas/lesson.schema";
 import { User } from "../schemas/user.schema";
+import { createActivityLog } from "./activity-log.service";
 
 export interface GenerateLessonPlanRequest {
   title: string;
@@ -217,6 +218,21 @@ class OpenAIService {
       await this.refundResponseCredit(userId);
       throw error;
     }
+
+    void createActivityLog({
+      userId,
+      eventType: "lesson_plan_generated",
+      subject: request.subject,
+      metadata: {
+        lessonPlanId: savedPlan._id.toString(),
+        title: request.title,
+        gradeLevel: request.gradeLevel,
+        duration: request.duration,
+        templateId: request.templateId || "lessora-ai",
+      },
+    }).catch((error) => {
+      console.error("Failed to write lesson plan activity log:", error);
+    });
 
     return {
       success: true,

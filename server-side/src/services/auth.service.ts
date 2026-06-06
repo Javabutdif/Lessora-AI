@@ -2,6 +2,7 @@ import { LoginPayload, RegisterPayload } from "../schemas/auth.schema";
 import { User } from "../schemas/user.schema";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { createActivityLog } from "./activity-log.service";
 
 const JWT_EXPIRES_IN = "1h";
 
@@ -44,6 +45,13 @@ export async function registerUser({ name, email, password, school }: RegisterPa
     school: school || "",
   });
 
+  void createActivityLog({
+    eventType: "user_registration",
+    metadata: { email, school: school || "" },
+  }).catch((error) => {
+    console.error("Failed to write user registration log:", error);
+  });
+
   return true;
 }
 
@@ -71,6 +79,14 @@ export async function loginUser({ email, password }: LoginPayload) {
 
   user.lastLogin = new Date();
   await user.save();
+
+  void createActivityLog({
+    userId: user._id.toString(),
+    eventType: "user_login",
+    metadata: { email: user.email },
+  }).catch((error) => {
+    console.error("Failed to write user login log:", error);
+  });
 
   return { token, user: authUser };
 }

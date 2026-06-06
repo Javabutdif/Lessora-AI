@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import { config } from "dotenv";
 import path from "path";
 import { CreditRefreshScheduler } from "./services/credit-refresh.scheduler";
+import { ActivityReportScheduler } from "./services/activity-report.scheduler";
 import { checkAppVersion } from "./middleware/auth.middleware";
 
 config({ path: path.resolve(__dirname, "../.env") });
@@ -28,6 +29,7 @@ if (!mongoUri) {
       );
 
       CreditRefreshScheduler.initialize();
+      ActivityReportScheduler.initialize();
     })
     .catch((error) => {
       console.error("MongoDB connection failed:", error);

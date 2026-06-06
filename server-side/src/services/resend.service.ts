@@ -75,4 +75,12 @@ export const ResendService = {
       html,
     });
   },
+
+  async sendDailyReportEmail(to: string, subject: string, html: string) {
+    return this.send({
+      to,
+      subject,
+      html,
+    });
+  },
 };
