@@ -222,9 +222,7 @@ function resolveTaskBrief(repoRoot, taskArgument) {
   const taskBriefs = listTaskBriefs(repoRoot);
 
   if (taskBriefs.length === 0) {
-    throw new WorkflowError(
-      "No task briefs were found. Create a task brief or pass --task.",
-    );
+    return null;
   }
 
   const activeTasks = taskBriefs.filter(
@@ -236,21 +234,23 @@ function resolveTaskBrief(repoRoot, taskArgument) {
   }
 
   if (activeTasks.length > 1) {
-    const taskList = activeTasks
-      .map((task) => `- ${task.relativePath}`)
-      .join("\n");
-    throw new WorkflowError(
-      `Multiple active task briefs found:\n${taskList}\nUse --task to select one explicitly.`,
+    console.warn(
+      [
+        "Multiple active task briefs found.",
+        "Proceeding without automatically selecting one.",
+        "Use --task to choose a specific task:",
+        ...activeTasks.map((task) => `- ${task.relativePath}`),
+      ].join("\n"),
     );
+
+    return null;
   }
 
   if (taskBriefs.length === 1) {
     return taskBriefs[0];
   }
 
-  throw new WorkflowError(
-    "No active task brief found. Use --task to select one explicitly.",
-  );
+  return null;
 }
 
 function buildPrompt(taskBrief, target) {
