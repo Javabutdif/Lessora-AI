@@ -26,7 +26,10 @@ export const generateLessonPlanSchema = z.object({
 });
 
 export const refineLessonPlanSchema = z.object({
-  currentDraftText: z.string().min(10, "Current draft text is required"),
+  lessonPlanId: z.string().min(1, "Lesson plan id is required"),
+  selectedSections: z
+    .array(z.string().min(1))
+    .min(1, "Select at least one section to refine"),
   refinementRequest: z.string().min(3, "Refinement request is required"),
 });
 

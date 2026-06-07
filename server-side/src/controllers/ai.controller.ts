@@ -40,7 +40,8 @@ export async function refineLessonPlan(
     }
 
     const result = await openAIService.refineLessonPlan(
-      input.currentDraftText,
+      input.lessonPlanId,
+      input.selectedSections,
       input.refinementRequest,
       userId,
     );

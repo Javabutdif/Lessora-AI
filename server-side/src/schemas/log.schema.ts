@@ -3,7 +3,8 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 export type LogEventType =
   | "user_login"
   | "user_registration"
-  | "lesson_plan_generated";
+  | "lesson_plan_generated"
+  | "lesson_plan_refined";
 
 export interface ILog extends Document {
   _id: mongoose.Types.ObjectId;
@@ -26,7 +27,12 @@ const LogSchema = new Schema<ILog>(
     eventType: {
       type: String,
       required: true,
-      enum: ["user_login", "user_registration", "lesson_plan_generated"],
+      enum: [
+        "user_login",
+        "user_registration",
+        "lesson_plan_generated",
+        "lesson_plan_refined",
+      ],
       index: true,
     },
     subject: {

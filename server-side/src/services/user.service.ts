@@ -1,19 +1,22 @@
 import { User } from "../schemas/user.schema";
 import { LessonPlan } from "../schemas/lesson.schema";
-import { UpdateProfilePayload, UpdateSettingsPayload } from "../schemas/user.schema";
+import {
+  UpdateProfilePayload,
+  UpdateSettingsPayload,
+} from "../schemas/user.schema";
 
 export async function getUserAnalytics(userId: string) {
   // Fetch user to get total tokens allocated
   const user = await User.findById(userId);
-  
+
   if (!user) {
     throw new Error("User not found");
   }
 
   // Count total lesson plans created by the user
-  const totalPlans = await LessonPlan.countDocuments({ 
-    userId, 
-    generatedByAI: true 
+  const totalPlans = await LessonPlan.countDocuments({
+    userId,
+    generatedByAI: true,
   });
 
   // Calculate tokens used (each plan generation uses 1 credit)
@@ -22,9 +25,9 @@ export async function getUserAnalytics(userId: string) {
   const tokensUsed = totalPlans; // Each generation uses 1 token
 
   // Get recent activity (last 5 lesson plans)
-  const recentPlans = await LessonPlan.find({ 
-    userId, 
-    generatedByAI: true 
+  const recentPlans = await LessonPlan.find({
+    userId,
+    generatedByAI: true,
   })
     .sort({ createdAt: -1 })
     .limit(5)
@@ -51,15 +54,15 @@ export async function getUserAnalytics(userId: string) {
 
 export async function updateUserProfile(
   userId: string,
-  data: UpdateProfilePayload
+  data: UpdateProfilePayload,
 ) {
   // Check if email is being changed and if it's already taken
   if (data.email) {
-    const existingUser = await User.findOne({ 
+    const existingUser = await User.findOne({
       email: data.email,
-      _id: { $ne: userId }
+      _id: { $ne: userId },
     });
-    
+
     if (existingUser) {
       throw new Error("Email is already in use by another account");
     }
@@ -75,7 +78,7 @@ export async function updateUserProfile(
       school: data.school,
       bio: data.bio,
     },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   );
 
   if (!updatedUser) {
@@ -84,7 +87,7 @@ export async function updateUserProfile(
 
   // Return user data in the expected format
   const name = `${updatedUser.firstName} ${updatedUser.lastName}`.trim();
-  
+
   return {
     user: {
       id: updatedUser._id.toString(),
@@ -101,7 +104,7 @@ export async function updateUserProfile(
 
 export async function updateUserSettings(
   userId: string,
-  settings: UpdateSettingsPayload
+  settings: UpdateSettingsPayload,
 ) {
   // Update user settings
   const updatedUser = await User.findByIdAndUpdate(
@@ -113,7 +116,7 @@ export async function updateUserSettings(
         theme: settings.theme || "light",
       },
     },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   );
 
   if (!updatedUser) {

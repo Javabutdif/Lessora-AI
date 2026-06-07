@@ -89,12 +89,14 @@ export interface LessonPlanHistoryItem {
   totalDuration: number;
   updatedAt: Date;
   createdAt: Date;
+  templateId?: "lessora-ai" | "deped-semi-detailed";
 }
 
 export interface LessonPlanHistoryDetail extends LessonPlanHistoryItem {
   document: LessonPlanDocument;
   draftText: string;
   model?: string;
+  templateId?: "lessora-ai" | "deped-semi-detailed";
 }
 
 const lessonPlanningSignals = [
@@ -196,6 +198,7 @@ class OpenAIService {
     try {
       savedPlan = await LessonPlan.create({
         userId,
+        templateId: request.templateId || "lessora-ai",
         title: sections.title,
         description: sections.lessonOverview.slice(0, 1000),
         subject: sections.subject,
@@ -253,31 +256,131 @@ class OpenAIService {
   }
 
   async refineLessonPlan(
-    currentDraftText: string,
+    lessonPlanId: string,
+    selectedSections: string[],
     refinementRequest: string,
     userId: string,
   ): Promise<GenerateLessonPlanResponse> {
+    const lessonPlan = await LessonPlan.findOne({
+      _id: lessonPlanId,
+      userId,
+      generatedByAI: true,
+    });
+
+    if (!lessonPlan || !lessonPlan.aiDocument) {
+      throw new Error("Lesson plan was not found");
+    }
+
+    const templateId = lessonPlan.templateId || "lessora-ai";
     const scopeCheck = this.validateRequest(
-      `${currentDraftText} ${refinementRequest}`,
+      `${lessonPlan.title} ${lessonPlan.subject} ${lessonPlan.gradeLevel} ${refinementRequest} ${selectedSections.join(" ")}`,
     );
 
     if (!scopeCheck.isValid) {
       throw new Error(scopeCheck.reason ?? OpenAIConfig.refusalMessage);
     }
 
-    return this.generateLessonPlan(
+    this.validateRefinementSections(selectedSections, templateId);
+
+    if (!OpenAIConfig.apiKey) {
+      throw new Error("OpenAI API key is not configured");
+    }
+
+    const creditedUser = await this.reserveResponseCredit(userId);
+    const user = await User.findById(userId);
+    if (!user) {
+      await this.refundResponseCredit(userId);
+      throw new Error("User not found");
+    }
+
+    let document: LessonPlanDocument;
+
+    try {
+      document = await this.createRefinedDocumentWithOpenAI({
+        lessonPlan,
+        selectedSections,
+        refinementRequest,
+        templateId,
+      });
+    } catch (error) {
+      await this.refundResponseCredit(userId);
+      throw error;
+    }
+
+    const baseRequest: GenerateLessonPlanRequest = {
+      title: lessonPlan.title,
+      subject: lessonPlan.subject,
+      gradeLevel: lessonPlan.gradeLevel,
+      duration: lessonPlan.totalDuration || 60,
+      numberOfSessions: 1,
+      language: "english",
+      templateId,
+    };
+    const sections = this.sectionsFromDocument(baseRequest, document);
+    const draftText = this.formatStructuredDraft(sections);
+    const sessions = [
       {
-        title: "Refined Lesson Plan",
-        subject: "Teacher-provided subject",
-        gradeLevel: "Teacher-provided grade level",
-        duration: 60,
-        numberOfSessions: 1,
-        userDraftText: currentDraftText,
-        language: "english",
-        templateNotes: `Requested refinement: ${refinementRequest}`,
+        sessionNumber: 1,
+        title: sections.title,
+        duration: baseRequest.duration,
+        objectives: sections.learningObjectives,
+        content: sections.lessonOverview,
+        activities: this.activitiesFromProcedure(sections.procedure),
       },
-      userId,
+    ];
+
+    await LessonPlan.updateOne(
+      { _id: lessonPlanId, userId },
+      {
+        $set: {
+          title: sections.title,
+          description: sections.lessonOverview.slice(0, 1000),
+          subject: sections.subject,
+          gradeLevel: sections.gradeLevel,
+          draftText,
+          sessions: sessions.map((session, index) => ({
+            ...session,
+            order: index + 1,
+          })),
+          totalDuration: baseRequest.duration,
+          aiDocument: document,
+          aiModel: OpenAIConfig.model,
+          lastGeneratedAt: new Date(),
+          templateId,
+        },
+      },
     );
+
+    void createActivityLog({
+      userId,
+      eventType: "lesson_plan_refined",
+      subject: lessonPlan.subject,
+      metadata: {
+        lessonPlanId,
+        title: lessonPlan.title,
+        templateId,
+        selectedSections,
+      },
+    }).catch((error) => {
+      console.error("Failed to write lesson plan refinement activity log:", error);
+    });
+
+    return {
+      success: true,
+      lessonPlanId,
+      document,
+      draftText,
+      sections,
+      sessions,
+      model: OpenAIConfig.model,
+      role: OpenAIConfig.role,
+      remainingResponses: creditedUser.aiResponseCredits,
+      tokens: {
+        prompt: 0,
+        completion: 0,
+        total: 0,
+      },
+    };
   }
 
   async listRecentLessonPlans(
@@ -286,7 +389,9 @@ class OpenAIService {
     const plans = await LessonPlan.find({ userId, generatedByAI: true })
       .sort({ updatedAt: -1 })
       .limit(10)
-      .select("title subject gradeLevel totalDuration createdAt updatedAt")
+      .select(
+        "title subject gradeLevel totalDuration createdAt updatedAt templateId",
+      )
       .lean();
 
     return plans.map((plan) => ({
@@ -297,6 +402,7 @@ class OpenAIService {
       totalDuration: plan.totalDuration,
       createdAt: plan.createdAt,
       updatedAt: plan.updatedAt,
+      templateId: plan.templateId ?? "lessora-ai",
     }));
   }
 
@@ -325,7 +431,125 @@ class OpenAIService {
       document: plan.aiDocument as unknown as LessonPlanDocument,
       draftText: plan.draftText,
       model: plan.aiModel ?? undefined,
+      templateId: plan.templateId ?? "lessora-ai",
     };
+  }
+
+  private async createRefinedDocumentWithOpenAI(params: {
+    lessonPlan: any;
+    selectedSections: string[];
+    refinementRequest: string;
+    templateId: "lessora-ai" | "deped-semi-detailed";
+  }): Promise<LessonPlanDocument> {
+    const requestBody = {
+      model: OpenAIConfig.model,
+      temperature: OpenAIConfig.temperature,
+      max_output_tokens: OpenAIConfig.maxTokens,
+      input: [
+        {
+          role: "system",
+          content:
+            "You refine existing lesson plans. Preserve the structure and update only the requested sections.",
+        },
+        {
+          role: "user",
+          content: [
+            `Template: ${params.templateId}`,
+            `Lesson plan title: ${params.lessonPlan.title}`,
+            `Subject: ${params.lessonPlan.subject}`,
+            `Grade level: ${params.lessonPlan.gradeLevel}`,
+            `Selected sections: ${params.selectedSections.join(", ")}`,
+            `User instruction: ${params.refinementRequest}`,
+            "Current lesson plan JSON:",
+            JSON.stringify(params.lessonPlan.aiDocument),
+            "Return only valid JSON for the updated lesson plan document.",
+          ].join("\n"),
+        },
+      ],
+      text: {
+        format: {
+          type: "json_object",
+        },
+      },
+    };
+
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${OpenAIConfig.apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    const payload = await response.json();
+
+    if (!response.ok) {
+      const message =
+        payload?.error?.message || "OpenAI lesson plan refinement failed";
+      throw new Error(message);
+    }
+
+    const rawText = this.extractOpenAIText(payload);
+    const parsed = JSON.parse(rawText);
+    const normalizedBlocks = this.normalizeDocumentBlocks(parsed, {
+      title: params.lessonPlan.title,
+      subject: params.lessonPlan.subject,
+      gradeLevel: params.lessonPlan.gradeLevel,
+      duration: params.lessonPlan.totalDuration || 60,
+      numberOfSessions: 1,
+      language: "english",
+      templateId: params.templateId,
+    });
+    this.assertCompleteLessonPlan(normalizedBlocks, params.templateId);
+
+    return {
+      ...parsed,
+      type: "lesson_plan_document",
+      format: "json",
+      version: 1,
+      title: parsed?.title || params.lessonPlan.title,
+      blocks: normalizedBlocks,
+      exportTargets: OpenAIConfig.exportTargets,
+    };
+  }
+
+  private validateRefinementSections(
+    selectedSections: string[],
+    templateId: "lessora-ai" | "deped-semi-detailed",
+  ) {
+    const allowedSections =
+      templateId === "deped-semi-detailed"
+        ? [
+            "metadata",
+            "learning competencies",
+            "objectives",
+            "content",
+            "learning resources",
+            "procedure",
+            "assessment",
+            "assignment",
+            "remarks",
+            "reflection",
+          ]
+        : [
+            "overview",
+            "lesson overview",
+            "objectives",
+            "learning objectives",
+            "materials",
+            "procedure",
+            "assessment",
+            "teacher notes",
+          ];
+
+    const invalid = selectedSections.filter(
+      (section) => !allowedSections.includes(section.toLowerCase()),
+    );
+
+    if (invalid.length) {
+      throw new Error("One or more selected sections are invalid for this template.");
+    }
   }
 
   validateRequest(request: string): {

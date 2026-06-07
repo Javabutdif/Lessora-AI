@@ -13,6 +13,7 @@ import {
   getLessonPlanById,
   LessonPlanDocument,
   LessonPlanDocumentBlock,
+  LessonPlanTemplate,
 } from "../../services/api";
 import {
   exportLessonPlanDocumentToCache,
@@ -105,6 +106,12 @@ function renderEditableDocumentBlock(
 export default function LessonPlanPreviewScreen({ route, navigation }: Props) {
   const [editableDocument, setEditableDocument] =
     React.useState<LessonPlanDocument | null>(route.params.document ?? null);
+  const [lessonPlanId, setLessonPlanId] = React.useState(
+    route.params.lessonPlanId ?? "",
+  );
+  const [templateId, setTemplateId] = React.useState<LessonPlanTemplate>(
+    route.params.templateId ?? "lessora-ai",
+  );
   const [isLoading, setIsLoading] = React.useState(
     !route.params.document && Boolean(route.params.lessonPlanId),
   );
@@ -118,6 +125,8 @@ export default function LessonPlanPreviewScreen({ route, navigation }: Props) {
 
     if (route.params.document) {
       setEditableDocument(route.params.document);
+      setLessonPlanId(route.params.lessonPlanId ?? "");
+      setTemplateId(route.params.templateId ?? "lessora-ai");
       setIsLoading(false);
       return () => {
         isActive = false;
@@ -143,6 +152,8 @@ export default function LessonPlanPreviewScreen({ route, navigation }: Props) {
         }
 
         setEditableDocument(plan.document);
+        setLessonPlanId(lessonPlanId as string);
+        setTemplateId(plan.templateId ?? "lessora-ai");
         setIsLoading(false);
       } catch (error: any) {
         if (!isActive) {
@@ -269,6 +280,23 @@ export default function LessonPlanPreviewScreen({ route, navigation }: Props) {
     }
   };
 
+  const handleRefine = () => {
+    if (!editableDocument || !lessonPlanId) {
+      Toast.show({
+        type: "error",
+        text1: "Refine unavailable",
+        text2: "Open a saved lesson plan first.",
+      });
+      return;
+    }
+
+    navigation.navigate("Refine", {
+      lessonPlanId,
+      document: editableDocument,
+      templateId,
+    });
+  };
+
   const handleSelectFormat = (format: ExportFormat) => {
     switch (format) {
       case "pdf":
@@ -338,23 +366,35 @@ export default function LessonPlanPreviewScreen({ route, navigation }: Props) {
               <Text className="text-royal font-poppins-semi ml-1">Back</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              activeOpacity={0.75}
-              onPress={() => setIsEditingPreview((value) => !value)}
-              className="h-10 w-10 items-center justify-center rounded-full bg-soft-blue"
-              accessibilityRole="button"
-              accessibilityLabel={
-                isEditingPreview
-                  ? "Stop editing lesson plan"
-                  : "Edit lesson plan"
-              }
-            >
-              <Ionicons
-                name={isEditingPreview ? "checkmark-outline" : "pencil-outline"}
-                size={20}
-                color="#2F5BFF"
-              />
-            </TouchableOpacity>
+            <View className="flex-row items-center">
+              <TouchableOpacity
+                activeOpacity={0.75}
+                onPress={handleRefine}
+                className="h-10 w-10 items-center justify-center rounded-full bg-soft-blue mr-2"
+                accessibilityRole="button"
+                accessibilityLabel="Refine lesson plan"
+              >
+                <Ionicons name="sparkles-outline" size={20} color="#2F5BFF" />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={0.75}
+                onPress={() => setIsEditingPreview((value) => !value)}
+                className="h-10 w-10 items-center justify-center rounded-full bg-soft-blue"
+                accessibilityRole="button"
+                accessibilityLabel={
+                  isEditingPreview
+                    ? "Stop editing lesson plan"
+                    : "Edit lesson plan"
+                }
+              >
+                <Ionicons
+                  name={isEditingPreview ? "checkmark-outline" : "pencil-outline"}
+                  size={20}
+                  color="#2F5BFF"
+                />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <Text className="text-navy font-poppins-bold text-3xl mb-2">

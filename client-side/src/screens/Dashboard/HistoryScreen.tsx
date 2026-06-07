@@ -99,7 +99,7 @@ export default function HistoryScreen({ navigation }: Props) {
             onPress={() =>
               navigation.navigate("Generate", {
                 screen: "Preview",
-                params: { lessonPlanId: plan.id },
+                params: { lessonPlanId: plan.id, templateId: plan.templateId },
               })
             }
           >

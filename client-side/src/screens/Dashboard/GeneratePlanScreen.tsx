@@ -141,6 +141,7 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
       navigation.navigate("Preview", {
         lessonPlanId: result.lessonPlanId,
         document: result.document,
+        templateId: selectedTemplate,
       });
     } catch (error: any) {
       Toast.show({

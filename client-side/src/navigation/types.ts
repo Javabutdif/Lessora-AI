@@ -1,11 +1,17 @@
 import { NavigatorScreenParams } from "@react-navigation/native";
-import { LessonPlanDocument } from "../services/api";
+import { LessonPlanDocument, LessonPlanTemplate } from "../services/api";
 
 export type DashboardStackParamList = {
   Generate: { lessonPlanId?: string } | undefined;
   Preview: {
     lessonPlanId?: string;
     document?: LessonPlanDocument;
+    templateId?: LessonPlanTemplate;
+  };
+  Refine: {
+    lessonPlanId?: string;
+    document?: LessonPlanDocument;
+    templateId?: LessonPlanTemplate;
   };
 };
 

@@ -127,13 +127,23 @@ export type LessonPlanHistoryItem = {
   totalDuration: number;
   createdAt: string;
   updatedAt: string;
+  templateId?: LessonPlanTemplate;
 };
 
 export type LessonPlanHistoryDetail = LessonPlanHistoryItem & {
   document: LessonPlanDocument;
   draftText: string;
   model?: string;
+  templateId?: LessonPlanTemplate;
 };
+
+export type RefineLessonPlanPayload = {
+  lessonPlanId: string;
+  selectedSections: string[];
+  refinementRequest: string;
+};
+
+export type RefineLessonPlanResponse = GenerateLessonPlanResponse;
 
 export type UserAnalytics = {
   totalTokens: number;
@@ -330,6 +340,10 @@ export async function getLessonPlanById(lessonPlanId: string) {
   return requestGetData<LessonPlanHistoryDetail>(
     `/ai/lesson-plan/history/${lessonPlanId}`,
   );
+}
+
+export async function refineLessonPlan(payload: RefineLessonPlanPayload) {
+  return requestData<RefineLessonPlanResponse>("/ai/lesson-plan/refine", payload);
 }
 
 export async function getUserAnalytics() {
