@@ -82,6 +82,7 @@ export async function checkAppVersion(
   next: NextFunction,
 ) {
   const clientType = req.headers["x-client-type"];
+  const version: string = req.headers["x-app-version"];
 
   if (clientType === "web") {
     return next();
@@ -91,6 +92,7 @@ export async function checkAppVersion(
   console.log({
     clientType,
     buildNumber: req.header("X-Build-Number"),
+    version,
   });
   const config = await AppConfig.findOne({
     key: "app_config",
@@ -100,7 +102,10 @@ export async function checkAppVersion(
     return next();
   }
 
-  if (buildNumber < config.minimumBuildNumber) {
+  if (
+    buildNumber < config.minimumBuildNumber ||
+    version !== config.latestVersion
+  ) {
     return res.status(426).json({
       success: false,
       code: "UPDATE_REQUIRED",
