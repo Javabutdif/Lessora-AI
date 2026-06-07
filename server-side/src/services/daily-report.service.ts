@@ -15,18 +15,25 @@ type AggregatedMetrics = {
 
 type MetricCounts = Omit<AggregatedMetrics, "reportDate" | "windowStart" | "windowEnd">;
 
-const REPORT_EMAIL = "jamesgenabio31@gmail.com";
+type DailyReportAnalysis = {
+  summaryText: string;
+  detailedAnalysis: string;
+  highlights: string[];
+};
 
-function toPacificDayKey(date: Date) {
+const REPORT_EMAIL = "jamesgenabio31@gmail.com";
+const REPORT_TIME_ZONE = "Asia/Manila";
+
+function toReportDayKey(date: Date) {
   return date.toLocaleDateString("en-CA", {
-    timeZone: "America/Los_Angeles",
+    timeZone: REPORT_TIME_ZONE,
   });
 }
 
-function getPacificWindow(date: Date) {
-  const dayKey = toPacificDayKey(date);
-  const start = new Date(`${dayKey}T00:00:00-08:00`);
-  const end = new Date(`${dayKey}T23:59:59.999-08:00`);
+function getReportWindow(date: Date) {
+  const dayKey = toReportDayKey(date);
+  const start = new Date(`${dayKey}T00:00:00+08:00`);
+  const end = new Date(`${dayKey}T23:59:59.999+08:00`);
   return { dayKey, start, end };
 }
 
@@ -71,7 +78,10 @@ function buildPrompt(metric: MetricCounts, previousMetric?: MetricCounts) {
   return [
     "You are writing as the founder of Lessora AI.",
     "Keep the tone friendly, encouraging, and confident.",
-    "Return two sections: a short summary and a detailed analysis.",
+    "Return only valid JSON with these keys: summaryText, detailedAnalysis, highlights.",
+    "summaryText should be 1 short paragraph.",
+    "detailedAnalysis should be 2 short paragraphs.",
+    "highlights should be an array of 3 to 5 short bullet-style strings.",
     "Focus on trends, wins, risks, and practical next steps.",
     `Today's data: ${JSON.stringify(metric)}`,
     previousMetric
@@ -87,6 +97,7 @@ async function analyzeMetrics(metric: MetricCounts, previousMetric?: MetricCount
     return {
       summaryText: "OpenAI analysis is unavailable because OPENAI_API_KEY is not set.",
       detailedAnalysis: "",
+      highlights: [],
     };
   }
 
@@ -101,14 +112,18 @@ async function analyzeMetrics(metric: MetricCounts, previousMetric?: MetricCount
       input: [
         {
           role: "system",
-          content:
-            "You are the founder of Lessora AI writing a daily product and usage report.",
+          content: "You are the founder of Lessora AI writing a daily product and usage report. Return only JSON.",
         },
         {
           role: "user",
           content: buildPrompt(metric, previousMetric),
         },
       ],
+      text: {
+        format: {
+          type: "json_object",
+        },
+      },
       temperature: 0.4,
     }),
   });
@@ -132,16 +147,43 @@ async function analyzeMetrics(metric: MetricCounts, previousMetric?: MetricCount
     throw new Error("OpenAI returned an empty daily report response");
   }
 
+  let parsed: DailyReportAnalysis;
+
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    throw new Error("OpenAI returned an invalid daily report JSON response");
+  }
+
+  const summaryText = String(parsed?.summaryText || "").trim();
+  const detailedAnalysis = String(parsed?.detailedAnalysis || "").trim();
+  const highlights = Array.isArray(parsed?.highlights)
+    ? parsed.highlights.map((item) => String(item).trim()).filter(Boolean)
+    : [];
+
+  if (!summaryText || !detailedAnalysis) {
+    throw new Error("OpenAI returned an incomplete daily report JSON response");
+  }
+
   return {
-    summaryText: text,
-    detailedAnalysis: text,
+    summaryText,
+    detailedAnalysis,
+    highlights,
   };
 }
 
-function buildEmailHtml(reportDate: string, metric: MetricCounts, analysis: { summaryText: string; detailedAnalysis: string }) {
+function buildEmailHtml(
+  reportDate: string,
+  metric: MetricCounts,
+  analysis: DailyReportAnalysis,
+) {
   const subjectRows = Object.entries(metric.lessonPlansBySubject)
     .map(([subject, count]) => `<li><strong>${subject}</strong>: ${count}</li>`)
     .join("");
+
+  const highlightRows = analysis.highlights.length
+    ? analysis.highlights.map((item) => `<li>${item}</li>`).join("")
+    : "<li>No additional highlights</li>";
 
   return `
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827;">
@@ -160,15 +202,17 @@ function buildEmailHtml(reportDate: string, metric: MetricCounts, analysis: { su
       <p>${analysis.summaryText}</p>
       <h3>Detailed Analysis</h3>
       <p>${analysis.detailedAnalysis}</p>
+      <h3>Highlights</h3>
+      <ul>${highlightRows}</ul>
     </div>
   `;
 }
 
 export const DailyReportService = {
   async runForDate(now = new Date()) {
-    const { dayKey, start, end } = getPacificWindow(now);
+    const { dayKey, start, end } = getReportWindow(now);
     const previousDate = new Date(start.getTime() - 24 * 60 * 60 * 1000);
-    const previousWindow = getPacificWindow(previousDate);
+    const previousWindow = getReportWindow(previousDate);
 
     const [todayLogs, yesterdayLogs] = await Promise.all([
       LogEntry.find({ createdAt: { $gte: start, $lte: end } })

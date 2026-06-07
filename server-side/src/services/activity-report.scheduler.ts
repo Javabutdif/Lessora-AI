@@ -22,10 +22,10 @@ export class ActivityReportScheduler {
         }
       },
       {
-        timezone: "America/Los_Angeles",
+        timezone: "Asia/Manila",
       },
     );
 
-    console.log("Daily activity reporting scheduler started for 22:00 PST");
+    console.log("Daily activity reporting scheduler started for 22:00 Asia/Manila");
   }
 }
