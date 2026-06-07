@@ -51,6 +51,14 @@ const languageOptions = [
   { label: "English", value: "english" },
   { label: "Tagalog", value: "tagalog" },
 ];
+
+const templateLabels: Record<LessonPlanTemplate, { label: string; icon: string }> = {
+  "lessora-ai": { label: "Lessora AI Template", icon: "sparkles" },
+  "deped-semi-detailed": { label: "DepEd Semi-Detailed", icon: "document-text" },
+  "detailed-lesson-plan": { label: "Detailed Lesson Plan", icon: "document-text" },
+  "daily-lesson-log": { label: "Daily Lesson Log", icon: "calendar" },
+  "matatag": { label: "Matatag Curriculum Lesson Plan", icon: "school" },
+};
 export default function GeneratePlanScreen({ route, navigation }: Props) {
   const [topicSubject, setTopicSubject] = React.useState("");
   const [selectedGrade, setSelectedGrade] = React.useState("");
@@ -189,11 +197,7 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
               >
                 <View className="flex-row items-center flex-1">
                   <Ionicons
-                    name={
-                      selectedTemplate === "lessora-ai"
-                        ? "sparkles"
-                        : "document-text"
-                    }
+                    name={templateLabels[selectedTemplate].icon as keyof typeof Ionicons.glyphMap}
                     size={20}
                     color="#8E95B2"
                     style={{ marginRight: 10 }}
@@ -203,9 +207,7 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
                     numberOfLines={1}
                     style={{ color: "#111827" }}
                   >
-                    {selectedTemplate === "lessora-ai"
-                      ? "Lessora AI Template"
-                      : "DepEd Semi-Detailed"}
+                    {templateLabels[selectedTemplate].label}
                   </Text>
                 </View>
                 <Ionicons

@@ -112,6 +112,87 @@ export default function TemplateSelectionModal({
                 <Ionicons name="checkmark-circle" size={24} color="#2F5BFF" />
               )}
             </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => handleSelectTemplate("detailed-lesson-plan")}
+              className={`flex-row items-center p-4 mb-3 rounded-2xl border ${
+                selectedTemplate === "detailed-lesson-plan"
+                  ? "bg-soft-blue border-royal"
+                  : "bg-soft-blue border-royal/10"
+              }`}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel="Detailed Lesson Plan Template"
+            >
+              <View className="h-12 w-12 items-center justify-center rounded-xl bg-royal/10 mr-4">
+                <Ionicons name="document-text" size={24} color="#2F5BFF" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-navy font-poppins-semi text-base mb-1">
+                  Detailed Lesson Plan
+                </Text>
+                <Text className="text-secondary font-poppins text-xs">
+                  Reference-based detailed lesson plan format
+                </Text>
+              </View>
+              {selectedTemplate === "detailed-lesson-plan" && (
+                <Ionicons name="checkmark-circle" size={24} color="#2F5BFF" />
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => handleSelectTemplate("daily-lesson-log")}
+              className={`flex-row items-center p-4 mb-3 rounded-2xl border ${
+                selectedTemplate === "daily-lesson-log"
+                  ? "bg-soft-blue border-royal"
+                  : "bg-soft-blue border-royal/10"
+              }`}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel="Daily Lesson Log Template"
+            >
+              <View className="h-12 w-12 items-center justify-center rounded-xl bg-royal/10 mr-4">
+                <Ionicons name="calendar" size={24} color="#2F5BFF" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-navy font-poppins-semi text-base mb-1">
+                  Daily Lesson Log
+                </Text>
+                <Text className="text-secondary font-poppins text-xs">
+                  JSON-based daily log structure
+                </Text>
+              </View>
+              {selectedTemplate === "daily-lesson-log" && (
+                <Ionicons name="checkmark-circle" size={24} color="#2F5BFF" />
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => handleSelectTemplate("matatag")}
+              className={`flex-row items-center p-4 rounded-2xl border ${
+                selectedTemplate === "matatag"
+                  ? "bg-soft-blue border-royal"
+                  : "bg-soft-blue border-royal/10"
+              }`}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel="Matatag Curriculum Lesson Plan Template"
+            >
+              <View className="h-12 w-12 items-center justify-center rounded-xl bg-royal/10 mr-4">
+                <Ionicons name="school" size={24} color="#2F5BFF" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-navy font-poppins-semi text-base mb-1">
+                  Matatag Curriculum Lesson Plan
+                </Text>
+                <Text className="text-secondary font-poppins text-xs">
+                  JSON-based Matatag curriculum format
+                </Text>
+              </View>
+              {selectedTemplate === "matatag" && (
+                <Ionicons name="checkmark-circle" size={24} color="#2F5BFF" />
+              )}
+            </TouchableOpacity>
           </View>
         </Pressable>
       </Pressable>

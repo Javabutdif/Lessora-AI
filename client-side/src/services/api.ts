@@ -43,7 +43,12 @@ export type LoginResponse = {
   user: AuthUser;
 };
 
-export type LessonPlanTemplate = "lessora-ai" | "deped-semi-detailed";
+export type LessonPlanTemplate =
+  | "lessora-ai"
+  | "deped-semi-detailed"
+  | "detailed-lesson-plan"
+  | "daily-lesson-log"
+  | "matatag";
 
 export type GenerateLessonPlanPayload = {
   title: string;

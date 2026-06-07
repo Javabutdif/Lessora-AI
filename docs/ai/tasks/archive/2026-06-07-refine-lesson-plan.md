@@ -25,19 +25,19 @@
 
 ## Current state
 
-- status: in progress
+- status: completed
 - current owner: codex
-- next action: run validation and fix any TypeScript or runtime issues in the refine flow
+- next action: none
 - blockers: none
 
 ## Progress checklist
 
-- [ ] confirm the refine flow and section labels for each template
-- [ ] confirm the backend route or mode for AI refinement
-- [ ] confirm the refine action consumes `aiResponseCredits`
-- [ ] implement the new refine route and screen
-- [ ] implement the backend refinement controller/service path
-- [ ] wire the refinement request and preview update flow
+- [x] confirm the refine flow and section labels for each template
+- [x] confirm the backend route or mode for AI refinement
+- [x] confirm the refine action consumes `aiResponseCredits`
+- [x] implement the new refine route and screen
+- [x] implement the backend refinement controller/service path
+- [x] wire the refinement request and preview update flow
 
 ## Scope
 
@@ -65,13 +65,13 @@
 
 ## Acceptance criteria
 
-- [ ] preview screen shows a refine action
-- [ ] refine screen lets the user choose multiple template-aware sections using checkboxes
-- [ ] user can enter one refinement instruction prompt
-- [ ] backend validates the authenticated owner and template-specific section selection
-- [ ] backend decrements `aiResponseCredits` after a successful refine
-- [ ] backend returns the refined lesson plan document using the existing API style
-- [ ] refined lesson plan replaces the current preview content after success
+- [x] preview screen shows a refine action
+- [x] refine screen lets the user choose multiple template-aware sections using checkboxes
+- [x] user can enter one refinement instruction prompt
+- [x] backend validates the authenticated owner and template-specific section selection
+- [x] backend decrements `aiResponseCredits` after a successful refine
+- [x] backend returns the refined lesson plan document using the existing API style
+- [x] refined lesson plan replaces the current preview content after success
 
 ## Validation
 

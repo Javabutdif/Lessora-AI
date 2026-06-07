@@ -40,6 +40,21 @@ const templateOptions: {
     value: "deped-semi-detailed",
     description: "Official DepEd format for Philippines",
   },
+  {
+    label: "Detailed Lesson Plan",
+    value: "detailed-lesson-plan",
+    description: "Reference-based detailed lesson plan format",
+  },
+  {
+    label: "Daily Lesson Log",
+    value: "daily-lesson-log",
+    description: "JSON-based daily log structure",
+  },
+  {
+    label: "Matatag Curriculum Lesson Plan",
+    value: "matatag",
+    description: "JSON-based Matatag curriculum format",
+  },
 ];
 
 const languageOptions = [

@@ -330,7 +330,12 @@ export async function resetPassword(token: string, newPassword: string) {
 // LESSON PLAN APIs
 // ============================================
 
-export type LessonPlanTemplate = "lessora-ai" | "deped-semi-detailed";
+export type LessonPlanTemplate =
+  | "lessora-ai"
+  | "deped-semi-detailed"
+  | "detailed-lesson-plan"
+  | "daily-lesson-log"
+  | "matatag";
 
 export type GenerateLessonPlanPayload = {
   title: string;

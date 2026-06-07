@@ -21,7 +21,13 @@ export const generateLessonPlanSchema = z.object({
   language: z.string().min(2).max(50).default("english"),
   templateNotes: z.string().max(4000).optional(),
   templateId: z
-    .enum(["lessora-ai", "deped-semi-detailed"])
+    .enum([
+      "lessora-ai",
+      "deped-semi-detailed",
+      "detailed-lesson-plan",
+      "daily-lesson-log",
+      "matatag",
+    ])
     .default("lessora-ai"),
 });
 

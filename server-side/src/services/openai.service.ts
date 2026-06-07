@@ -8,6 +8,7 @@ import OpenAIConfig from "../config/openai.config";
 import { LessonPlan } from "../schemas/lesson.schema";
 import { User } from "../schemas/user.schema";
 import { createActivityLog } from "./activity-log.service";
+import { buildTemplatePrompt } from "./template-prompts";
 
 export interface GenerateLessonPlanRequest {
   title: string;
@@ -18,7 +19,12 @@ export interface GenerateLessonPlanRequest {
   userDraftText?: string;
   language: string;
   templateNotes?: string;
-  templateId?: "lessora-ai" | "deped-semi-detailed";
+  templateId?:
+    | "lessora-ai"
+    | "deped-semi-detailed"
+    | "detailed-lesson-plan"
+    | "daily-lesson-log"
+    | "matatag";
 }
 
 export type LessonPlanDocumentBlock =
@@ -89,14 +95,24 @@ export interface LessonPlanHistoryItem {
   totalDuration: number;
   updatedAt: Date;
   createdAt: Date;
-  templateId?: "lessora-ai" | "deped-semi-detailed";
+  templateId?:
+    | "lessora-ai"
+    | "deped-semi-detailed"
+    | "detailed-lesson-plan"
+    | "daily-lesson-log"
+    | "matatag";
 }
 
 export interface LessonPlanHistoryDetail extends LessonPlanHistoryItem {
   document: LessonPlanDocument;
   draftText: string;
   model?: string;
-  templateId?: "lessora-ai" | "deped-semi-detailed";
+  templateId?:
+    | "lessora-ai"
+    | "deped-semi-detailed"
+    | "detailed-lesson-plan"
+    | "daily-lesson-log"
+    | "matatag";
 }
 
 const lessonPlanningSignals = [
@@ -439,7 +455,12 @@ class OpenAIService {
     lessonPlan: any;
     selectedSections: string[];
     refinementRequest: string;
-    templateId: "lessora-ai" | "deped-semi-detailed";
+    templateId:
+      | "lessora-ai"
+      | "deped-semi-detailed"
+      | "detailed-lesson-plan"
+      | "daily-lesson-log"
+      | "matatag";
   }): Promise<LessonPlanDocument> {
     const requestBody = {
       model: OpenAIConfig.model,
@@ -516,8 +537,17 @@ class OpenAIService {
 
   private validateRefinementSections(
     selectedSections: string[],
-    templateId: "lessora-ai" | "deped-semi-detailed",
+    templateId:
+      | "lessora-ai"
+      | "deped-semi-detailed"
+      | "detailed-lesson-plan"
+      | "daily-lesson-log"
+      | "matatag",
   ) {
+    if (templateId !== "lessora-ai" && templateId !== "deped-semi-detailed") {
+      return;
+    }
+
     const allowedSections =
       templateId === "deped-semi-detailed"
         ? [
@@ -676,11 +706,31 @@ class OpenAIService {
   private buildTeacherPrompt(request: GenerateLessonPlanRequest, user: any) {
     const templateId = request.templateId || "lessora-ai";
 
+    if (templateId === "lessora-ai") {
+      return this.buildLessoraAIPrompt(request);
+    }
+
     if (templateId === "deped-semi-detailed") {
       return this.buildDepEdPrompt(request, user);
     }
 
-    return this.buildLessoraAIPrompt(request);
+    return buildTemplatePrompt(request, user);
+  }
+
+  private buildGradeLevelAdaptationRequirement() {
+    return [
+      `Grade-Level Adaptation Requirement`,
+      ``,
+      `Adjust activities based on learner age and developmental level.`,
+      ``,
+      `Younger learners should receive more games, movement, visuals, storytelling, and guided activities.`,
+      ``,
+      `Older learners should receive more discussions, problem-solving, investigations, projects, analysis, and real-world applications.`,
+      ``,
+      `Do NOT leave any instructional content in English unless it is a proper noun, technical term, or curriculum code.`,
+      ``,
+      `Apply this rule to every part of the lesson plan, including the headings, explanations, procedures, assessments, and teacher notes.`,
+    ].join("\n");
   }
 
   private buildLessoraAIPrompt(request: GenerateLessonPlanRequest) {
@@ -702,15 +752,8 @@ This includes:
 - assessments
 - teacher notes
 
-Grade-Level Adaptation Requirement
-
-Adjust activities based on learner age and developmental level.
-
-Younger learners should receive more games, movement, visuals, storytelling, and guided activities.
-
-Older learners should receive more discussions, problem-solving, investigations, projects, analysis, and real-world applications.
-
-Do NOT leave any instructional content in English unless it is a proper noun, technical term, or curriculum code.`,
+${this.buildGradeLevelAdaptationRequirement()}`,
+      `Do not copy any sample procedure pattern literally; tailor the procedure sequence to the topic, subject, and grade level.`,
       `Topic / Subject: ${request.title}`,
       `Subject: ${request.subject}`,
       `Grade Level: ${request.gradeLevel}`,
@@ -815,6 +858,7 @@ Do NOT leave any instructional content in English unless it is a proper noun, te
 
     return [
       `Generate a DepEd Semi-Detailed Lesson Plan following the Philippine Department of Education format.`,
+      this.buildGradeLevelAdaptationRequirement(),
       ``,
       `CRITICAL ANTI-HALLUCINATION RULES:`,
       `1. DO NOT invent or make up any information`,
@@ -825,6 +869,7 @@ Do NOT leave any instructional content in English unless it is a proper noun, te
       `6. All procedure steps must be COMPLETE and ACTIONABLE`,
       `7. All assessment questions must be REAL and GRADE-APPROPRIATE`,
       `8. All content must be in ${request.language || "English"} event the blocks themselves must be in the specified language`,
+      `9. The procedure sequence must be tailored to the lesson topic and grade level, not copied from a fixed pattern.`,
       ``,
       `ACTUAL DATA TO USE:`,
       `Topic / Subject: ${request.title}`,
@@ -1063,7 +1108,7 @@ Do NOT leave any instructional content in English unless it is a proper noun, te
     parsed: any,
     request: GenerateLessonPlanRequest,
   ): LessonPlanDocumentBlock[] {
-    const sourceBlocks = Array.isArray(parsed?.blocks)
+    const sourceBlocks = Array.isArray(parsed?.blocks) && parsed.blocks.length
       ? parsed.blocks
       : this.blocksFromSectionObject(parsed, request);
 
@@ -1113,10 +1158,15 @@ Do NOT leave any instructional content in English unless it is a proper noun, te
 
   private assertCompleteLessonPlan(
     blocks: LessonPlanDocumentBlock[],
-    templateId?: "lessora-ai" | "deped-semi-detailed",
+    templateId?:
+      | "lessora-ai"
+      | "deped-semi-detailed"
+      | "detailed-lesson-plan"
+      | "daily-lesson-log"
+      | "matatag",
   ) {
     // Skip validation for DepEd template as it has different structure
-    if (templateId === "deped-semi-detailed") {
+    if (templateId !== "lessora-ai") {
       // Just check that we have some blocks
       if (!blocks.length) {
         throw new Error("OpenAI returned an empty lesson plan.");
@@ -1159,14 +1209,34 @@ Do NOT leave any instructional content in English unless it is a proper noun, te
       sections?.lessonOverview ||
       sections?.overview ||
       sections?.description ||
+      sections?.content ||
       "";
     const objectives =
-      sections?.learningObjectives || sections?.objectives || [];
-    const materials = sections?.materials || [];
-    const procedure = sections?.procedure || sections?.activities || [];
-    const assessment = sections?.assessment || sections?.assessments || [];
+      sections?.learningObjectives ||
+      sections?.objectives ||
+      sections?.contentStandard ||
+      [];
+    const materials =
+      sections?.materials ||
+      sections?.learningResources ||
+      sections?.resources ||
+      [];
+    const procedure =
+      sections?.procedure ||
+      sections?.procedures ||
+      sections?.teachingAndLearningProcedure ||
+      sections?.lessonProper ||
+      sections?.activities ||
+      [];
+    const assessment =
+      sections?.assessment || sections?.evaluation || sections?.assessments || [];
     const teacherNotes =
-      sections?.teacherNotes || sections?.notes || sections?.reminders || [];
+      sections?.teacherNotes ||
+      sections?.remarks ||
+      sections?.reflection ||
+      sections?.notes ||
+      sections?.reminders ||
+      [];
 
     return [
       { type: "heading", level: 1, text: title },

@@ -23,7 +23,12 @@ export interface ISession {
 export interface ILessonPlan extends Document {
   _id: mongoose.Types.ObjectId;
   userId: Types.ObjectId; // Reference to User
-  templateId?: "lessora-ai" | "deped-semi-detailed";
+  templateId?:
+    | "lessora-ai"
+    | "deped-semi-detailed"
+    | "detailed-lesson-plan"
+    | "daily-lesson-log"
+    | "matatag";
   title: string;
   description: string;
   subject: string;
@@ -94,7 +99,13 @@ const LessonPlanSchema = new Schema<ILessonPlan>(
     },
     templateId: {
       type: String,
-      enum: ["lessora-ai", "deped-semi-detailed"],
+      enum: [
+        "lessora-ai",
+        "deped-semi-detailed",
+        "detailed-lesson-plan",
+        "daily-lesson-log",
+        "matatag",
+      ],
       default: "lessora-ai",
     },
     title: {

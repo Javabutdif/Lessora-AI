@@ -41,6 +41,30 @@ const templateOptions: Record<LessonPlanTemplate, RefineOption[]> = {
     { key: "remarks", label: "Remarks" },
     { key: "reflection", label: "Reflection" },
   ],
+  "detailed-lesson-plan": [
+    { key: "objectives", label: "Objectives" },
+    { key: "content", label: "Content" },
+    { key: "learning resources", label: "Learning Resources" },
+    { key: "procedure", label: "Procedures" },
+    { key: "evaluation", label: "Evaluation" },
+    { key: "reflection", label: "Reflection" },
+  ],
+  "daily-lesson-log": [
+    { key: "objectives", label: "Objectives" },
+    { key: "content", label: "Content" },
+    { key: "learning resources", label: "Learning Resources" },
+    { key: "procedures", label: "Procedures" },
+    { key: "evaluation", label: "Evaluation" },
+    { key: "remarks", label: "Remarks" },
+    { key: "reflection", label: "Reflection" },
+  ],
+  matatag: [
+    { key: "curriculum content", label: "Curriculum Content" },
+    { key: "learning resources", label: "Learning Resources" },
+    { key: "teaching and learning procedure", label: "Teaching and Learning Procedure" },
+    { key: "evaluating learning", label: "Evaluating Learning" },
+    { key: "reflection", label: "Reflection" },
+  ],
 };
 
 function getTemplateId(
