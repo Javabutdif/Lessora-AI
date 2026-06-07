@@ -235,7 +235,7 @@ async function requestData<T>(path: string, body: unknown): Promise<T> {
 
     if (!response.ok) {
       if (response.status === 426) {
-        throw new Error("UPDATE_REQUIRED");
+        throw new Error("Need to update the app to continue using the service");
       }
 
       throw new Error(payload?.error?.message || "Request failed");
@@ -348,7 +348,10 @@ export async function getLessonPlanById(lessonPlanId: string) {
 }
 
 export async function refineLessonPlan(payload: RefineLessonPlanPayload) {
-  return requestData<RefineLessonPlanResponse>("/ai/lesson-plan/refine", payload);
+  return requestData<RefineLessonPlanResponse>(
+    "/ai/lesson-plan/refine",
+    payload,
+  );
 }
 
 export async function getUserAnalytics() {
