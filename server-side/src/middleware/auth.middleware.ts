@@ -82,7 +82,7 @@ export async function checkAppVersion(
   next: NextFunction,
 ) {
   const clientType = req.headers["x-client-type"];
-  const version: string = req.headers["x-app-version"];
+  const version = req.headers["x-app-version"];
 
   if (clientType === "web") {
     return next();
