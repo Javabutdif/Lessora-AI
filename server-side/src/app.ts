@@ -11,6 +11,7 @@ import path from "path";
 import { CreditRefreshScheduler } from "./services/credit-refresh.scheduler";
 import { ActivityReportScheduler } from "./services/activity-report.scheduler";
 import { checkAppVersion } from "./middleware/auth.middleware";
+import { createRateLimitMiddleware } from "./middleware/rate-limit.middleware";
 
 config({ path: path.resolve(__dirname, "../.env") });
 
@@ -42,10 +43,40 @@ app.use(express.json());
 
 app.use(checkAppVersion);
 
+const apiRateLimit = createRateLimitMiddleware({
+  windowMs: 60_000,
+  maxRequests: 120,
+  keyPrefix: "api",
+});
+
+const authWriteRateLimit = createRateLimitMiddleware({
+  windowMs: 60_000,
+  maxRequests: 20,
+  keyPrefix: "auth-write",
+});
+
+const authRecoveryRateLimit = createRateLimitMiddleware({
+  windowMs: 60_000,
+  maxRequests: 10,
+  keyPrefix: "auth-recovery",
+});
+
+const aiRateLimit = createRateLimitMiddleware({
+  windowMs: 60_000,
+  maxRequests: 30,
+  keyPrefix: "ai",
+});
+
+app.use("/api/auth", apiRateLimit);
+app.use("/api/auth/login", authWriteRateLimit);
+app.use("/api/auth/register", authWriteRateLimit);
+app.use("/api/auth/forgot-password", authRecoveryRateLimit);
+app.use("/api/auth/reset-password", authRecoveryRateLimit);
+app.use("/api/auth/verify-reset-token", authRecoveryRateLimit);
 app.use("/api/auth", authRouter);
-app.use("/api/ai", aiRouter);
-app.use("/api/admin", adminRouter);
-app.use("/api/user", userRouter);
+app.use("/api/ai", apiRateLimit, aiRateLimit, aiRouter);
+app.use("/api/admin", apiRateLimit, adminRouter);
+app.use("/api/user", apiRateLimit, userRouter);
 
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
