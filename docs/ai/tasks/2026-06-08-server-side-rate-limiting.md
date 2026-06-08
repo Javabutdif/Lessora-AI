@@ -15,7 +15,7 @@
 
 - task: add rate limiting to server-side API routes
 - requested outcome: protect auth, user, admin, and AI endpoints with simple request throttling
-- primary constraint: keep the solution lightweight and avoid introducing new dependencies
+- primary constraint: keep the solution lightweight while using standard rate-limit tooling
 
 ## Linked artifacts
 
@@ -24,16 +24,16 @@
 
 ## Current state
 
-- status: in progress
+- status: completed
 - current owner: Codex
-- next action: verify the auth-specific write limits and keep the API-wide limiter in place
+- next action: none
 - blockers: none
 
 ## Progress checklist
 
 - [x] confirm the route groups that need coverage
 - [x] implement the middleware and apply it to the server routes
-- [ ] run type-check validation
+- [x] run type-check validation
 
 ## Scope
 
@@ -59,7 +59,7 @@
 
 ## Acceptance criteria
 
-- requests to the API route groups are throttled with a simple in-memory limit
+- requests to the API route groups are throttled with a standard rate-limit setup
 - auth login, registration, and password reset traffic stay protected without overcomplicating the code
 - existing behavior for healthy traffic remains unchanged
 
@@ -69,7 +69,7 @@
 
 ## Risks or dependencies
 
-- risk: in-memory counters reset on process restart
+- risk: limiter behavior is still process-local, so it is not shared across multiple instances
 - dependency: route coverage stays aligned with the current API structure
 
 ## Handoff notes
