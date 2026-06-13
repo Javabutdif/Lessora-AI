@@ -11,6 +11,8 @@ import { fetchLandingMetrics } from "../services/api";
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const downloadAppUrl =
+    "https://drive.google.com/file/d/1TUuA2d4tPZgIRkVijq2JUuDn7CO_W3Z_/view?usp=drive_link";
   const { data: landingMetrics } = useQuery({
     queryKey: ["landingMetrics"],
     queryFn: fetchLandingMetrics,
@@ -121,37 +123,62 @@ export default function LandingPage() {
         </div>
         <div
           style={{
+            width: "100%",
+            maxWidth: "560px",
+            margin: "0 auto",
+            padding: "18px",
+            borderRadius: "18px",
+            background: "rgba(255, 255, 255, 0.72)",
+            border: "1px solid #dbe4f0",
+            boxShadow: "0 12px 28px rgba(15, 23, 42, 0.05)",
             display: "flex",
-            gap: "16px",
-            flexWrap: "wrap",
-            justifyContent: "center",
+            flexDirection: "column",
+            gap: "12px",
           }}
         >
-          <button
-            onClick={() => navigate("/login")}
+          <p
             style={{
-              padding: "14px 28px",
-              borderRadius: "10px",
+              margin: 0,
+              color: "#7c3aed",
+              fontSize: "12px",
+              fontWeight: "800",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+            }}
+          >
+            Start here
+          </p>
+          <a
+            href={downloadAppUrl}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              width: "100%",
+              padding: "15px 24px",
+              borderRadius: "14px",
               border: "none",
               background: "linear-gradient(135deg, #3b82f6 0%, #7c3aed 100%)",
               color: "#fff",
               fontWeight: "700",
+              textDecoration: "none",
+              textAlign: "center",
+              boxShadow: "0 12px 24px rgba(124, 58, 237, 0.18)",
             }}
           >
-            Login
-          </button>
+            Download App
+          </a>
           <button
-            onClick={() => navigate("/register")}
+            onClick={() => navigate("/login")}
             style={{
-              padding: "14px 28px",
-              borderRadius: "10px",
-              border: "1px solid #bfdbfe",
-              background: "#eff6ff",
-              color: "#1d4ed8",
+              padding: "14px 20px",
+              borderRadius: "14px",
+              border: "1px solid #c4b5fd",
+              background: "#f5f3ff",
+              color: "#6d28d9",
               fontWeight: "700",
             }}
           >
-            Create Account
+            Login
           </button>
         </div>
         <div
@@ -196,7 +223,7 @@ export default function LandingPage() {
               <div
                 style={{
                   fontSize: "28px",
-                  color: "#2563eb",
+                  color: "#7c3aed",
                   marginBottom: "10px",
                 }}
               >
@@ -217,6 +244,44 @@ export default function LandingPage() {
             </div>
           ))}
         </div>
+        <section
+          style={{
+            textAlign: "left",
+            padding: "26px",
+            borderRadius: "18px",
+            background: "#fff",
+            border: "1px solid #dbe4f0",
+            boxShadow: "0 12px 28px rgba(15, 23, 42, 0.05)",
+          }}
+        >
+          <p
+            style={{
+              margin: "0 0 8px",
+              color: "#3b82f6",
+              fontSize: "12px",
+              fontWeight: "800",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+            }}
+          >
+            Android App
+          </p>
+          <h2
+            style={{
+              margin: "0 0 10px",
+              fontSize: "24px",
+              fontWeight: "900",
+              color: "#0f172a",
+            }}
+          >
+            Built for teachers on the go
+          </h2>
+          <p style={{ margin: 0, color: "#475569", lineHeight: "1.7" }}>
+            The Android app helps you export lesson plan documents and refine
+            lesson plan generation when you need quick updates from your mobile
+            device.
+          </p>
+        </section>
         <div
           style={{
             display: "grid",
