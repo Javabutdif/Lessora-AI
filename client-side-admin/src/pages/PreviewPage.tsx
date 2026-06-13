@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { FaBookOpen, FaClock, FaExclamationTriangle, FaHistory, FaPlus, FaSpinner, FaUser } from "react-icons/fa";
 import {
   getLessonPlanById,
   getCurrentUser,
@@ -16,17 +17,14 @@ export default function PreviewPage() {
   const user = getCurrentUser();
 
   useEffect(() => {
-    if (id) {
-      loadPlan(id);
-    }
+    if (id) loadPlan(id);
   }, [id]);
 
   async function loadPlan(planId: string) {
     try {
       setIsLoading(true);
       setError("");
-      const fetchedPlan = await getLessonPlanById(planId);
-      setPlan(fetchedPlan);
+      setPlan(await getLessonPlanById(planId));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load lesson plan");
     } finally {
@@ -43,15 +41,15 @@ export default function PreviewPage() {
     if (block.type === "heading") {
       const HeadingTag = `h${block.level}` as keyof JSX.IntrinsicElements;
       const fontSize = block.level === 1 ? "28px" : block.level === 2 ? "22px" : "18px";
-      const marginTop = index === 0 ? "0" : "24px";
       return (
         <HeadingTag
           key={index}
           style={{
-            margin: `${marginTop} 0 12px`,
+            margin: index === 0 ? "0 0 14px" : "28px 0 12px",
             fontSize,
-            fontWeight: "700",
-            color: "#f3f4f6",
+            fontWeight: 800,
+            color: "#0f172a",
+            letterSpacing: "-0.02em",
           }}
         >
           {block.text}
@@ -65,9 +63,9 @@ export default function PreviewPage() {
           key={index}
           style={{
             margin: "0 0 16px",
-            fontSize: "15px",
-            lineHeight: "1.7",
-            color: "rgba(255,255,255,0.85)",
+            fontSize: "16px",
+            lineHeight: "1.8",
+            color: "#334155",
           }}
         >
           {block.text}
@@ -81,11 +79,11 @@ export default function PreviewPage() {
         <ListTag
           key={index}
           style={{
-            margin: "0 0 16px",
-            paddingLeft: "24px",
-            fontSize: "15px",
-            lineHeight: "1.7",
-            color: "rgba(255,255,255,0.85)",
+            margin: "0 0 18px",
+            paddingLeft: "22px",
+            fontSize: "16px",
+            lineHeight: "1.8",
+            color: "#334155",
           }}
         >
           {block.items.map((item: string, itemIndex: number) => (
@@ -101,69 +99,72 @@ export default function PreviewPage() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1425 100%)",
-        color: "#fff",
-      }}
-    >
-      {/* Header */}
+    <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%)", color: "#0f172a" }}>
       <div
         style={{
-          background: "rgba(5,11,22,0.6)",
-          borderBottom: "1px solid rgba(148,163,184,0.1)",
+          background: "rgba(255,255,255,0.82)",
+          borderBottom: "1px solid rgba(148,163,184,0.2)",
+          backdropFilter: "blur(12px)",
           padding: "16px 24px",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          gap: "16px",
+          flexWrap: "wrap",
         }}
       >
-        <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "700" }}>
-          Lessora AI
-        </h1>
-        <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-          <span style={{ fontSize: "14px", color: "rgba(255,255,255,0.7)" }}>
+        <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "800" }}>Lessora AI</h1>
+        <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
+          <span style={{ fontSize: "14px", color: "#475569", display: "inline-flex", alignItems: "center", gap: "8px" }}>
+            <FaUser />
             {user?.name || "User"}
           </span>
           <button
             onClick={() => navigate("/generate")}
             style={{
               padding: "8px 16px",
-              background: "rgba(59, 130, 246, 0.1)",
-              border: "1px solid rgba(59, 130, 246, 0.3)",
+              background: "#eff6ff",
+              border: "1px solid #bfdbfe",
               borderRadius: "8px",
-              color: "#60a5fa",
+              color: "#1d4ed8",
               cursor: "pointer",
               fontSize: "14px",
               fontWeight: "600",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
             }}
           >
+            <FaPlus />
             Generate
           </button>
           <button
             onClick={() => navigate("/history")}
             style={{
               padding: "8px 16px",
-              background: "rgba(59, 130, 246, 0.1)",
-              border: "1px solid rgba(59, 130, 246, 0.3)",
+              background: "#eff6ff",
+              border: "1px solid #bfdbfe",
               borderRadius: "8px",
-              color: "#60a5fa",
+              color: "#1d4ed8",
               cursor: "pointer",
               fontSize: "14px",
               fontWeight: "600",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
             }}
           >
+            <FaHistory />
             History
           </button>
           <button
             onClick={handleLogout}
             style={{
               padding: "8px 16px",
-              background: "rgba(239, 68, 68, 0.1)",
-              border: "1px solid rgba(239, 68, 68, 0.3)",
+              background: "#fef2f2",
+              border: "1px solid #fecaca",
               borderRadius: "8px",
-              color: "#fca5a5",
+              color: "#b91c1c",
               cursor: "pointer",
               fontSize: "14px",
               fontWeight: "600",
@@ -174,51 +175,36 @@ export default function PreviewPage() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div
-        style={{
-          maxWidth: "900px",
-          margin: "0 auto",
-          padding: "40px 24px",
-        }}
-      >
-        {/* Loading State */}
+      <div style={{ maxWidth: "980px", margin: "0 auto", padding: "32px 16px 56px" }}>
         {isLoading && (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "60px 20px",
-              color: "rgba(255,255,255,0.6)",
-            }}
-          >
-            <div style={{ fontSize: "40px", marginBottom: "16px" }}>⏳</div>
+          <div style={{ textAlign: "center", padding: "72px 20px", color: "#64748b" }}>
+            <FaSpinner style={{ fontSize: "36px", marginBottom: "16px", animation: "spin 1s linear infinite" }} />
             <p style={{ margin: 0, fontSize: "16px" }}>Loading lesson plan...</p>
           </div>
         )}
 
-        {/* Error State */}
         {error && !isLoading && (
           <div
             style={{
-              borderRadius: "12px",
+              borderRadius: "14px",
               padding: "20px",
-              background: "rgba(239,68,68,0.18)",
-              color: "#fecdd3",
-              border: "1px solid rgba(248,113,113,0.3)",
+              background: "#fef2f2",
+              color: "#991b1b",
+              border: "1px solid #fecaca",
               textAlign: "center",
             }}
           >
-            <div style={{ fontSize: "32px", marginBottom: "12px" }}>⚠️</div>
-            <p style={{ margin: "0 0 12px", fontWeight: "600" }}>Failed to load lesson plan</p>
+            <FaExclamationTriangle style={{ fontSize: "28px", marginBottom: "10px" }} />
+            <p style={{ margin: "0 0 10px", fontWeight: "700" }}>Failed to load lesson plan</p>
             <p style={{ margin: "0 0 16px", fontSize: "14px" }}>{error}</p>
             <button
               onClick={() => navigate("/history")}
               style={{
                 padding: "8px 16px",
-                background: "rgba(239, 68, 68, 0.2)",
-                border: "1px solid rgba(248,113,113,0.4)",
+                background: "#fee2e2",
+                border: "1px solid #fca5a5",
                 borderRadius: "8px",
-                color: "#fecdd3",
+                color: "#b91c1c",
                 cursor: "pointer",
                 fontSize: "14px",
                 fontWeight: "600",
@@ -229,122 +215,71 @@ export default function PreviewPage() {
           </div>
         )}
 
-        {/* Lesson Plan Content */}
         {!isLoading && !error && plan && (
           <>
-            {/* Header Info */}
-            <div
+            <section
               style={{
-                background: "rgba(5,11,22,0.6)",
-                border: "1px solid rgba(148,163,184,0.2)",
-                borderRadius: "12px",
-                padding: "24px",
+                background: "#ffffff",
+                border: "1px solid rgba(148,163,184,0.22)",
+                borderRadius: "16px",
+                padding: "28px",
                 marginBottom: "24px",
+                boxShadow: "0 12px 32px rgba(15, 23, 42, 0.06)",
               }}
             >
-              <h1
-                style={{
-                  margin: "0 0 16px",
-                  fontSize: "32px",
-                  fontWeight: "800",
-                  color: "#f3f4f6",
-                }}
-              >
+              <p style={{ margin: "0 0 10px", color: "#2563eb", fontSize: "13px", fontWeight: "800", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                Lesson Plan Preview
+              </p>
+              <h1 style={{ margin: "0 0 14px", fontSize: "clamp(28px, 5vw, 40px)", fontWeight: "900", color: "#0f172a", lineHeight: "1.1" }}>
                 {plan.title}
               </h1>
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "12px",
-                  marginBottom: "16px",
-                }}
-              >
-                <span
-                  style={{
-                    padding: "6px 12px",
-                    background: "rgba(59, 130, 246, 0.15)",
-                    border: "1px solid rgba(59, 130, 246, 0.3)",
-                    borderRadius: "8px",
-                    fontSize: "13px",
-                    color: "#93c5fd",
-                    fontWeight: "600",
-                  }}
-                >
-                  📚 {plan.subject}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "16px" }}>
+                <span style={{ padding: "8px 12px", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "999px", fontSize: "13px", color: "#1d4ed8", fontWeight: "700", display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                  <FaBookOpen />
+                  {plan.subject}
                 </span>
-                <span
-                  style={{
-                    padding: "6px 12px",
-                    background: "rgba(124, 58, 237, 0.15)",
-                    border: "1px solid rgba(124, 58, 237, 0.3)",
-                    borderRadius: "8px",
-                    fontSize: "13px",
-                    color: "#c4b5fd",
-                    fontWeight: "600",
-                  }}
-                >
-                  🎓 {plan.gradeLevel}
+                <span style={{ padding: "8px 12px", background: "#f5f3ff", border: "1px solid #ddd6fe", borderRadius: "999px", fontSize: "13px", color: "#6d28d9", fontWeight: "700" }}>
+                  Grade: {plan.gradeLevel}
                 </span>
-                <span
-                  style={{
-                    padding: "6px 12px",
-                    background: "rgba(34, 197, 94, 0.15)",
-                    border: "1px solid rgba(34, 197, 94, 0.3)",
-                    borderRadius: "8px",
-                    fontSize: "13px",
-                    color: "#86efac",
-                    fontWeight: "600",
-                  }}
-                >
-                  ⏱️ {plan.totalDuration} minutes
+                <span style={{ padding: "8px 12px", background: "#ecfdf5", border: "1px solid #bbf7d0", borderRadius: "999px", fontSize: "13px", color: "#15803d", fontWeight: "700", display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                  <FaClock />
+                  {plan.totalDuration} minutes
                 </span>
               </div>
-              <div
-                style={{
-                  fontSize: "13px",
-                  color: "rgba(255,255,255,0.5)",
-                }}
-              >
+              <div style={{ fontSize: "13px", color: "#64748b" }}>
                 Created: {new Date(plan.createdAt).toLocaleString()}
               </div>
-            </div>
+            </section>
 
-            {/* Document Content */}
-            <div
+            <section
               style={{
-                background: "rgba(5,11,22,0.6)",
-                border: "1px solid rgba(148,163,184,0.2)",
-                borderRadius: "12px",
+                background: "#ffffff",
+                border: "1px solid rgba(148,163,184,0.22)",
+                borderRadius: "16px",
                 padding: "32px",
+                boxShadow: "0 12px 32px rgba(15, 23, 42, 0.06)",
               }}
             >
-              {plan.document.blocks.map((block, index) => renderBlock(block, index))}
-            </div>
+              <div style={{ maxWidth: "760px", margin: "0 auto" }}>
+                {plan.document.blocks.map((block, index) => renderBlock(block, index))}
+              </div>
+            </section>
 
-            {/* Action Buttons */}
-            <div
-              style={{
-                marginTop: "24px",
-                display: "flex",
-                gap: "12px",
-                justifyContent: "center",
-              }}
-            >
+            <div style={{ marginTop: "24px", display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
               <button
                 onClick={() => navigate("/history")}
                 style={{
                   padding: "12px 24px",
-                  background: "rgba(148,163,184,0.1)",
-                  border: "1px solid rgba(148,163,184,0.3)",
+                  background: "#eff6ff",
+                  border: "1px solid #bfdbfe",
                   borderRadius: "10px",
-                  color: "#cbd5e1",
+                  color: "#1d4ed8",
                   cursor: "pointer",
                   fontSize: "14px",
                   fontWeight: "600",
                 }}
               >
-                ← Back to History
+                Back to History
               </button>
               <button
                 onClick={() => navigate("/generate")}
@@ -369,5 +304,3 @@ export default function PreviewPage() {
     </div>
   );
 }
-
-// Made with Bob

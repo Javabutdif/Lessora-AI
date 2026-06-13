@@ -1,6 +1,14 @@
 import { useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  FaBookOpen,
+  FaGraduationCap,
+  FaHistory,
+  FaLanguage,
+  FaRobot,
+  FaSignOutAlt,
+} from "react-icons/fa";
+import {
   generateLessonPlan,
   getCurrentUser,
   logoutUser,
@@ -30,31 +38,11 @@ const templateOptions: {
   value: LessonPlanTemplate;
   description: string;
 }[] = [
-  {
-    label: "Lessora AI Template",
-    value: "lessora-ai",
-    description: "Modern, comprehensive lesson plan format",
-  },
-  {
-    label: "DepEd Semi-Detailed",
-    value: "deped-semi-detailed",
-    description: "Official DepEd format for Philippines",
-  },
-  {
-    label: "Detailed Lesson Plan",
-    value: "detailed-lesson-plan",
-    description: "Reference-based detailed lesson plan format",
-  },
-  {
-    label: "Daily Lesson Log",
-    value: "daily-lesson-log",
-    description: "JSON-based daily log structure",
-  },
-  {
-    label: "Matatag Curriculum Lesson Plan",
-    value: "matatag",
-    description: "JSON-based Matatag curriculum format",
-  },
+  { label: "Lessora AI Template", value: "lessora-ai", description: "Modern, comprehensive lesson plan format" },
+  { label: "DepEd Semi-Detailed", value: "deped-semi-detailed", description: "Official DepEd format for Philippines" },
+  { label: "Detailed Lesson Plan", value: "detailed-lesson-plan", description: "Reference-based detailed lesson plan format" },
+  { label: "Daily Lesson Log", value: "daily-lesson-log", description: "JSON-based daily log structure" },
+  { label: "Matatag Curriculum Lesson Plan", value: "matatag", description: "JSON-based Matatag curriculum format" },
 ];
 
 const languageOptions = [
@@ -66,7 +54,6 @@ export default function GeneratePlanPage() {
   const [topicSubject, setTopicSubject] = useState("");
   const [selectedGrade, setSelectedGrade] = useState("");
   const [duration, setDuration] = useState("");
-  const [numberOfSessions, setNumberOfSessions] = useState("1");
   const [goalsStandards, setGoalsStandards] = useState("");
   const [selectedTemplate, setSelectedTemplate] =
     useState<LessonPlanTemplate>("lessora-ai");
@@ -82,8 +69,6 @@ export default function GeneratePlanPage() {
     setError("");
 
     const parsedDuration = Number(duration);
-    const parsedSessions = Number(numberOfSessions);
-
     if (!topicSubject.trim() || !selectedGrade || !duration.trim()) {
       setError("Please fill in all required fields");
       setIsGenerating(false);
@@ -96,30 +81,21 @@ export default function GeneratePlanPage() {
       return;
     }
 
-    if (!Number.isInteger(parsedSessions) || parsedSessions < 1) {
-      setError("Number of sessions must be at least 1");
-      setIsGenerating(false);
-      return;
-    }
-
     try {
       const response = await generateLessonPlan({
         title: topicSubject.trim(),
         subject: topicSubject.trim(),
         gradeLevel: selectedGrade,
         duration: parsedDuration,
-        numberOfSessions: parsedSessions,
+        numberOfSessions: 1,
         userDraftText: goalsStandards.trim() || undefined,
         templateId: selectedTemplate,
         language: selectedLanguage,
       });
 
-      console.log("Lesson plan generated:", response.lessonPlanId);
       navigate(`/preview/${response.lessonPlanId}`);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to generate lesson plan",
-      );
+      setError(err instanceof Error ? err.message : "Failed to generate lesson plan");
     } finally {
       setIsGenerating(false);
     }
@@ -131,90 +107,70 @@ export default function GeneratePlanPage() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background:
-          "linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1425 100%)",
-        color: "#fff",
-      }}
-    >
-      {/* Header */}
+    <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%)", color: "#0f172a" }}>
       <div
         style={{
-          background: "rgba(5,11,22,0.6)",
-          borderBottom: "1px solid rgba(148,163,184,0.1)",
+          background: "rgba(255,255,255,0.82)",
+          borderBottom: "1px solid rgba(148,163,184,0.2)",
+          backdropFilter: "blur(12px)",
           padding: "16px 24px",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          gap: "16px",
+          flexWrap: "wrap",
         }}
       >
-        <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "700" }}>
-          Lessora AI
-        </h1>
-        <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-          <span style={{ fontSize: "14px", color: "rgba(255,255,255,0.7)" }}>
-            {user?.name || "User"}
-          </span>
+        <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "800" }}>Lessora AI</h1>
+        <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
+          <span style={{ fontSize: "14px", color: "#475569" }}>{user?.name || "User"}</span>
           <button
             onClick={() => navigate("/history")}
             style={{
               padding: "8px 16px",
-              background: "rgba(59, 130, 246, 0.1)",
-              border: "1px solid rgba(59, 130, 246, 0.3)",
+              background: "#eff6ff",
+              border: "1px solid #bfdbfe",
               borderRadius: "8px",
-              color: "#60a5fa",
+              color: "#1d4ed8",
               cursor: "pointer",
               fontSize: "14px",
               fontWeight: "600",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
             }}
           >
+            <FaHistory />
             History
           </button>
           <button
             onClick={handleLogout}
             style={{
               padding: "8px 16px",
-              background: "rgba(239, 68, 68, 0.1)",
-              border: "1px solid rgba(239, 68, 68, 0.3)",
+              background: "#fef2f2",
+              border: "1px solid #fecaca",
               borderRadius: "8px",
-              color: "#fca5a5",
+              color: "#b91c1c",
               cursor: "pointer",
               fontSize: "14px",
               fontWeight: "600",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
             }}
           >
+            <FaSignOutAlt />
             Logout
           </button>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div
-        style={{
-          maxWidth: "800px",
-          margin: "0 auto",
-          padding: "40px 24px",
-        }}
-      >
+      <div style={{ maxWidth: "800px", margin: "0 auto", padding: "32px 16px 48px" }}>
         <div style={{ marginBottom: "32px" }}>
-          <h2
-            style={{
-              margin: "0 0 8px",
-              fontSize: "32px",
-              fontWeight: "800",
-            }}
-          >
+          <h2 style={{ margin: "0 0 8px", fontSize: "clamp(28px, 5vw, 40px)", fontWeight: "800", color: "#0f172a" }}>
             Generate Lesson Plan
           </h2>
-          <p
-            style={{
-              margin: 0,
-              fontSize: "16px",
-              color: "rgba(255,255,255,0.7)",
-            }}
-          >
+          <p style={{ margin: 0, fontSize: "16px", color: "#475569" }}>
             Create a professional lesson plan in minutes with AI
           </p>
         </div>
@@ -222,20 +178,17 @@ export default function GeneratePlanPage() {
         <form
           onSubmit={handleGenerate}
           style={{
-            background: "rgba(5,11,22,0.6)",
-            border: "1px solid rgba(148,163,184,0.2)",
+            background: "#ffffff",
+            border: "1px solid rgba(148,163,184,0.22)",
             borderRadius: "16px",
-            padding: "32px",
+            padding: "24px",
+            boxShadow: "0 12px 32px rgba(15, 23, 42, 0.06)",
           }}
         >
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "24px" }}
-          >
-            {/* Topic/Subject */}
-            <label
-              style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <span style={{ fontSize: "14px", fontWeight: "600" }}>
+                <FaBookOpen style={{ display: "inline", marginRight: "8px", verticalAlign: "middle" }} />
                 Topic/Subject <span style={{ color: "#ef4444" }}>*</span>
               </span>
               <input
@@ -248,20 +201,18 @@ export default function GeneratePlanPage() {
                 style={{
                   padding: "12px 14px",
                   borderRadius: "10px",
-                  border: "1px solid rgba(148,163,184,0.28)",
-                  background: "#020817",
-                  color: "#fff",
+                  border: "1px solid #cbd5e1",
+                  background: "#fff",
+                  color: "#0f172a",
                   fontSize: "14px",
                   outline: "none",
                 }}
               />
             </label>
 
-            {/* Grade Level */}
-            <label
-              style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
+            <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <span style={{ fontSize: "14px", fontWeight: "600" }}>
+                <FaGraduationCap style={{ display: "inline", marginRight: "8px", verticalAlign: "middle" }} />
                 Grade Level <span style={{ color: "#ef4444" }}>*</span>
               </span>
               <select
@@ -272,9 +223,9 @@ export default function GeneratePlanPage() {
                 style={{
                   padding: "12px 14px",
                   borderRadius: "10px",
-                  border: "1px solid rgba(148,163,184,0.28)",
-                  background: "#020817",
-                  color: "#fff",
+                  border: "1px solid #cbd5e1",
+                  background: "#fff",
+                  color: "#0f172a",
                   fontSize: "14px",
                   outline: "none",
                 }}
@@ -288,11 +239,9 @@ export default function GeneratePlanPage() {
               </select>
             </label>
 
-            {/* Grade Level */}
-            <label
-              style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
+            <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <span style={{ fontSize: "14px", fontWeight: "600" }}>
+                <FaLanguage style={{ display: "inline", marginRight: "8px", verticalAlign: "middle" }} />
                 Language <span style={{ color: "#ef4444" }}>*</span>
               </span>
               <select
@@ -303,9 +252,9 @@ export default function GeneratePlanPage() {
                 style={{
                   padding: "12px 14px",
                   borderRadius: "10px",
-                  border: "1px solid rgba(148,163,184,0.28)",
-                  background: "#020817",
-                  color: "#fff",
+                  border: "1px solid #cbd5e1",
+                  background: "#fff",
+                  color: "#0f172a",
                   fontSize: "14px",
                   outline: "none",
                 }}
@@ -319,136 +268,57 @@ export default function GeneratePlanPage() {
               </select>
             </label>
 
-            {/* Duration and Sessions Row */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "16px",
-              }}
-            >
-              <label
-                style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-              >
-                <span style={{ fontSize: "14px", fontWeight: "600" }}>
-                  Duration (minutes) <span style={{ color: "#ef4444" }}>*</span>
-                </span>
-                <input
-                  type="number"
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                  placeholder="e.g., 60"
-                  min="5"
-                  disabled={isGenerating}
-                  required
-                  style={{
-                    padding: "12px 14px",
-                    borderRadius: "10px",
-                    border: "1px solid rgba(148,163,184,0.28)",
-                    background: "#020817",
-                    color: "#fff",
-                    fontSize: "14px",
-                    outline: "none",
-                  }}
-                />
-              </label>
+            <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <span style={{ fontSize: "14px", fontWeight: "600" }}>
+                <FaBookOpen style={{ display: "inline", marginRight: "8px", verticalAlign: "middle" }} />
+                Duration (minutes) <span style={{ color: "#ef4444" }}>*</span>
+              </span>
+              <input
+                type="number"
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                placeholder="e.g., 60"
+                min="5"
+                disabled={isGenerating}
+                required
+                style={{
+                  padding: "12px 14px",
+                  borderRadius: "10px",
+                  border: "1px solid #cbd5e1",
+                  background: "#fff",
+                  color: "#0f172a",
+                  fontSize: "14px",
+                  outline: "none",
+                }}
+              />
+            </label>
 
-              <label
-                style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-              >
-                <span style={{ fontSize: "14px", fontWeight: "600" }}>
-                  Number of Sessions
-                </span>
-                <input
-                  type="number"
-                  value={numberOfSessions}
-                  onChange={(e) => setNumberOfSessions(e.target.value)}
-                  placeholder="1"
-                  min="1"
-                  disabled={isGenerating}
-                  style={{
-                    padding: "12px 14px",
-                    borderRadius: "10px",
-                    border: "1px solid rgba(148,163,184,0.28)",
-                    background: "#020817",
-                    color: "#fff",
-                    fontSize: "14px",
-                    outline: "none",
-                  }}
-                />
-              </label>
-            </div>
-
-            {/* Template Selection */}
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <span style={{ fontSize: "14px", fontWeight: "600" }}>
                 Template
               </span>
-              <div
+              <select
+                value={selectedTemplate}
+                onChange={(e) => setSelectedTemplate(e.target.value as LessonPlanTemplate)}
+                disabled={isGenerating}
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "12px",
+                  padding: "12px 14px",
+                  borderRadius: "10px",
+                  border: "1px solid #cbd5e1",
+                  background: "#fff",
+                  color: "#0f172a",
+                  fontSize: "14px",
                 }}
               >
                 {templateOptions.map((template) => (
-                  <label
-                    key={template.value}
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "12px",
-                      padding: "16px",
-                      background:
-                        selectedTemplate === template.value
-                          ? "rgba(59, 130, 246, 0.1)"
-                          : "rgba(148,163,184,0.05)",
-                      border:
-                        selectedTemplate === template.value
-                          ? "1px solid rgba(59, 130, 246, 0.5)"
-                          : "1px solid rgba(148,163,184,0.15)",
-                      borderRadius: "10px",
-                      cursor: "pointer",
-                      transition: "all 0.2s",
-                    }}
-                  >
-                    <input
-                      type="radio"
-                      name="template"
-                      value={template.value}
-                      checked={selectedTemplate === template.value}
-                      onChange={(e) =>
-                        setSelectedTemplate(
-                          e.target.value as LessonPlanTemplate,
-                        )
-                      }
-                      disabled={isGenerating}
-                      style={{ marginTop: "2px" }}
-                    />
-                    <div>
-                      <div style={{ fontWeight: "600", marginBottom: "4px" }}>
-                        {template.label}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: "13px",
-                          color: "rgba(255,255,255,0.6)",
-                        }}
-                      >
-                        {template.description}
-                      </div>
-                    </div>
-                  </label>
+                  <option key={template.value} value={template.value}>
+                    {template.label} - {template.description}
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
 
-            {/* Goals/Standards (Optional) */}
-            <label
-              style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
+            <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <span style={{ fontSize: "14px", fontWeight: "600" }}>
                 Learning Goals/Standards (Optional)
               </span>
@@ -461,9 +331,9 @@ export default function GeneratePlanPage() {
                 style={{
                   padding: "12px 14px",
                   borderRadius: "10px",
-                  border: "1px solid rgba(148,163,184,0.28)",
-                  background: "#020817",
-                  color: "#fff",
+                  border: "1px solid #cbd5e1",
+                  background: "#fff",
+                  color: "#0f172a",
                   fontSize: "14px",
                   outline: "none",
                   resize: "vertical",
@@ -477,9 +347,9 @@ export default function GeneratePlanPage() {
                 style={{
                   borderRadius: "10px",
                   padding: "12px",
-                  background: "rgba(239,68,68,0.18)",
-                  color: "#fecdd3",
-                  border: "1px solid rgba(248,113,113,0.3)",
+                  background: "#fef2f2",
+                  color: "#b91c1c",
+                  border: "1px solid #fecaca",
                   fontSize: "14px",
                 }}
               >
@@ -487,7 +357,6 @@ export default function GeneratePlanPage() {
               </div>
             )}
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isGenerating}
@@ -500,12 +369,16 @@ export default function GeneratePlanPage() {
                 cursor: isGenerating ? "not-allowed" : "pointer",
                 fontWeight: 700,
                 fontSize: "16px",
-                transition: "all 0.3s",
                 opacity: isGenerating ? 0.7 : 1,
                 boxShadow: "0 8px 24px rgba(59, 130, 246, 0.3)",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "10px",
               }}
             >
-              {isGenerating ? "Generating..." : "🚀 Generate Lesson Plan"}
+              <FaRobot />
+              {isGenerating ? "Generating..." : "Generate Lesson Plan"}
             </button>
           </div>
         </form>
@@ -513,5 +386,3 @@ export default function GeneratePlanPage() {
     </div>
   );
 }
-
-// Made with Bob

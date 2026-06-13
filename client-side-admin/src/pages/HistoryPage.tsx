@@ -1,5 +1,12 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  FaExclamationTriangle,
+  FaHistory,
+  FaPlus,
+  FaSearch,
+  FaSpinner,
+} from "react-icons/fa";
 import {
   listRecentLessonPlans,
   getCurrentUser,
@@ -23,8 +30,7 @@ export default function HistoryPage() {
     try {
       setIsLoading(true);
       setError("");
-      const fetchedPlans = await listRecentLessonPlans();
-      setPlans(fetchedPlans);
+      setPlans(await listRecentLessonPlans());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load history");
     } finally {
@@ -39,9 +45,7 @@ export default function HistoryPage() {
 
   function formatDate(dateString: string) {
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-      return "Recently";
-    }
+    if (Number.isNaN(date.getTime())) return "Recently";
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -63,51 +67,64 @@ export default function HistoryPage() {
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1425 100%)",
-        color: "#fff",
+        background: "linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%)",
+        color: "#0f172a",
       }}
     >
-      {/* Header */}
       <div
         style={{
-          background: "rgba(5,11,22,0.6)",
-          borderBottom: "1px solid rgba(148,163,184,0.1)",
+          background: "rgba(255,255,255,0.82)",
+          borderBottom: "1px solid rgba(148,163,184,0.2)",
+          backdropFilter: "blur(12px)",
           padding: "16px 24px",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          gap: "16px",
+          flexWrap: "wrap",
         }}
       >
-        <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "700" }}>
+        <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "800" }}>
           Lessora AI
         </h1>
-        <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-          <span style={{ fontSize: "14px", color: "rgba(255,255,255,0.7)" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "12px",
+            alignItems: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          <span style={{ fontSize: "14px", color: "#475569" }}>
             {user?.name || "User"}
           </span>
           <button
             onClick={() => navigate("/generate")}
             style={{
               padding: "8px 16px",
-              background: "rgba(59, 130, 246, 0.1)",
-              border: "1px solid rgba(59, 130, 246, 0.3)",
+              background: "#eff6ff",
+              border: "1px solid #bfdbfe",
               borderRadius: "8px",
-              color: "#60a5fa",
+              color: "#1d4ed8",
               cursor: "pointer",
               fontSize: "14px",
               fontWeight: "600",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
             }}
           >
+            <FaPlus />
             Generate
           </button>
           <button
             onClick={handleLogout}
             style={{
               padding: "8px 16px",
-              background: "rgba(239, 68, 68, 0.1)",
-              border: "1px solid rgba(239, 68, 68, 0.3)",
+              background: "#fef2f2",
+              border: "1px solid #fecaca",
               borderRadius: "8px",
-              color: "#fca5a5",
+              color: "#b91c1c",
               cursor: "pointer",
               fontSize: "14px",
               fontWeight: "600",
@@ -118,13 +135,8 @@ export default function HistoryPage() {
         </div>
       </div>
 
-      {/* Main Content */}
       <div
-        style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          padding: "40px 24px",
-        }}
+        style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 24px" }}
       >
         <div style={{ marginBottom: "32px" }}>
           <h2
@@ -132,22 +144,16 @@ export default function HistoryPage() {
               margin: "0 0 8px",
               fontSize: "32px",
               fontWeight: "800",
+              color: "#475569",
             }}
           >
             Lesson Plan History
           </h2>
-          <p
-            style={{
-              margin: 0,
-              fontSize: "16px",
-              color: "rgba(255,255,255,0.7)",
-            }}
-          >
+          <p style={{ margin: 0, fontSize: "16px", color: "#475569" }}>
             View and manage your generated lesson plans
           </p>
         </div>
 
-        {/* Search Bar */}
         <div style={{ marginBottom: "24px" }}>
           <input
             type="text"
@@ -158,59 +164,56 @@ export default function HistoryPage() {
               width: "100%",
               padding: "12px 16px",
               borderRadius: "10px",
-              border: "1px solid rgba(148,163,184,0.28)",
-              background: "rgba(5,11,22,0.6)",
-              color: "#fff",
+              border: "1px solid #cbd5e1",
+              background: "#fff",
+              color: "#0f172a",
               fontSize: "14px",
               outline: "none",
             }}
           />
         </div>
 
-        {/* Loading State */}
         {isLoading && (
           <div
             style={{
               textAlign: "center",
               padding: "60px 20px",
-              color: "rgba(255,255,255,0.6)",
+              color: "#64748b",
             }}
           >
-            <div
-              style={{
-                fontSize: "40px",
-                marginBottom: "16px",
-              }}
-            >
-              ⏳
-            </div>
-            <p style={{ margin: 0, fontSize: "16px" }}>Loading your lesson plans...</p>
+            <FaSpinner style={{ fontSize: "40px", marginBottom: "16px" }} />
+            <p style={{ margin: 0, fontSize: "16px" }}>
+              Loading your lesson plans...
+            </p>
           </div>
         )}
 
-        {/* Error State */}
         {error && !isLoading && (
           <div
             style={{
               borderRadius: "12px",
               padding: "20px",
-              background: "rgba(239,68,68,0.18)",
-              color: "#fecdd3",
-              border: "1px solid rgba(248,113,113,0.3)",
+              background: "#fef2f2",
+              color: "#b91c1c",
+              border: "1px solid #fecaca",
               textAlign: "center",
             }}
           >
-            <div style={{ fontSize: "32px", marginBottom: "12px" }}>⚠️</div>
-            <p style={{ margin: "0 0 12px", fontWeight: "600" }}>Failed to load history</p>
+            <FaExclamationTriangle
+              style={{ fontSize: "32px", marginBottom: "12px" }}
+            />
+            <p style={{ margin: "0 0 12px", fontWeight: "600" }}>
+              Failed to load history
+            </p>
             <p style={{ margin: "0 0 16px", fontSize: "14px" }}>{error}</p>
             <button
               onClick={loadPlans}
               style={{
                 padding: "8px 16px",
-                background: "rgba(239, 68, 68, 0.2)",
-                border: "1px solid rgba(248,113,113,0.4)",
+                background: "#fee2e2",
+                border: "1px solid #fca5a5",
                 borderRadius: "8px",
-                color: "#fecdd3",
+                color: "#b91c1c",
                 cursor: "pointer",
                 fontSize: "14px",
                 fontWeight: "600",
@@ -221,90 +224,99 @@ export default function HistoryPage() {
           </div>
         )}
 
-        {/* Empty State */}
-        {!isLoading && !error && filteredPlans.length === 0 && plans.length === 0 && (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "60px 20px",
-              background: "rgba(5,11,22,0.6)",
-              border: "1px solid rgba(148,163,184,0.2)",
-              borderRadius: "16px",
-            }}
-          >
+        {!isLoading &&
+          !error &&
+          filteredPlans.length === 0 &&
+          plans.length === 0 && (
             <div
               style={{
-                fontSize: "64px",
-                marginBottom: "16px",
+                textAlign: "center",
+                padding: "60px 20px",
+                background: "#ffffff",
+                border: "1px solid rgba(148,163,184,0.22)",
+                borderRadius: "16px",
               }}
             >
-              📚
+              <FaHistory
+                style={{
+                  fontSize: "64px",
+                  marginBottom: "16px",
+                  color: "#2563eb",
+                }}
+              />
+              <h3
+                style={{
+                  margin: "0 0 8px",
+                  fontSize: "20px",
+                  fontWeight: "700",
+                }}
+              >
+                No Lesson Plans Yet
+              </h3>
+              <p
+                style={{
+                  margin: "0 0 24px",
+                  fontSize: "14px",
+                  color: "#64748b",
+                }}
+              >
+                Start creating your first lesson plan with AI
+              </p>
+              <button
+                onClick={() => navigate("/generate")}
+                style={{
+                  padding: "12px 24px",
+                  background:
+                    "linear-gradient(135deg, #3b82f6 0%, #7c3aed 100%)",
+                  border: "none",
+                  borderRadius: "10px",
+                  color: "#fff",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  fontWeight: "700",
+                  boxShadow: "0 8px 24px rgba(59, 130, 246, 0.3)",
+                }}
+              >
+                Generate Lesson Plan
+              </button>
             </div>
-            <h3
-              style={{
-                margin: "0 0 8px",
-                fontSize: "20px",
-                fontWeight: "700",
-              }}
-            >
-              No Lesson Plans Yet
-            </h3>
-            <p
-              style={{
-                margin: "0 0 24px",
-                fontSize: "14px",
-                color: "rgba(255,255,255,0.6)",
-              }}
-            >
-              Start creating your first lesson plan with AI
-            </p>
-            <button
-              onClick={() => navigate("/generate")}
-              style={{
-                padding: "12px 24px",
-                background: "linear-gradient(135deg, #3b82f6 0%, #7c3aed 100%)",
-                border: "none",
-                borderRadius: "10px",
-                color: "#fff",
-                cursor: "pointer",
-                fontSize: "14px",
-                fontWeight: "700",
-                boxShadow: "0 8px 24px rgba(59, 130, 246, 0.3)",
-              }}
-            >
-              Generate Lesson Plan
-            </button>
-          </div>
-        )}
+          )}
 
-        {/* No Search Results */}
-        {!isLoading && !error && filteredPlans.length === 0 && plans.length > 0 && (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "60px 20px",
-              background: "rgba(5,11,22,0.6)",
-              border: "1px solid rgba(148,163,184,0.2)",
-              borderRadius: "16px",
-            }}
-          >
-            <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔍</div>
-            <h3 style={{ margin: "0 0 8px", fontSize: "18px", fontWeight: "700" }}>
-              No Results Found
-            </h3>
-            <p
+        {!isLoading &&
+          !error &&
+          filteredPlans.length === 0 &&
+          plans.length > 0 && (
+            <div
               style={{
-                margin: 0,
-                fontSize: "14px",
-                color: "rgba(255,255,255,0.6)",
+                textAlign: "center",
+                padding: "60px 20px",
+                background: "#ffffff",
+                border: "1px solid rgba(148,163,184,0.22)",
+                borderRadius: "16px",
               }}
             >
-              Try a different search term
-            </p>
-          </div>
-        )}
+              <FaSearch
+                style={{
+                  fontSize: "48px",
+                  marginBottom: "16px",
+                  color: "#2563eb",
+                }}
+              />
+              <h3
+                style={{
+                  margin: "0 0 8px",
+                  fontSize: "18px",
+                  fontWeight: "700",
+                }}
+              >
+                No Results Found
+              </h3>
+              <p style={{ margin: 0, fontSize: "14px", color: "#64748b" }}>
+                Try a different search term
+              </p>
+            </div>
+          )}
 
-        {/* Lesson Plans Grid */}
         {!isLoading && !error && filteredPlans.length > 0 && (
           <div
             style={{
@@ -318,22 +330,12 @@ export default function HistoryPage() {
                 key={plan.id}
                 onClick={() => navigate(`/preview/${plan.id}`)}
                 style={{
-                  background: "rgba(5,11,22,0.6)",
-                  border: "1px solid rgba(148,163,184,0.2)",
+                  background: "#ffffff",
+                  border: "1px solid rgba(148,163,184,0.22)",
                   borderRadius: "12px",
                   padding: "20px",
                   cursor: "pointer",
                   transition: "all 0.3s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-4px)";
-                  e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.5)";
-                  e.currentTarget.style.boxShadow = "0 12px 32px rgba(59, 130, 246, 0.2)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.borderColor = "rgba(148,163,184,0.2)";
-                  e.currentTarget.style.boxShadow = "none";
                 }}
               >
                 <h3
@@ -341,7 +343,7 @@ export default function HistoryPage() {
                     margin: "0 0 8px",
                     fontSize: "18px",
                     fontWeight: "700",
-                    color: "#f3f4f6",
+                    color: "#0f172a",
                   }}
                 >
                   {plan.title}
@@ -357,11 +359,11 @@ export default function HistoryPage() {
                   <span
                     style={{
                       padding: "4px 10px",
-                      background: "rgba(59, 130, 246, 0.15)",
-                      border: "1px solid rgba(59, 130, 246, 0.3)",
+                      background: "#eff6ff",
+                      border: "1px solid #bfdbfe",
                       borderRadius: "6px",
                       fontSize: "12px",
-                      color: "#93c5fd",
+                      color: "#1d4ed8",
                       fontWeight: "600",
                     }}
                   >
@@ -370,11 +372,11 @@ export default function HistoryPage() {
                   <span
                     style={{
                       padding: "4px 10px",
-                      background: "rgba(124, 58, 237, 0.15)",
-                      border: "1px solid rgba(124, 58, 237, 0.3)",
+                      background: "#f5f3ff",
+                      border: "1px solid #ddd6fe",
                       borderRadius: "6px",
                       fontSize: "12px",
-                      color: "#c4b5fd",
+                      color: "#6d28d9",
                       fontWeight: "600",
                     }}
                   >
@@ -387,7 +389,7 @@ export default function HistoryPage() {
                     justifyContent: "space-between",
                     alignItems: "center",
                     fontSize: "13px",
-                    color: "rgba(255,255,255,0.5)",
+                    color: "#64748b",
                   }}
                 >
                   <span>{plan.totalDuration} min</span>
@@ -401,5 +403,3 @@ export default function HistoryPage() {
     </div>
   );
 }
-
-// Made with Bob
