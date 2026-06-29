@@ -47,11 +47,14 @@ Lessora AI follows a client-server architecture with three main components:
   - Export functionality
 
 #### Web Portal (`client-side-admin/`)
+
 - **Technology**: React 18 + TypeScript + Vite
-- **Styling**: Tailwind CSS
+- **Styling**: CSS Modules + CSS custom properties (tokens in `src/styles/tokens.css`)
+- **Visual language**: "Academic notebook" — paper background, navy ink, Source Serif 4 display, hairline rules. No cards, no pill chips, no gradients. See [`client-side-admin/README.md`](client-side-admin/README.md) for the full design system.
 - **Features**:
-  - User portal for teachers (login, register, generate, history)
-  - Admin portal for user management
+  - Teacher portal: signup, login, password reset, AI lesson-plan generation, history, preview, export
+  - Admin portal: login, platform dashboard with metric cards, user management with edit/delete
+  - Public: landing page (hero + features + Android CTA), privacy / terms / about docs
   - Responsive design for desktop and mobile browsers
 
 ### Server (`server-side/`)
@@ -152,12 +155,14 @@ lessora-ai/
 │   │   ├── services/     # API service layer
 │   │   └── utils/        # Utility functions
 │   └── App.tsx           # App entry point
-├── client-side-admin/    # React web portal
+├── client-side-admin/    # React web portal (admin + teacher + landing)
 │   ├── src/
-│   │   ├── components/   # Shared components
-│   │   ├── pages/        # Page components
-│   │   └── services/     # API service layer
-│   └── index.html        # Web entry point
+│   │   ├── components/   # Reusable UI components (Button, Card, Input, Modal, ...)
+│   │   ├── pages/        # Route components (Landing, Login, Register, Generate, History, Preview, ...)
+│   │   ├── services/     # API service layer
+│   │   ├── styles/       # Design tokens + shared CSS modules
+│   │   └── utils/        # Helpers (e.g. SEO metadata)
+│   └── index.html        # Web entry point (loads Source Serif 4 + Inter + JetBrains Mono)
 ├── server-side/          # Node.js backend
 │   ├── src/
 │   │   ├── controllers/  # Request handlers
@@ -242,12 +247,26 @@ npm run workflow -- finalize
 
 ## 🔑 Key Technologies
 
-- **Frontend**: React Native (Expo), React, TypeScript, Tailwind CSS, NativeWind
+- **Frontend**: React Native (Expo), React, TypeScript, NativeWind (mobile), CSS Modules + tokens (web)
 - **Backend**: Node.js, Express, TypeScript, MongoDB, Mongoose
 - **AI**: OpenAI API (GPT-4o-mini)
 - **Authentication**: JWT, bcrypt
 - **Validation**: Zod
 - **Development**: Vite, Metro bundler, ESLint, Prettier
+
+### Web design system (academic notebook)
+
+The admin + web portal are intentionally built with a single, restrained design language rather than the typical SaaS gradient + card aesthetic:
+
+- **Paper + ink palette** — warm paper `#FAFAF7`, near-black ink `#111111`, single deep navy accent `#1E3A8A`. No secondary indigo / teal / pink rounds.
+- **Source Serif 4** for display (page titles, metric numbers, hero). Inter for body, JetBrains Mono for IDs and small-caps eyebrows.
+- **Hairline rules instead of cards.** Sections are separated by 1 px lines, not boxed containers. A 3 px solid black top rule sits at the start of every page.
+- **Flat buttons, rectangular tags.** No gradients, no pill chips, no `backdrop-filter`, no box-shadows.
+- **Underline-only inputs** by default; a boxed variant exists for 3+ field forms (e.g. teacher registration).
+
+Tokens live in [`client-side-admin/src/styles/tokens.css`](client-side-admin/src/styles/tokens.css). The full design system is documented in [`client-side-admin/README.md`](client-side-admin/README.md#design-system--academic-notebook).
+
+Specs and plans that drove the current look are in `docs/specs/2026-06-29-client-side-admin-minimal-redesign.md`.
 
 ## 🤝 Contributing
 

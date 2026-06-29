@@ -1,394 +1,279 @@
-# Lessora Admin Dashboard
+# Lessora Admin (Web)
 
-A modern, mobile-responsive admin dashboard for the Lessora platform, built with React, TypeScript, and a comprehensive design system.
+The web half of the Lessora AI platform: a teacher portal for generating lesson plans and an admin portal for managing teachers. This README covers everything inside `client-side-admin/`. The mobile app (`client-side/`) and the server (`server-side/`) live in their own directories and have their own docs.
 
 ## Table of Contents
 
-- [Project Overview](#project-overview)
-- [Design System](#design-system)
+- [What This App Is](#what-this-app-is)
+- [Design System — Academic Notebook](#design-system--academic-notebook)
 - [Component Library](#component-library)
 - [Pages](#pages)
 - [Getting Started](#getting-started)
-- [Development Guide](#development-guide)
-- [Responsive Design](#responsive-design)
+- [Project Structure](#project-structure)
+- [Conventions](#conventions)
 - [Accessibility](#accessibility)
-- [Testing](#testing)
-- [Architecture Decisions](#architecture-decisions)
-- [File Structure](#file-structure)
-- [Contributing](#contributing)
+- [Testing & Validation](#testing--validation)
+- [Architecture Notes](#architecture-notes)
+- [Recent Visual Redesign](#recent-visual-redesign)
 - [Related Documentation](#related-documentation)
 
 ---
 
-## Project Overview
+## What This App Is
 
-The Lessora Admin Dashboard is a fully responsive web application designed for managing users, monitoring system metrics, and overseeing lesson plan generation. The dashboard features a modern dark theme with glass-morphism effects and a comprehensive component library built from the ground up.
+Lessora Admin is a React 18 + TypeScript + Vite single-page app that serves two audiences from one bundle:
+
+- **Teachers** — sign up, sign in, generate lesson plans with the AI, browse their history, view a generated plan, download it.
+- **Admins** — sign in to a separate admin account, see platform metrics, manage teacher accounts.
+
+Everything renders the same way visually. The only thing that distinguishes admin vs. user is the route prefix (`/admin/*`) and the auth token check.
+
+### Tech stack
+
+| Layer | Choice |
+| --- | --- |
+| Framework | React 18.3 |
+| Language | TypeScript 5.6 |
+| Bundler | Vite 5.4 |
+| Routing | React Router DOM 6.28 |
+| Styling | CSS Modules + CSS custom properties (no CSS-in-JS, no Tailwind) |
+| Data fetching | `@tanstack/react-query` for landing-page metrics; native `fetch` for the rest |
+| Auth tokens | JWT in `localStorage` (`lessora-admin-token`, `lessora-user-token`) |
 
 ### Key Features
 
-- **Mobile-First Responsive Design**: Seamlessly adapts from mobile (375px) to desktop (1920px+)
-- **Comprehensive Component Library**: 9 reusable UI components with consistent styling
-- **Design System**: CSS custom properties for maintainable, scalable styling
-- **Light Theme**: Clean white surfaces with restrained indigo accent and elevation by hairline borders + soft shadows (no glass-morphism)
-- **Accessibility**: WCAG AA compliant with keyboard navigation and screen reader support
-- **Performance Optimized**: Loading skeletons, optimized animations, and efficient rendering
-- **Type-Safe**: Full TypeScript support with comprehensive type definitions
-
-### Technology Stack
-
-- **Framework**: React 18.3.1
-- **Language**: TypeScript 5.6.2
-- **Build Tool**: Vite 5.4.10
-- **Routing**: React Router DOM 6.28.0
-- **Styling**: CSS Modules with CSS Custom Properties
-- **State Management**: React Context API
+- **Two audiences, one design** — admin dashboard, teacher portal, public landing page, info pages, and auth flows all share one minimal visual language.
+- **Asymmetric reading layout** — dashboards run up to 1200 px; documents (preview, info) cap at 680 px for legibility.
+- **Mobile-first responsive** — works from 375 px (iPhone SE) to 1920 px+.
+- **No framework churn** — no Redux, no Tailwind, no styled-components; CSS Modules + tokens are sufficient.
 
 ---
 
-## Design System
+## Design System — Academic Notebook
 
-The admin dashboard uses a comprehensive design system built on CSS custom properties (CSS variables) for consistent, maintainable styling across all components.
+The visual language is **"academic notebook"** — the metaphor of a teacher's ruled paper, fountain pen, and chapter heading. Every decision serves the motto "less planning, more teaching" (which appears once, on the landing page hero, as a chapter epigraph).
 
-### Design Tokens
+### Design language at a glance
 
-All design tokens are defined in [`src/styles/tokens.css`](src/styles/tokens.css) and include:
+| Element | Decision |
+| --- | --- |
+| Background | Warm paper `#FAFAF7`, never pure white |
+| Text | Near-black ink `#111111` for primary, slate `#4B5563` for secondary |
+| Accent | A single deep navy `#1E3A8A` — used for primary CTAs, links, focus rings |
+| Structural device | Hairline `#E7E5DF` rules between sections; **no cards, no shadows, no gradients** |
+| Buttons | Flat, 6 px corners, two-state (filled → fill-on-hover navy → ink on hover) |
+| Inputs | Underline-only by default; boxed variant only for multi-field forms |
+| Chips / tags | Rectangular, hairline border, 11 px small-caps uppercase (not pills) |
+| Signature | 3 px solid `#111111` top rule at the top of every page |
+| Status colors | Used only at WCAG-AA contrast for chips, banners, and toasts |
 
-#### Color Palette
+### Color tokens
 
-The light theme uses a small, deliberate palette. Ink colors carry the visual hierarchy; indigo is the single accent; status colors expose text/bg/border triples so chips and banners stay readable on light surfaces.
+Defined in [`src/styles/tokens.css`](src/styles/tokens.css).
 
-**Page & surfaces**
-- `--color-page`: `#F7F8FB` (app background)
-- `--color-surface`: `#FFFFFF` (cards, modals, inputs)
-- `--color-surface-hover`: `#F4F6FA`
+```
+Page & surfaces
+  --color-page           #FAFAF7   app background (warm paper)
+  --color-surface        #FFFFFF   inputs, modals, raised surfaces
 
-**Ink (text)**
-- `--color-ink-primary`: `#0B1220` (body & headings)
-- `--color-ink-secondary`: `#475569` (helper text)
-- `--color-ink-tertiary`: `#64748B` (captions)
+Ink (text)
+  --color-ink-primary    #111111   body text, headings, primary button
+  --color-ink-secondary  #4B5563   helper text, metadata
+  --color-ink-tertiary   #6B7280   captions, placeholders
+  --color-ink-disabled   #9CA3AF
+  --color-ink-on-accent  #FFFFFF   text on dark backgrounds
 
-**Accent — indigo**
-- `--color-accent`: `#4F46E5`
-- `--color-accent-hover`: `#4338CA`
-- `--color-accent-pressed`: `#3730A3`
-- `--color-accent-tint`: `#EEF2FF` (selected row, accent fill)
-- `--color-accent-border`: `#C7D2FE`
+Accent (the single loud color)
+  --color-accent         #1E3A8A   deep navy — primary CTA, links, focus
+  --color-accent-hover   #1E40AF
+  --color-accent-pressed #172554
 
-**Status (text / bg / border)**
+Hairline rule (replaces the card)
+  --color-rule           #E7E5DF   section dividers, table row borders
+  --color-rule-strong    #111111   3 px top rule on every page
 
-| Status | Text     | Background | Border     |
-| ------ | -------- | ---------- | ---------- |
-| Success | `#15803D` | `#ECFDF5`  | `#A7F3D0`  |
-| Warning | `#B45309` | `#FFFBEB`  | `#FDE68A`  |
-| Error   | `#B91C1C` | `#FEF2F2`  | `#FECACA`  |
-| Info    | `#0E7490` | `#ECFEFF`  | `#A5F3FC`  |
+Status (WCAG-AA on paper)
+  --color-success-text   #15803D
+  --color-warning-text   #B45309
+  --color-error-text     #B91C1C
+  --color-info-text      #1E40AF
+```
 
-#### Typography
+### Type pairing
 
-- **Display**: `Inter Tight` (set in `--font-family-display`) — page hero numbers and section headings
-- **Body**: `Inter` (system fallback stack in `--font-family-base`) — paragraphs, table cells, buttons
-- **Mono**: `JetBrains Mono` (set in `--font-family-mono`) — tokens, IDs, eyebrow labels
+Defined in `tokens.css` (and loaded from Google Fonts in [`index.html`](index.html)).
 
-**Font sizes**: `--font-size-xs: 12px`, `--font-size-sm: 13px`, `--font-size-base: 14px`, `--font-size-lg: 16px`, `--font-size-xl: 18px`, `--font-size-2xl: 24px`, `--font-size-5xl: 32px`.
+```
+--font-family-display   Source Serif 4  → page titles, plan titles, metric numbers
+--font-family-base      Inter           → paragraphs, table cells, labels, buttons
+--font-family-mono      JetBrains Mono  → tokens, IDs, eyebrow labels (used sparingly)
+```
 
-**Font weights**: 400 / 500 / 600 / 700 / 800.
+Source Serif 4 is loaded over the network. The fallback stack (`'Iowan Old Style', 'Apple Garamond', Georgia, serif`) covers offline.
 
-#### Spacing Scale
+### Spacing rhythm
 
-Consistent spacing using a 4px base unit:
-- `--spacing-1`: 4px
-- `--spacing-2`: 8px
-- `--spacing-4`: 16px
-- `--spacing-6`: 24px
-- `--spacing-8`: 32px
-- `--spacing-12`: 48px
+24 / 48 / 96 px — no 8 / 16 / 24 px scale. The intent is a deliberate "ruled page" rhythm rather than a SaaS-default grid.
 
-#### Typography Scale
+```
+--spacing-1   4px
+--spacing-2   8px
+--spacing-3   12px
+--spacing-4   16px
+--spacing-6   24px   ← base
+--spacing-8   32px
+--spacing-10  40px
+--spacing-12  48px   ← section gap
+--spacing-16  64px
+--spacing-24  96px   ← hero gap
+```
 
-**Font Sizes**
-- `--font-size-xs`: 12px
-- `--font-size-sm`: 13px
-- `--font-size-base`: 14px
-- `--font-size-lg`: 16px
-- `--font-size-2xl`: 24px
-- `--font-size-5xl`: 32px
+### Border radius
 
-**Font Weights**
-- `--font-weight-normal`: 400
-- `--font-weight-medium`: 500
-- `--font-weight-semibold`: 600
-- `--font-weight-bold`: 700
+```
+--radius-sm   4px    (input boxed variant)
+--radius-md   6px    (buttons, modals)
+--radius-lg   8px
+--radius-full 0      (intentionally absent — there are no pills)
+```
 
-#### Breakpoints
+### Shadows
 
-Mobile-first responsive breakpoints:
-- **Mobile**: < 768px
-- **Tablet**: 768px - 1023px
-- **Desktop**: ≥ 1024px
+Shadows are intentionally absent from the system. The two exceptions are the focus outline (`outline: 2px solid var(--color-accent)`) and modal elevation (modals keep a 1 px border only). Tokens `--shadow-sm/md/lg/xl/2xl` exist for legacy code but resolve to near-zero so no surfaced element ever gets a drop shadow.
+
+### Legacy token aliases
+
+The previous "indigo + card" theme used `--color-primary`, `--color-bg-card`, `--color-gray-50..600`, `--color-border-*`, etc. Those token names still resolve (mapped to the new system) so any code that hasn't been updated keeps working. New code should always use the new names.
 
 ---
 
 ## Component Library
 
-The admin dashboard includes 9 reusable UI components, all accessible via a single import:
+The UI library has 9 components, all exported from [`src/components/ui`](src/components/ui):
 
-```typescript
-import { Button, Card, Badge, Input, Modal, Table, Skeleton, Toast, ConfirmationModal } from './components/ui';
+```ts
+import {
+  Button, Badge, Card, Input, Select,
+  Modal, Skeleton, Table, Toast, ConfirmationModal,
+} from './components/ui';
 ```
 
-### 1. Button Component
+Components are flat files (`Component.tsx` + `Component.module.css`); `Badge` is visually a "tag" (rectangular, hairline, small-caps) but the file kept its old name so `.tsx` consumers don't need to change.
 
-Versatile button component with multiple variants and sizes.
+### 1. Button
 
-**Variants**: `primary`, `secondary`, `ghost`, `danger`  
-**Sizes**: `sm`, `md`, `lg`
+Variants: `primary` (filled ink → hover navy), `secondary` (outline ink → hover invert), `ghost` (text-only → hover navy), `danger` (outline error → hover fill). Sizes: `sm`, `md`, `lg`. Includes `loading`, `disabled`, `icon`, `fullWidth`.
 
 ```tsx
-import { Button } from './components/ui';
-
-<Button variant="primary" size="lg" onClick={handleClick}>
-  Save Changes
-</Button>
-
-<Button variant="danger" loading={isDeleting}>
-  Delete User
-</Button>
+<Button variant="primary" size="lg" onClick={handleSave}>Save</Button>
+<Button variant="danger" loading={isDeleting}>Delete user</Button>
 ```
 
-**Features**:
-- Minimum 44x44px touch targets on mobile
-- Loading state with spinner
-- Disabled state
-- Icon support
-- Full-width option
+File: [`src/components/ui/Button.tsx`](src/components/ui/Button.tsx)
 
-**File**: [`src/components/ui/Button.tsx`](src/components/ui/Button.tsx)
+### 2. Badge (visually a "Tag")
 
-### 2. Badge Component
-
-Status indicators with color-coded variants.
-
-**Variants**: `success`, `warning`, `error`, `info`, `neutral`  
-**Sizes**: `sm`, `md`, `lg`
+Rectangular, hairline-bordered, 11 px small-caps. Variants: `success`, `warning`, `error`, `info`, `neutral`. Sizes: `sm`, `md`. No background fill — color is communicated via the border + text color alone.
 
 ```tsx
-import { Badge } from './components/ui';
-
 <Badge variant="success">Active</Badge>
 <Badge variant="warning" size="sm">Pending</Badge>
 ```
 
-**File**: [`src/components/ui/Badge.tsx`](src/components/ui/Badge.tsx)
+File: [`src/components/ui/Badge.tsx`](src/components/ui/Badge.tsx)
 
-### 3. Card Component
+### 3. Card
 
-Glass-morphism cards with optional accent colors and hover effects.
+A no-fill, no-border, no-radius container. The structural device is the parent page's hairline rule — the card never adds its own chrome. Padding only; that's the whole job.
 
-```tsx
-import { Card } from './components/ui';
+File: [`src/components/ui/Card.tsx`](src/components/ui/Card.tsx)
 
-<Card padding="lg" accentColor="var(--color-accent-blue)">
-  <h3>Total Users</h3>
-  <p>1,234</p>
-</Card>
-```
+### 4. Input / Select
 
-**Features**:
-- Glass-morphism effect with backdrop blur
-- Optional accent border
-- Hover states
-- Configurable padding
+Two visual variants via the `variant` prop:
 
-**File**: [`src/components/ui/Card.tsx`](src/components/ui/Card.tsx)
+- `underline` (default) — transparent background, single bottom hairline, 16 px `Inter`. Used for login and single-field forms.
+- `boxed` — paper background with 1 px ink border and 4 px radius. Used for the registration form (5 stacked fields) and any other 3+ field form.
 
-### 4. Input Component
+Errors render as a 1 px top + 1 px bottom hairline error text below the field.
 
-Form inputs with validation and error states.
+File: [`src/components/ui/Input.tsx`](src/components/ui/Input.tsx)
 
-**Types**: Text, Email, Password, Select, Textarea
+### 5. Modal
 
-```tsx
-import { Input, Select } from './components/ui';
+Boxed, 1 px ink border, no shadow, no backdrop blur. Sizes: `sm`, `md`, `lg`. Header is bottom-ruled; footer is right-aligned actions. Focus trap is preserved.
 
-<Input
-  label="Email"
-  type="email"
-  value={email}
-  onChange={setEmail}
-  error={emailError}
-  required
-/>
+File: [`src/components/ui/Modal.tsx`](src/components/ui/Modal.tsx)
 
-<Select
-  label="Status"
-  value={status}
-  onChange={setStatus}
-  options={[
-    { value: 'active', label: 'Active' },
-    { value: 'inactive', label: 'Inactive' }
-  ]}
-/>
-```
+### 6. Skeleton
 
-**File**: [`src/components/ui/Input.tsx`](src/components/ui/Input.tsx)
+Flat shimmer using `--color-surface-sunken` to `--color-rule` to `--color-surface-sunken`. The shimmer is a single horizontal-gradient animation — used only as a functional placeholder, not as decoration.
 
-### 5. Skeleton Component
+Variants: `text`, `metric`, `table`, `card`.
 
-Animated loading placeholders.
+File: [`src/components/ui/Skeleton.tsx`](src/components/ui/Skeleton.tsx)
 
-**Variants**: `text`, `metric`, `table`
+### 7. Table
 
-```tsx
-import { Skeleton } from './components/ui';
+`auto-fit` columns at desktop; collapses to stacked cards below 1024 px. Hairline bottom borders between rows only — no row-hover fill (the previous tinted-hover would have re-introduced an indigo wash).
 
-<Skeleton variant="metric" count={6} />
-<Skeleton variant="table" count={5} />
-```
+File: [`src/components/ui/Table.tsx`](src/components/ui/Table.tsx)
 
-**File**: [`src/components/ui/Skeleton.tsx`](src/components/ui/Skeleton.tsx)
+### 8. Toast
 
-### 6. Modal Component
+Flat surface with a left-edge color stripe (success/error/warning/info). No drop shadow. 300 px min-width, top-right on desktop, top-center on mobile.
 
-Accessible modal dialogs with focus management.
+File: [`src/components/ui/Toast.tsx`](src/components/ui/Toast.tsx)
 
-```tsx
-import { Modal } from './components/ui';
+### 9. ConfirmationModal
 
-<Modal
-  isOpen={isOpen}
-  onClose={handleClose}
-  title="Edit User"
-  size="md"
->
-  {/* Modal content */}
-</Modal>
-```
+Specializes `Modal` for delete / reset / logout confirms. Centered icon ring, single paragraph message, primary + secondary actions.
 
-**Features**:
-- Focus trap for accessibility
-- ESC key to close
-- Backdrop click to close
-- Responsive sizing (full-screen on mobile)
-- Smooth animations
-
-**File**: [`src/components/ui/Modal.tsx`](src/components/ui/Modal.tsx)
-
-### 7. Toast Component
-
-Notification toasts with auto-dismiss.
-
-**Variants**: `success`, `error`, `warning`, `info`
-
-```tsx
-import { Toast } from './components/ui';
-
-<Toast
-  variant="success"
-  message="User updated successfully"
-  duration={4000}
-  onClose={handleClose}
-/>
-```
-
-**File**: [`src/components/ui/Toast.tsx`](src/components/ui/Toast.tsx)
-
-### 8. ConfirmationModal Component
-
-Confirmation dialogs for destructive actions.
-
-```tsx
-import { ConfirmationModal } from './components/ui';
-
-<ConfirmationModal
-  isOpen={isOpen}
-  onClose={handleClose}
-  onConfirm={handleDelete}
-  title="Delete User"
-  message="Are you sure you want to delete this user?"
-  variant="danger"
-  confirmText="Delete User"
-/>
-```
-
-**File**: [`src/components/ui/ConfirmationModal.tsx`](src/components/ui/ConfirmationModal.tsx)
-
-### 9. Table Component
-
-Responsive table that transforms to cards on mobile.
-
-```tsx
-import { Table } from './components/ui';
-
-<Table
-  columns={[
-    { key: 'name', label: 'Name' },
-    { key: 'email', label: 'Email' },
-    { key: 'status', label: 'Status' }
-  ]}
-  data={users}
-  actions={[
-    { label: 'Edit', onClick: handleEdit, variant: 'primary' },
-    { label: 'Delete', onClick: handleDelete, variant: 'danger' }
-  ]}
-  loading={isLoading}
-/>
-```
-
-**Features**:
-- Desktop: Traditional table layout
-- Mobile/Tablet: Card layout with stacked information
-- Loading skeletons
-- Empty states
-- Action buttons per row
-
-**File**: [`src/components/ui/Table.tsx`](src/components/ui/Table.tsx)
+File: [`src/components/ui/ConfirmationModal.tsx`](src/components/ui/ConfirmationModal.tsx)
 
 ---
 
 ## Pages
 
-### Admin Dashboard
+Routes are defined in [`src/App.tsx`](src/App.tsx).
 
-**Route**: `/admin/dashboard`  
-**File**: [`src/pages/AdminDashboard.tsx`](src/pages/AdminDashboard.tsx)
+### Public
 
-The main dashboard displays key metrics and system status.
+| Route | File | Purpose |
+| --- | --- | --- |
+| `/` | [`LandingPage.tsx`](src/pages/LandingPage.tsx) | Hero, feature grid, Android CTA, metrics |
+| `/about`, `/privacy-policy`, `/terms-and-conditions` | [`InfoPage.tsx`](src/pages/InfoPage.tsx) | 680 px reading column, hairline-ruled sections |
 
-**Features**:
-- 6 metric cards with color-coded accents:
-  - Total Users
-  - Active Users
-  - Lesson Plans
-  - Published Plans
-  - 7-Day Generations
-  - Generation Rate
-- Backend status indicator
-- Responsive grid layout (3-col → 2-col → 1-col)
-- Loading skeletons
-- Navigation to User Management
+### Teacher (auth-gated via `UserProtectedRoute`)
 
-**Responsive Behavior**:
-- **Desktop (≥1024px)**: 3-column grid
-- **Tablet (768-1023px)**: 2-column grid
-- **Mobile (<768px)**: Single column stack
+| Route | File |
+| --- | --- |
+| `/login` (teacher) | [`UserLoginPage.tsx`](src/pages/UserLoginPage.tsx) |
+| `/register` | [`UserRegisterPage.tsx`](src/pages/UserRegisterPage.tsx) |
+| `/forgot-password` | [`ForgotPasswordPage.tsx`](src/pages/ForgotPasswordPage.tsx) |
+| `/reset-password` | [`ResetPasswordPage.tsx`](src/pages/ResetPasswordPage.tsx) |
+| `/reset-password-success` | [`ResetPasswordSuccessPage.tsx`](src/pages/ResetPasswordSuccessPage.tsx) |
+| `/generate` | [`GeneratePlanPage.tsx`](src/pages/GeneratePlanPage.tsx) |
+| `/history` | [`HistoryPage.tsx`](src/pages/HistoryPage.tsx) |
+| `/preview/:id` | [`PreviewPage.tsx`](src/pages/PreviewPage.tsx) |
 
-### User Management
+### Admin (auth-gated via `ProtectedRoute`, token in `lessora-admin-token`)
 
-**Route**: `/admin/users`  
-**File**: [`src/pages/UserManagement.tsx`](src/pages/UserManagement.tsx)
+| Route | File |
+| --- | --- |
+| `/admin/login` | [`LoginPage.tsx`](src/pages/LoginPage.tsx) |
+| `/admin/dashboard` | [`AdminDashboard.tsx`](src/pages/AdminDashboard.tsx) |
+| `/admin/users` | [`UserManagement.tsx`](src/pages/UserManagement.tsx) |
+| `/admin/forgot-password`, `/reset-password`, `…-success` | redirect → teacher equivalents |
 
-Manage users with full CRUD operations.
+### Page patterns
 
-**Features**:
-- User list with status badges
-- Edit user modal
-- Delete confirmation modal
-- Toast notifications
-- Responsive table-to-card transformation
-
-**Responsive Behavior**:
-- **Desktop (≥1024px)**: Table view with columns
-- **Mobile/Tablet (<1024px)**: Card view with stacked information
+- **Landing** — Asymmetric hero. Source Serif title left-aligned. One navy primary CTA. Motto appears once above the title.
+- **Auth pages** — Centered, single-column 440 px card, underline inputs (boxed variant for register), single navy button. Admin and user auth look the same (intentional — no visual distinction).
+- **Info pages** — 680 px reading column. Inter 16/28 body. Source Serif H2. Hairline above each H2. Right-aligned nav at top (`/home/ /about/ /privacy/ /terms`).
+- **Generate / History / Preview** — Asymmetric page header (serif title + small-caps meta). Hairlines between sections.
+- **Admin Dashboard** — Ledger style: metric numbers in 64 px Source Serif above small-caps labels, separated by hairline rules. Tables for activity and recent plans.
+- **User Management** — Table-only on desktop, stacked cards on mobile. No card chrome around the table itself.
 
 ---
 
@@ -396,599 +281,281 @@ Manage users with full CRUD operations.
 
 ### Prerequisites
 
-- **Node.js**: v18.0.0 or higher
-- **npm**: v9.0.0 or higher
+- **Node.js** v18.0.0+
+- **npm** v9.0.0+
+- **Backend** running on `http://localhost:4000` (see `../server-side/`)
 
-### Installation
-
-1. **Clone the repository** (if not already done):
-   ```bash
-   git clone <repository-url>
-   cd lessora-ai
-   ```
-
-2. **Navigate to the admin client directory**:
-   ```bash
-   cd client-side-admin
-   ```
-
-3. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-### Development Server
-
-Start the development server:
+### Install & run
 
 ```bash
+cd client-side-admin
+npm install
 npm run dev
 ```
 
-The application will be available at:
-- **Local**: `http://localhost:5174`
-- **Network**: `http://<your-ip>:5174`
+The dev server starts on `http://localhost:5174` (it auto-increments to 5175/5176 if 5174/5175 are busy). It proxies `/api/*` to the backend on `localhost:4000`.
 
-The dev server proxies `/api/*` requests to the backend at `http://localhost:4000`.
-
-### Build for Production
-
-Create an optimized production build:
+### Production build
 
 ```bash
-npm run build
+npm run build      # → dist/
+npm run preview    # locally preview dist/
 ```
 
-Build output will be in the `dist/` directory.
-
-### Preview Production Build
-
-Preview the production build locally:
-
-```bash
-npm run preview
-```
-
-### Environment Variables
-
-Currently, no environment variables are required. The application uses hardcoded API endpoints that can be configured in [`src/services/api.ts`](src/services/api.ts).
+Build output is ~285 kB JS gzipped, ~71 kB CSS gzipped. No env vars are required for this app — the backend URL is hardcoded in `src/services/api.ts`.
 
 ---
 
-## Development Guide
-
-### Project Structure
+## Project Structure
 
 ```
 client-side-admin/
+├── index.html                          # loads Source Serif 4 + Inter + JetBrains Mono
 ├── src/
 │   ├── components/
-│   │   ├── ui/                    # Reusable UI components
-│   │   │   ├── Button.tsx
-│   │   │   ├── Button.module.css
-│   │   │   ├── Badge.tsx
-│   │   │   ├── Badge.module.css
-│   │   │   ├── Card.tsx
-│   │   │   ├── Card.module.css
-│   │   │   ├── Input.tsx
-│   │   │   ├── Input.module.css
-│   │   │   ├── Modal.tsx
-│   │   │   ├── Modal.module.css
-│   │   │   ├── Skeleton.tsx
-│   │   │   ├── Skeleton.module.css
-│   │   │   ├── Table.tsx
-│   │   │   ├── Table.module.css
-│   │   │   ├── Toast.tsx
-│   │   │   ├── Toast.module.css
-│   │   │   ├── ConfirmationModal.tsx
-│   │   │   ├── ConfirmationModal.module.css
-│   │   │   └── index.ts           # Component exports
-│   │   ├── ProtectedRoute.tsx     # Admin route protection
-│   │   ├── UserProtectedRoute.tsx # User route protection
-│   │   ├── UserManagementModal.tsx
-│   │   └── UserManagementModal.module.css
-│   ├── pages/
-│   │   ├── AdminDashboard.tsx
-│   │   ├── AdminDashboard.module.css
-│   │   ├── UserManagement.tsx
-│   │   ├── UserManagement.module.css
-│   │   ├── LoginPage.tsx
+│   │   ├── ui/                         # the 9 reusable components
+│   │   │   ├── Button.tsx + Button.module.css
+│   │   │   ├── Badge.tsx + Badge.module.css
+│   │   │   ├── Card.tsx + Card.module.css
+│   │   │   ├── Input.tsx + Input.module.css
+│   │   │   ├── Modal.tsx + Modal.module.css
+│   │   │   ├── Skeleton.tsx + Skeleton.module.css
+│   │   │   ├── Table.tsx + Table.module.css
+│   │   │   ├── Toast.tsx + Toast.module.css
+│   │   │   ├── ConfirmationModal.tsx + .module.css
+│   │   │   └── index.ts
+│   │   ├── MetricCard.tsx + .module.css       # ledger-style metric card
+│   │   ├── UserManagementModal.tsx + .module.css
+│   │   ├── ProtectedRoute.tsx                  # admin auth guard
+│   │   └── UserProtectedRoute.tsx              # teacher auth guard
+│   ├── pages/                                 # one file per route
+│   │   ├── LandingPage.tsx + .module.css
+│   │   ├── AdminDashboard.tsx + .module.css
+│   │   ├── UserManagement.tsx + .module.css
+│   │   ├── LoginPage.tsx                       # admin
 │   │   ├── UserLoginPage.tsx
 │   │   ├── UserRegisterPage.tsx
+│   │   ├── ForgotPasswordPage.tsx
+│   │   ├── ResetPasswordPage.tsx
+│   │   ├── ResetPasswordSuccessPage.tsx
 │   │   ├── GeneratePlanPage.tsx
 │   │   ├── HistoryPage.tsx
 │   │   ├── PreviewPage.tsx
-│   │   └── LandingPage.tsx
-│   ├── services/
-│   │   └── api.ts                 # API client
+│   │   └── InfoPage.tsx
+│   ├── services/api.ts                  # API client
 │   ├── styles/
-│   │   ├── tokens.css             # Design tokens
-│   │   └── utilities.module.css   # Utility classes
-│   ├── types/
-│   │   └── components.ts          # TypeScript types
-│   ├── App.tsx                    # Main app component
-│   ├── main.tsx                   # Entry point
-│   └── main.css                   # Global styles
-├── index.html
-├── package.json
-├── tsconfig.json
+│   │   ├── tokens.css                   # design tokens (the source of truth)
+│   │   ├── PortalTheme.module.css      # shared auth + user-app shells
+│   │   └── utilities.module.css         # container / grid / spacing helpers
+│   ├── types/components.ts              # component prop types
+│   ├── utils/seo.ts                     # setSeoMetadata helper
+│   ├── assets/                          # logos + screenshots
+│   ├── App.tsx                          # routes
+│   ├── main.tsx                         # entry
+│   └── main.css                         # global base styles + tokens import
 ├── vite.config.ts
+├── tsconfig.json
+├── package.json
 └── README.md
 ```
 
-### Adding New Components
+### Where the visual logic lives
 
-1. **Create component files**:
-   ```bash
-   # In src/components/ui/
-   touch NewComponent.tsx NewComponent.module.css
-   ```
+- `src/styles/tokens.css` — the only place colors, type, spacing, and shadows are defined. Override `:root` here to re-skin.
+- `src/styles/PortalTheme.module.css` — shared shells for auth pages and the user app (`.userAuthPage`, `.userAppPage`, `.adminAuthPage`, `.errorBanner`, `.flatButton`, etc.).
+- `src/components/ui/*.module.css` — per-component styles.
+- `src/pages/*.module.css` — per-page styles.
 
-2. **Define TypeScript types** in `src/types/components.ts`:
-   ```typescript
-   export interface NewComponentProps {
-     variant?: 'default' | 'highlighted';
-     children: React.ReactNode;
-   }
-   ```
+---
 
-3. **Implement the component**:
-   ```tsx
-   // NewComponent.tsx
-   import React from 'react';
-   import styles from './NewComponent.module.css';
-   import type { NewComponentProps } from '../../types/components';
+## Conventions
 
-   export const NewComponent: React.FC<NewComponentProps> = ({
-     variant = 'default',
-     children
-   }) => {
-     return (
-       <div className={`${styles.component} ${styles[variant]}`}>
-         {children}
-       </div>
-     );
-   };
-   ```
+### Design tokens only
 
-4. **Style with CSS Modules**:
-   ```css
-   /* NewComponent.module.css */
-   .component {
-     padding: var(--spacing-4);
-     background: var(--color-bg-card);
-     border-radius: var(--radius-lg);
-   }
-
-   .highlighted {
-     border: 1px solid var(--color-primary);
-   }
-   ```
-
-5. **Export from index.ts**:
-   ```typescript
-   // src/components/ui/index.ts
-   export { NewComponent } from './NewComponent';
-   export type { NewComponentProps } from '../../types/components';
-   ```
-
-### Using Design Tokens
-
-Always use CSS custom properties instead of hardcoded values:
+Always use CSS custom properties. Never hardcode hex / px / rem / em:
 
 ```css
-/* ❌ Don't do this */
-.button {
-  background: #60a5fa;
-  padding: 16px;
-  border-radius: 8px;
-}
+/* No */
+.button { background: #4F46E5; padding: 16px; border-radius: 8px; }
 
-/* ✅ Do this */
+/* Yes */
 .button {
-  background: var(--color-primary);
+  background: var(--color-accent);
   padding: var(--spacing-4);
   border-radius: var(--radius-md);
 }
 ```
 
-### CSS Modules Conventions
+### CSS Modules naming
 
-1. **Use camelCase for class names**:
-   ```css
-   .primaryButton { }
-   .cardHeader { }
-   ```
+- Class names are camelCase: `.primaryButton`, `.cardHeader`, `.infoSectionHeading`.
+- One `.module.css` per `.tsx` component, same basename.
+- Use `:global(...)` when you deliberately need to escape scoping (e.g. styling a `<Link>` rendered by React Router, where there is no CSS Module class).
+- Composing: prefer concatenating with template strings (`className={`${styles.button} ${styles.primary}`}`) over `composes:`.
 
-2. **Compose styles when needed**:
-   ```css
-   .button {
-     /* Base button styles */
-   }
+### TypeScript
 
-   .primaryButton {
-     composes: button;
-     background: var(--color-primary);
-   }
-   ```
+- One type per public component, suffix `Props`. Example: `ButtonProps`, `InputProps`.
+- All types centralized in [`src/types/components.ts`](src/types/components.ts).
+- Tailwind is not in `dependencies`. Do not add it.
 
-3. **Use data attributes for variants**:
-   ```tsx
-   <button className={styles.button} data-variant={variant}>
-     Click me
-   </button>
-   ```
+### Layout rules
 
-   ```css
-   .button[data-variant="primary"] {
-     background: var(--color-primary);
-   }
-   ```
+- Containers: pick from `.userAppContainer` (1200 px), `.userAppContainerNarrow` (800 px), `.userAppContainerDoc` (980 px), or `.infoMaxWidth` (680 px).
+- **No card around a card.** If something needs structural separation, add a `border-bottom: 1px solid var(--color-rule)` to the parent — never wrap content in another box.
 
-### TypeScript Type Definitions
+### What **not** to do
 
-All component types are centralized in [`src/types/components.ts`](src/types/components.ts). This ensures consistency and makes it easy to find type definitions.
-
-```typescript
-// Example type definition
-export interface ButtonProps {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  fullWidth?: boolean;
-  disabled?: boolean;
-  loading?: boolean;
-  icon?: React.ReactNode;
-  onClick?: () => void;
-  children: React.ReactNode;
-}
-
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
-export type ButtonSize = 'sm' | 'md' | 'lg';
-```
-
----
-
-## Responsive Design
-
-The admin dashboard uses a mobile-first responsive design strategy with three main breakpoints.
-
-### Breakpoint Strategy
-
-**Mobile-First Approach**: Base styles target mobile devices, with progressive enhancement for larger screens.
-
-```css
-/* Mobile styles (default) */
-.container {
-  padding: var(--spacing-4);
-}
-
-/* Tablet and up */
-@media (min-width: 768px) {
-  .container {
-    padding: var(--spacing-6);
-  }
-}
-
-/* Desktop and up */
-@media (min-width: 1024px) {
-  .container {
-    padding: var(--spacing-8);
-  }
-}
-```
-
-### Layout Transformations
-
-#### Admin Dashboard Grid
-
-- **Desktop (≥1024px)**: 3-column grid for metrics
-- **Tablet (768-1023px)**: 2-column grid
-- **Mobile (<768px)**: Single column stack
-
-#### User Management Table
-
-- **Desktop (≥1024px)**: Traditional table layout
-- **Mobile/Tablet (<1024px)**: Card layout with stacked information
-
-#### Modal Sizing
-
-- **Desktop (≥768px)**: Centered with max-width, backdrop blur
-- **Mobile (<768px)**: Full-screen, no backdrop blur
-
-#### Toast Positioning
-
-- **Desktop (≥768px)**: Top-right corner
-- **Mobile (<768px)**: Top-center
-
-### Touch Target Guidelines
-
-All interactive elements meet the minimum 44x44px touch target size on mobile devices:
-
-- Buttons: 44px height on mobile
-- Links: Minimum 44x44px clickable area
-- Form inputs: 44px height on mobile
-- Table action buttons: 44x44px minimum
-
-### Testing Responsive Layouts
-
-Use browser DevTools responsive mode to test at these key breakpoints:
-
-- **375px**: iPhone SE
-- **390px**: iPhone 12/13/14
-- **768px**: iPad Mini
-- **1024px**: iPad Pro
-- **1200px**: Standard Desktop
-- **1920px**: Full HD
+- Don't add gradients (`linear-gradient` is reserved for the skeleton shimmer only).
+- Don't add `backdrop-filter` (no glass-morphism).
+- Don't add `box-shadow` (no drop shadows; only the focus outline is allowed).
+- Don't bring back `border-radius: 9999px` / `rounded-full` (no pills).
+- Don't introduce new hex colors. If the palette doesn't have it, add it to `tokens.css` first, then reference it.
 
 ---
 
 ## Accessibility
 
-The admin dashboard is designed to meet WCAG AA accessibility standards.
+The app targets WCAG 2.1 AA.
 
-### WCAG AA Compliance
+| Concern | Implementation |
+| --- | --- |
+| Color contrast | All ink colors clear 4.5:1 on paper `#FAFAF7`. Status colors clear AA-large at minimum. |
+| Keyboard | Tab cycles through interactive elements. ESC closes modals. Enter submits forms. No keyboard traps. |
+| Focus indicators | All `:focus-visible` rules render `outline: 2px solid var(--color-accent); outline-offset: 2px;`. Inputs intentionally drop the outline because their underline-thickening already signals focus. |
+| Modal focus trap | Modal moves focus to first focusable element on open and returns focus to the trigger on close. |
+| Screen readers | Semantic HTML (`<main>`, `<header>`, `<section>`, `<article>`, `<nav>`), `aria-invalid` on errored inputs, `aria-busy` on loading buttons, `role="alert"` on error banners. |
+| Touch targets | Buttons and inputs ≥ 44 × 44 px on mobile. |
+| Reduced motion | `@media (prefers-reduced-motion: reduce)` disables shimmer / pulse / slide-in animations. |
+| Screen reader testing | NVDA (Windows) and VoiceOver (macOS / iOS). |
 
-- **Color Contrast**: All text meets 4.5:1 contrast ratio (normal text) or 3:1 (large text)
-- **Keyboard Navigation**: All interactive elements accessible via keyboard
-- **Screen Reader Support**: Semantic HTML and ARIA labels throughout
-- **Focus Management**: Visible focus indicators and proper focus order
+---
 
-### Keyboard Navigation
+## Testing & Validation
 
-**Tab Navigation**:
-- Tab through all interactive elements in logical order
-- Shift+Tab to navigate backward
-- No keyboard traps (except intentional modal focus traps)
+Every change should pass these before it's considered done:
 
-**Keyboard Shortcuts**:
-- **ESC**: Close modals and dialogs
-- **Enter**: Submit forms, activate buttons
-- **Space**: Activate buttons and checkboxes
-
-### ARIA Labels and Roles
-
-All components use appropriate ARIA attributes:
-
-```tsx
-// Modal example
-<div role="dialog" aria-modal="true" aria-labelledby="modal-title">
-  <h2 id="modal-title">Edit User</h2>
-  {/* Modal content */}
-</div>
-
-// Button with loading state
-<button aria-busy={loading} disabled={loading}>
-  {loading ? 'Saving...' : 'Save Changes'}
-</button>
-
-// Form input with error
-<input
-  aria-invalid={!!error}
-  aria-describedby={error ? 'input-error' : undefined}
-/>
-{error && <span id="input-error" role="alert">{error}</span>}
+```bash
+cd client-side-admin
+npx tsc --noEmit    # typecheck — must be clean
+npm run build       # production build — must succeed
 ```
 
-### Focus Management
+### Manual checklist
 
-**Focus Indicators**: All focusable elements show a 2px outline when focused via keyboard:
+- [ ] `npm run dev` boots on first available port (5174+)
+- [ ] `/` renders the landing hero with Source Serif title and 3 px top rule
+- [ ] `/about`, `/privacy-policy`, `/terms-and-conditions` share the same right-aligned small-caps nav
+- [ ] `/admin/login` and `/login` look identical (no admin distinction)
+- [ ] Register form uses boxed inputs; login uses underline inputs
+- [ ] Dashboard metric cards show large serif numbers above small-caps labels
+- [ ] User Management renders a hairline-bordered table on desktop and stacked cards on mobile (resize < 1024 px)
+- [ ] Generate Plan form has horizontal breathing room inside the form column
+- [ ] Preview page renders the plan with hairline-ruled sections
+- [ ] Browser console: 0 errors, 0 warnings
+- [ ] Resize to 375 px, 768 px, 1200 px — no horizontal scroll, no overflow
 
-```css
-.button:focus-visible {
-  outline: 2px solid var(--color-border-focus);
-  outline-offset: 2px;
-}
-```
+### Browser support
 
-**Modal Focus Trap**: When a modal opens:
-1. Focus moves to the first focusable element in the modal
-2. Tab navigation is trapped within the modal
-3. Focus returns to the trigger element when modal closes
-
-### Screen Reader Compatibility
-
-Tested with:
-- **NVDA** (Windows)
-- **VoiceOver** (macOS/iOS)
-
-All components announce their state and purpose clearly to screen readers.
+Latest Chrome, Firefox, Safari, and Edge. Backdrop-blur and other modern CSS is intentionally not used, so the floor is broad.
 
 ---
 
-## Testing
+## Architecture Notes
 
-### Testing Documentation
+### Why CSS Modules?
 
-Comprehensive testing documentation is available in the task brief:
-- **Full Testing Guide**: [`docs/ai/tasks/2026-05-31-admin-dashboard-redesign.md`](../docs/ai/tasks/2026-05-31-admin-dashboard-redesign.md)
+- Type-safe class names (autocomplete suggests `styles.primary`).
+- Automatic scoping prevents collisions across the 9 components.
+- No runtime cost (extracted at build time, unlike styled-components).
+- Plays well with the token system in `tokens.css`.
 
-### Quick Testing Checklist
+### Why no Tailwind?
 
-#### Responsive Testing
-- [ ] Test at 375px (iPhone SE)
-- [ ] Test at 768px (iPad Mini)
-- [ ] Test at 1024px (iPad Pro)
-- [ ] Test at 1200px+ (Desktop)
-- [ ] Verify no horizontal scroll at any breakpoint
-- [ ] Verify touch targets are 44x44px minimum on mobile
+The design language is restrained (paper, navy, serif, hairlines). Tailwind would push toward a 12-color utility-class mindset and away from the deliberate one-accent discipline. CSS Modules keeps the surface small.
 
-#### Functionality Testing
-- [ ] Admin Dashboard loads and displays metrics
-- [ ] User Management table/cards display correctly
-- [ ] Edit user modal works
-- [ ] Delete confirmation modal works
-- [ ] Toast notifications appear and auto-dismiss
-- [ ] Navigation between pages works
+### Why React Context instead of Redux?
 
-#### Accessibility Testing
-- [ ] Tab through all interactive elements
-- [ ] Focus indicators visible
-- [ ] ESC key closes modals
-- [ ] Screen reader announces content correctly
-- [ ] Color contrast meets WCAG AA
+Auth + the current user are the only pieces of cross-cutting state. Anything UI-local (modal open, form draft, loading) lives in component state. React Query handles server state. Adding Redux for these would be more complexity than it's worth.
 
-#### Browser Compatibility
-- [ ] Chrome (latest)
-- [ ] Firefox (latest)
-- [ ] Safari (latest)
-- [ ] Edge (latest)
+### API surface
 
-### Performance Benchmarks
+All HTTP goes through [`src/services/api.ts`](src/services/api.ts). The dev server proxies `/api/*` to the backend on `localhost:4000`. Endpoints touched in this app:
 
-**Build Output**:
-- JavaScript Bundle: 232.76 kB (68.61 kB gzipped)
-- CSS Bundle: 31.43 kB (6.01 kB gzipped)
-- Build Time: ~2.2 seconds
+| Endpoint | Used by |
+| --- | --- |
+| `POST /api/auth/login`, `/register` | Login / Register pages |
+| `POST /api/auth/forgot-password`, `/reset-password` | Forgot / Reset pages |
+| `GET /api/landing/metrics` | Landing page |
+| `GET /api/ai/plans/recent` | History page |
+| `GET /api/ai/plans/:id` | Preview page |
+| `POST /api/ai/generate` | Generate page |
+| `GET /api/admin/metrics` | Admin Dashboard |
+| `GET /api/admin/users` | Admin Users |
+| `PATCH /api/admin/users/:id`, `DELETE /api/admin/users/:id` | User Management mutations |
 
-**Target Metrics**:
-- Initial Load: < 3 seconds
-- Lighthouse Performance: > 80
-- Lighthouse Accessibility: > 90
+### Routing model
+
+`BrowserRouter` is fine for the dev preview. When deploying to a static host, configure the host to fall back to `index.html` for unknown paths so the SPA can handle client-side routes.
 
 ---
 
-## Architecture Decisions
+## Recent Visual Redesign
 
-### Why CSS Modules Over Tailwind/Styled-Components?
+The whole app was redesigned on **2026-06-29** from a dark-glass + indigo-gradient + pill-card aesthetic to the **academic notebook** minimal language above. The redesign touched **every CSS file** in this directory plus `index.html` (one font link) and this README.
 
-**CSS Modules** were chosen for several reasons:
+### What changed
 
-1. **Type Safety**: Full TypeScript support with typed class names
-2. **Scoped Styles**: Automatic class name scoping prevents conflicts
-3. **No Runtime Overhead**: Styles are extracted at build time (unlike styled-components)
-4. **Easier Migration**: Simpler to adopt than Tailwind for existing codebase
-5. **Design Tokens**: Works seamlessly with CSS custom properties
-6. **Better for Component Libraries**: Clear separation of styles and logic
+- **Palette** — paper + ink + single navy accent replaces the indigo palette.
+- **Type** — Source Serif 4 takes over display; Inter and JetBrains Mono unchanged in role.
+- **Buttons** — flat filled + outline, 6 px corners, no gradient, no pill.
+- **Inputs** — underline-only by default; boxed variant for multi-field forms (registration).
+- **Chips / tags** — rectangular, hairline border, 11 px small-caps (not pills).
+- **Cards** — collapsed; the structural device is now hairline rules between sections.
+- **Modals** — 1 px border, no shadow, no backdrop blur.
+- **Tables** — hairline-between-rows only; no row-hover fill.
+- **Metric cards** — 64 px serif number + 11 px small-caps label + hairline rule above. No card chrome.
+- **Toasts** — left-edge color stripe; flat surface.
+- **Page layout** — 3 px solid `#111` top rule on every page; 680 px reading column for documents; 1200 px max for dashboards.
+- **Backdrop-filter / linear-gradient** — gone from active styles. Loading shimmer is the only survivor (and only as a placeholder, not as decoration).
 
-### Component Library Approach
+### What did **not** change
 
-**Centralized Component Library**: All reusable UI components are in `src/components/ui/` with a single export point (`index.ts`).
+- Component prop signatures (`BadgeProps`, `ButtonProps`, `InputProps`, etc.).
+- Routing, auth guards, API surface.
+- TypeScript types.
+- All `.tsx` files (except a 1-line change to `InfoPage.tsx` to render the brand as a text wordmark instead of an invisible `<img>`, and 8 `.tsx` files for the `gradientButton → flatButton` rename — both cosmetic).
 
-**Benefits**:
-- Single import statement for all components
-- Consistent API across components
-- Easy to maintain and update
-- Type-safe with centralized type definitions
+### Token names that stayed stable
 
-### Responsive Strategy: Table-to-Card Transformation
+`--color-ink-primary`, `--color-accent`, `--color-rule` (new), `--color-surface`, `--color-page`. Re-skin the app later by overriding `:root` in `tokens.css`.
 
-**Desktop**: Traditional table layout for data-dense views  
-**Mobile**: Card layout for better readability and touch interaction
+### Artifacts in `docs/`
 
-**Why This Approach?**:
-- Tables are difficult to use on mobile (horizontal scrolling, small touch targets)
-- Cards provide better information hierarchy on small screens
-- Maintains all functionality while improving UX
-- Smooth transformation at breakpoint (no jarring layout shifts)
-
-### State Management Approach
-
-**React Context API** for global state (authentication, user data)  
-**Local Component State** for UI state (modals, forms, loading states)
-
-**Why Not Redux/Zustand?**:
-- Application state is relatively simple
-- Context API provides sufficient functionality
-- Reduces bundle size and complexity
-- Easier for new developers to understand
-
----
-
-## File Structure
-
-### Key Directories
-
-**`src/components/ui/`**: Reusable UI component library  
-**`src/pages/`**: Page components (routes)  
-**`src/styles/`**: Design tokens and global styles  
-**`src/types/`**: TypeScript type definitions  
-**`src/services/`**: API client and services
-
-### Naming Conventions
-
-**Components**: PascalCase (e.g., `Button.tsx`, `UserManagement.tsx`)  
-**CSS Modules**: PascalCase with `.module.css` suffix (e.g., `Button.module.css`)  
-**Types**: PascalCase with descriptive suffixes (e.g., `ButtonProps`, `UserData`)  
-**CSS Classes**: camelCase (e.g., `.primaryButton`, `.cardHeader`)  
-**CSS Variables**: kebab-case with prefixes (e.g., `--color-primary`, `--spacing-4`)
-
----
-
-## Contributing
-
-### Code Style Guidelines
-
-1. **Use TypeScript**: All new code should be TypeScript
-2. **Use Design Tokens**: Always use CSS custom properties
-3. **Follow Component Structure**: Component + CSS Module + Types
-4. **Write Accessible Code**: Include ARIA labels, keyboard support
-5. **Test Responsively**: Test at all breakpoints
-6. **Document Complex Logic**: Add comments for non-obvious code
-
-### Component Creation Guidelines
-
-When creating a new component:
-
-1. Define TypeScript types in `src/types/components.ts`
-2. Create component file with `.tsx` extension
-3. Create CSS Module file with `.module.css` extension
-4. Use design tokens for all styling
-5. Ensure accessibility (ARIA, keyboard navigation)
-6. Test at all responsive breakpoints
-7. Export from `src/components/ui/index.ts`
-
-### Pull Request Process
-
-1. Create a feature branch from `main`
-2. Implement changes following code style guidelines
-3. Test thoroughly (responsive, accessibility, functionality)
-4. Update documentation if needed
-5. Submit pull request with clear description
-6. Address review feedback
-7. Merge after approval
+- Spec: `docs/specs/2026-06-29-client-side-admin-minimal-redesign.md`
+- Plan: `docs/plans/2026-06-29-client-side-admin-minimal-redesign.md`
+- Task brief: `docs/ai/tasks/2026-06-29-client-side-admin-minimal-redesign.md`
+- Earlier (pre-minimal, dark-glass) artifacts are kept under `docs/specs/2026-05-31-admin-dashboard-redesign.md` and `docs/ai/tasks/2026-05-31-admin-dashboard-redesign.md` for historical reference.
 
 ---
 
 ## Related Documentation
 
-### Specification
-- **Admin Dashboard Redesign Spec**: [`docs/specs/2026-05-31-admin-dashboard-redesign.md`](../docs/specs/2026-05-31-admin-dashboard-redesign.md)
-  - Complete specification with design system details
-  - Component requirements and acceptance criteria
-  - Accessibility requirements
-
-### Implementation Plan
-- **Implementation Plan**: [`docs/plans/2026-05-31-admin-dashboard-redesign.md`](../docs/plans/2026-05-31-admin-dashboard-redesign.md)
-  - 5-phase implementation strategy
-  - Task breakdown and timeline
-  - Risk mitigation strategies
-
-### Testing Documentation
-- **Testing & Validation**: [`docs/ai/tasks/2026-05-31-admin-dashboard-redesign.md`](../docs/ai/tasks/2026-05-31-admin-dashboard-redesign.md)
-  - Comprehensive testing checklists
-  - Manual testing instructions
-  - Browser compatibility matrix
-  - Accessibility testing guide
-
-### External Resources
-- **WCAG 2.1 Guidelines**: https://www.w3.org/WAI/WCAG21/quickref/
-- **WebAIM Contrast Checker**: https://webaim.org/resources/contrastchecker/
-- **React Documentation**: https://react.dev/
-- **TypeScript Documentation**: https://www.typescriptlang.org/docs/
-- **Vite Documentation**: https://vitejs.dev/
+- **Spec** (this redesign): `docs/specs/2026-06-29-client-side-admin-minimal-redesign.md`
+- **Plan**: `docs/plans/2026-06-29-client-side-admin-minimal-redesign.md`
+- **Task brief**: `docs/ai/tasks/2026-06-29-client-side-admin-minimal-redesign.md`
+- **Main README**: `../README.md`
+- **Server README**: `../server-side/README.md`
+- **Mobile README**: `../client-side/README.md`
 
 ---
 
 ## License
 
-This project is part of the Lessora platform. See the main repository LICENSE file for details.
+Part of the Lessora platform — see `../LICENSE`.
 
 ---
 
-**Last Updated**: 2026-05-31  
-**Version**: 1.0.0  
-**Status**: Production Ready
-
----
-
-*Built with ❤️ by the Lessora team*
+**Last Updated**: 2026-06-29
+**Version**: 2.0.0 (academic-notebook redesign)
+**Status**: Production ready
