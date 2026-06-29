@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -8,6 +9,7 @@ import {
 } from "react-icons/fa";
 import LessoraLogo from "../assets/Transparent Logo.png";
 import { fetchLandingMetrics } from "../services/api";
+import { setSeoMetadata } from "../utils/seo";
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -21,6 +23,15 @@ export default function LandingPage() {
     retry: 1,
   });
   const numberFormatter = new Intl.NumberFormat();
+  
+  useEffect(() => {
+    setSeoMetadata({
+      title: "Lessora AI | AI-Powered Lesson Planning for Educators",
+      description:
+        "Lessora AI helps educators create structured lesson plans, objectives, activities, and assessments in minutes.",
+    });
+  }, []);
+
   const metrics = [
     {
       label: "Active educators",

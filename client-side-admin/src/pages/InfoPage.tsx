@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import LessoraLogo from "../assets/Transparent Logo.png";
+import { setSeoMetadata } from "../utils/seo";
 
 type InfoPageType = "privacy" | "terms" | "about";
 type InfoContent = { title: string; updated: string; intro: string; sections: Array<{ heading: string; body: string }> };
@@ -12,6 +14,14 @@ const content: Record<InfoPageType, InfoContent> = {
 
 export default function InfoPage({ page }: { page: InfoPageType }) {
   const pageContent = content[page];
+
+  useEffect(() => {
+    setSeoMetadata({
+      title: `${pageContent.title} | Lessora AI`,
+      description: pageContent.intro,
+    });
+  }, [pageContent]);
+
   return (
     <main style={{ minHeight: "100vh", padding: "24px", color: "#0f172a", background: "linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%)" }}>
       <div style={{ width: "100%", maxWidth: "920px", margin: "0 auto" }}>
