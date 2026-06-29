@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import LessoraLogo from "../assets/Transparent Logo.png";
 import { setSeoMetadata } from "../utils/seo";
+import styles from "../styles/PortalTheme.module.css";
 
 type InfoPageType = "privacy" | "terms" | "about";
 type InfoContent = { title: string; updated: string; intro: string; sections: Array<{ heading: string; body: string }> };
@@ -23,24 +24,27 @@ export default function InfoPage({ page }: { page: InfoPageType }) {
   }, [pageContent]);
 
   return (
-    <main style={{ minHeight: "100vh", padding: "24px", color: "#0f172a", background: "linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%)" }}>
-      <div style={{ width: "100%", maxWidth: "920px", margin: "0 auto" }}>
-        <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px", padding: "8px 0 36px", flexWrap: "wrap" }}>
-          <Link to="/"><img src={LessoraLogo} alt="Lessora AI" style={{ width: "160px", height: "auto", objectFit: "contain" }} /></Link>
-          <nav style={{ display: "flex", gap: "18px", flexWrap: "wrap", fontSize: "14px", fontWeight: "700" }}>
-            <Link to="/about">About</Link><Link to="/privacy-policy">Privacy Policy</Link><Link to="/terms-and-conditions">Terms & Conditions</Link>
+    <main className={styles.userAuthPage} style={{ alignItems: "flex-start" }}>
+      <div className={styles.infoMaxWidth}>
+        <header className={styles.infoPageHeader}>
+          <Link to="/" className={styles.infoLogo}>Lessora AI</Link>
+          <nav className={styles.infoNav}>
+            <Link to="/">Home</Link>
+            <Link to="/about">About</Link>
+            <Link to="/privacy-policy">Privacy Policy</Link>
+            <Link to="/terms-and-conditions">Terms &amp; Conditions</Link>
           </nav>
         </header>
-        <section style={{ maxWidth: "760px", padding: "40px 0 56px" }}>
-          <p style={{ margin: "0 0 12px", color: "#2563eb", fontSize: "13px", fontWeight: "800", letterSpacing: "0.08em", textTransform: "uppercase" }}>{pageContent.updated}</p>
-          <h1 style={{ margin: "0 0 18px", color: "#0f172a", fontSize: "42px", lineHeight: "1.1", fontWeight: "900" }}>{pageContent.title}</h1>
-          <p style={{ margin: 0, color: "#475569", fontSize: "18px", lineHeight: "1.7" }}>{pageContent.intro}</p>
+        <section className={styles.infoHeroSection}>
+          <p className={styles.infoEyebrow}>{pageContent.updated}</p>
+          <h1 className={styles.infoHeroTitle}>{pageContent.title}</h1>
+          <p className={styles.infoIntro}>{pageContent.intro}</p>
         </section>
-        <section style={{ display: "grid", gap: "22px", paddingBottom: "56px" }}>
+        <section className={styles.infoBody}>
           {pageContent.sections.map((section) => (
-            <article key={section.heading} style={{ paddingBottom: "22px", borderBottom: "1px solid #dbe4f0" }}>
-              <h2 style={{ margin: "0 0 10px", color: "#0f172a", fontSize: "22px", fontWeight: "800" }}>{section.heading}</h2>
-              <p style={{ margin: 0, color: "#475569", fontSize: "16px", lineHeight: "1.75" }}>{section.body}</p>
+            <article key={section.heading} className={styles.infoArticle}>
+              <h2 className={styles.infoSectionHeading}>{section.heading}</h2>
+              <p className={styles.infoSectionBody}>{section.body}</p>
             </article>
           ))}
         </section>

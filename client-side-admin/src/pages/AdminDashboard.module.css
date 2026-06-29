@@ -1,14 +1,27 @@
 @import '../styles/tokens.css';
 
-/* ========================================
-   PAGE CONTAINER
-   ======================================== */
-
 .page {
   min-height: 100vh;
-  color: var(--color-white);
-  padding: var(--spacing-6);
-  background: linear-gradient(180deg, var(--color-bg-primary), var(--color-bg-secondary) 35%, var(--color-bg-tertiary));
+  background: var(--color-page);
+  color: var(--color-ink-primary);
+  padding: var(--spacing-12) var(--spacing-6);
+}
+
+.page::before {
+  content: "";
+  display: block;
+  height: 3px;
+  background: var(--color-ink-primary);
+  margin: calc(-1 * var(--spacing-12)) calc(-1 * var(--spacing-6)) var(--spacing-12);
+}
+
+@media (min-width: 768px) {
+  .page {
+    padding: var(--spacing-16) var(--spacing-8);
+  }
+  .page::before {
+    margin: calc(-1 * var(--spacing-16)) calc(-1 * var(--spacing-8)) var(--spacing-12);
+  }
 }
 
 .container {
@@ -16,20 +29,14 @@
   margin: 0 auto;
 }
 
-/* ========================================
-   HEADER SECTION
-   ======================================== */
-
 .header {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  margin-bottom: var(--spacing-5);
-  border-radius: var(--radius-4xl);
-  padding: var(--spacing-6) var(--spacing-5);
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border-primary);
-  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-16);
+  padding-bottom: var(--spacing-8);
+  border-bottom: 1px solid var(--color-ink-primary);
+  gap: var(--spacing-6);
 }
 
 .headerContent {
@@ -38,26 +45,30 @@
 }
 
 .headerLabel {
-  margin: 0 0 var(--spacing-2);
-  color: var(--color-primary);
-  font-size: var(--font-size-xs);
+  margin: 0 0 var(--spacing-3);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
   letter-spacing: var(--letter-spacing-wider);
   text-transform: uppercase;
-  font-weight: var(--font-weight-bold);
+  color: var(--color-ink-tertiary);
 }
 
 .headerTitle {
   margin: 0;
+  font-family: var(--font-family-display);
   font-size: var(--font-size-4xl);
-  font-weight: var(--font-weight-extrabold);
+  font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-ink-primary);
 }
 
 .headerDescription {
-  margin: var(--spacing-2) 0 0;
-  color: var(--color-gray-300);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-normal);
+  margin: var(--spacing-3) 0 0;
+  color: var(--color-ink-secondary);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-relaxed);
 }
 
 .headerActions {
@@ -67,56 +78,57 @@
   flex-shrink: 0;
 }
 
-/* ========================================
-   INFO CARDS GRID
-   ======================================== */
-
 .infoGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-4);
-  margin-bottom: var(--spacing-6);
+  gap: var(--spacing-8);
+  margin-bottom: var(--spacing-16);
 }
 
 .infoCard {
-  /* Card component handles base styles */
+  padding: var(--spacing-6) 0;
+  border-top: 1px solid var(--color-ink-primary);
 }
 
 .infoCardLabel {
-  margin: 0 0 var(--spacing-2);
-  color: var(--color-gray-300);
-  font-size: var(--font-size-sm);
+  margin: 0 0 var(--spacing-3);
+  color: var(--color-ink-tertiary);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
   font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
 }
 
 .infoCardTitle {
   margin: 0;
+  font-family: var(--font-family-display);
   font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-extrabold);
+  font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-ink-primary);
 }
 
 .infoCardDescription {
   margin: var(--spacing-3) 0 0;
-  color: var(--color-gray-300);
+  color: var(--color-ink-secondary);
   font-size: var(--font-size-sm);
-  line-height: var(--line-height-normal);
+  line-height: var(--line-height-relaxed);
 }
 
-/* ========================================
-   STATISTICS SECTION
-   ======================================== */
-
 .statsSection {
-  /* Card component handles base styles */
+  padding: var(--spacing-12) 0;
+  border-top: 1px solid var(--color-ink-primary);
+  border-bottom: 1px solid var(--color-rule);
 }
 
 .statsHeader {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  margin-bottom: var(--spacing-4);
-  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-8);
+  gap: var(--spacing-6);
 }
 
 .statsHeaderContent {
@@ -125,121 +137,111 @@
 }
 
 .statsLabel {
-  margin: 0 0 var(--spacing-2);
-  color: var(--color-primary);
-  font-size: var(--font-size-xs);
+  margin: 0 0 var(--spacing-3);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
   letter-spacing: var(--letter-spacing-wider);
   text-transform: uppercase;
-  font-weight: var(--font-weight-bold);
+  color: var(--color-ink-tertiary);
 }
 
 .statsTitle {
   margin: 0;
+  font-family: var(--font-family-display);
   font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-extrabold);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-ink-primary);
 }
 
 .statsStatus {
-  color: var(--color-gray-400);
-  font-size: var(--font-size-xs);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
   font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-ink-tertiary);
   flex-shrink: 0;
 }
 
 .dashboardMetricsGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--spacing-4);
-  margin-bottom: var(--spacing-5);
+  gap: var(--spacing-8);
+  margin-bottom: var(--spacing-8);
 }
-
-/* ========================================
-   ERROR BANNER
-   ======================================== */
 
 .errorBanner {
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-3) var(--spacing-4);
-  background: rgba(239, 68, 68, 0.16);
-  color: var(--color-error-light);
-  border: 1px solid rgba(248, 113, 113, 0.26);
-  margin-bottom: var(--spacing-4);
+  padding: var(--spacing-3) 0;
+  color: var(--color-error-text);
+  border-top: 1px solid var(--color-error-text);
+  border-bottom: 1px solid var(--color-error-text);
+  margin-bottom: var(--spacing-6);
   font-size: var(--font-size-sm);
-  line-height: var(--line-height-normal);
 }
-
-/* ========================================
-   METRICS GRID
-   ======================================== */
 
 .metricsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-4);
+  gap: var(--spacing-8);
 }
 
 .metricCard {
-  border-radius: var(--radius-2xl);
-  padding: var(--spacing-4);
-  background: rgba(2, 8, 23, 0.88);
-  transition: all var(--transition-base);
+  padding: var(--spacing-6) 0;
+  border-top: 1px solid var(--color-ink-primary);
+  transition: border-color var(--transition-fast);
 }
 
 .metricCard:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  border-top-color: var(--color-accent);
 }
 
 .metricHeader {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
   margin-bottom: var(--spacing-3);
 }
 
 .metricLabel {
-  color: var(--color-gray-200);
-  font-size: var(--font-size-xs);
+  color: var(--color-ink-tertiary);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
-  font-weight: var(--font-weight-semibold);
 }
 
 .metricDot {
-  width: 10px;
-  height: 10px;
-  border-radius: var(--radius-full);
+  width: 8px;
+  height: 8px;
   flex-shrink: 0;
 }
 
 .metricValue {
-  font-size: var(--font-size-5xl);
-  font-weight: var(--font-weight-extrabold);
-  margin-bottom: var(--spacing-2);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-3);
   line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-ink-primary);
 }
 
 .metricHelper {
-  color: var(--color-gray-300);
+  color: var(--color-ink-secondary);
   font-size: var(--font-size-sm);
-  line-height: var(--line-height-normal);
+  line-height: var(--line-height-relaxed);
 }
-
-/* ========================================
-   SKELETON LOADING STATES
-   ======================================== */
 
 .skeletonGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-4);
+  gap: var(--spacing-8);
 }
 
-/* ========================================
-   RESPONSIVE BREAKPOINTS
-   ======================================== */
-
-/* Tablet: 768px - 1199px (2-column layout) */
+/* Tablet */
 @media (max-width: 1199px) and (min-width: 768px) {
   .infoGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -256,43 +258,34 @@
   }
 }
 
-/* Mobile: < 768px (single column layout) */
+/* Mobile */
 @media (max-width: 767px) {
   .page {
-    padding: var(--spacing-4);
+    padding: var(--spacing-8) var(--spacing-4);
+  }
+
+  .page::before {
+    margin: calc(-1 * var(--spacing-8)) calc(-1 * var(--spacing-4)) var(--spacing-8);
   }
 
   .header {
     flex-direction: column;
     align-items: flex-start;
-    padding: var(--spacing-5);
-  }
-
-  .headerContent {
-    width: 100%;
   }
 
   .headerTitle {
     font-size: var(--font-size-2xl);
   }
 
-  .headerDescription {
-    font-size: var(--font-size-sm);
-  }
-
   .headerActions {
     width: 100%;
     flex-direction: column;
-    gap: var(--spacing-2);
-  }
-
-  .headerActions > * {
-    width: 100%;
+    align-items: stretch;
   }
 
   .infoGrid {
     grid-template-columns: 1fr;
-    gap: var(--spacing-3);
+    gap: var(--spacing-4);
   }
 
   .infoCardTitle {
@@ -304,66 +297,39 @@
     align-items: flex-start;
   }
 
-  .statsTitle {
-    font-size: var(--font-size-xl);
-  }
-
   .metricsGrid,
   .dashboardMetricsGrid,
   .skeletonGrid {
     grid-template-columns: 1fr;
-    gap: var(--spacing-3);
+    gap: var(--spacing-4);
   }
 
   .metricValue {
-    font-size: var(--font-size-4xl);
-  }
-
-  .metricCard {
-    padding: var(--spacing-5);
+    font-size: var(--font-size-5xl);
   }
 }
 
-/* Extra small mobile: < 375px */
+/* XS */
 @media (max-width: 374px) {
-  .page {
-    padding: var(--spacing-3);
-  }
-
-  .header {
-    padding: var(--spacing-4);
-  }
-
   .headerTitle {
     font-size: var(--font-size-xl);
   }
 
   .metricValue {
-    font-size: var(--font-size-3xl);
+    font-size: var(--font-size-4xl);
   }
 }
 
-/* ========================================
-   ACCESSIBILITY
-   ======================================== */
-
-/* Focus visible styles for keyboard navigation */
+/* Accessibility */
 .header:focus-visible,
 .infoCard:focus-visible,
 .metricCard:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
 
-/* Reduced motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
   .metricCard {
     transition: none;
   }
-
-  .metricCard:hover {
-    transform: none;
-  }
 }
-
-/* Made with Bob */

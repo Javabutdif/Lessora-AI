@@ -1,25 +1,24 @@
 @import '../../styles/tokens.css';
 
-/* Base Button Styles */
+/* Base Button Styles — minimalist flat, two-state, rectangular */
 .button {
-  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--spacing-2);
   font-family: var(--font-family-base);
   font-weight: var(--font-weight-semibold);
-  border: none;
+  border: 1px solid transparent;
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
   white-space: nowrap;
   user-select: none;
   outline: none;
 }
 
 .button:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
 
@@ -28,108 +27,94 @@
   opacity: 0.5;
 }
 
-/* Variant Styles */
+/* Primary: filled black, hover = navy */
 .primary {
-  background: var(--color-primary);
-  color: var(--color-white);
-  border: 1px solid transparent;
+  background: var(--color-ink-primary);
+  color: var(--color-ink-on-accent);
+  border-color: var(--color-ink-primary);
 }
 
 .primary:hover:not(:disabled) {
-  background: var(--color-primary-dark);
-  box-shadow: var(--shadow-glow-blue);
+  background: var(--color-accent);
+  border-color: var(--color-accent);
 }
 
-.primary:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
+/* Secondary: transparent with ink border, hover inverts */
 .secondary {
   background: transparent;
-  color: var(--color-gray-100);
-  border: 1px solid var(--color-border-input);
+  color: var(--color-ink-primary);
+  border-color: var(--color-ink-primary);
 }
 
 .secondary:hover:not(:disabled) {
-  background: var(--color-bg-input);
-  border-color: var(--color-border-focus);
+  background: var(--color-ink-primary);
+  color: var(--color-ink-on-accent);
 }
 
-.secondary:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
+/* Danger: outlined red, hover fills */
 .danger {
-  background: var(--color-error);
-  color: var(--color-white);
-  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-error-text);
+  border-color: var(--color-error-text);
 }
 
 .danger:hover:not(:disabled) {
-  background: #dc2626;
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+  background: var(--color-error-text);
+  color: var(--color-ink-on-accent);
+  border-color: var(--color-error-text);
 }
 
-.danger:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
+/* Ghost: text-only */
 .ghost {
   background: transparent;
-  color: var(--color-gray-100);
-  border: 1px solid transparent;
+  color: var(--color-ink-primary);
+  border-color: transparent;
 }
 
 .ghost:hover:not(:disabled) {
-  background: var(--color-bg-input);
+  color: var(--color-accent);
 }
 
-.ghost:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
-/* Size Styles */
+/* Size Styles — modest scale, no oversized buttons */
 .small {
   height: 32px;
-  padding: var(--spacing-2) var(--spacing-3);
+  padding: 0 var(--spacing-3);
   font-size: var(--font-size-sm);
+  min-height: 32px;
 }
 
 .medium {
-  height: 40px;
-  padding: var(--spacing-2) var(--spacing-4);
+  height: 44px;
+  padding: 0 var(--spacing-6);
   font-size: var(--font-size-base);
+  min-height: 44px;
 }
 
 .large {
-  height: 44px;
-  padding: var(--spacing-3) var(--spacing-5);
+  height: 52px;
+  padding: 0 var(--spacing-8);
   font-size: var(--font-size-lg);
+  min-height: 52px;
 }
 
-/* Mobile touch target optimization */
 @media (max-width: 768px) {
   .button {
     min-height: 44px;
-    min-width: 44px;
   }
 }
 
-/* Full Width */
 .fullWidth {
   width: 100%;
 }
 
-/* Loading State */
 .loading {
   pointer-events: none;
 }
 
 .loading .content {
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
-/* Spinner */
 .spinner {
   position: absolute;
   left: 50%;
@@ -141,21 +126,16 @@
 }
 
 .spinner svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
-/* Icon */
 .icon {
   display: flex;
   align-items: center;
@@ -178,11 +158,8 @@
   height: 18px;
 }
 
-/* Content */
 .content {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
-/* Made with Bob */

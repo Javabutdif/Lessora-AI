@@ -1,63 +1,121 @@
-/* Design Tokens - CSS Custom Properties */
-/* Reference: Admin Dashboard Redesign Specification */
+/* Design Tokens — "Academic notebook" minimalist palette */
+/* Lessora AI */
+/* Spec: docs/specs/2026-06-29-client-side-admin-minimal-redesign.md */
+/* Design language: warm paper, near-black ink, single deep-navy accent,
+   hairline rules instead of cards, no pills, no gradients. */
 
 :root {
   /* ========================================
-     COLOR PALETTE
+     PAGE & SURFACE
      ======================================== */
-  
-  /* Primary Colors */
-  --color-primary: #60a5fa;
-  --color-primary-light: #93c5fd;
-  --color-primary-dark: #3b82f6;
-  
-  /* Status Colors */
-  --color-success: #22c55e;
-  --color-success-light: #86efac;
-  --color-warning: #f59e0b;
-  --color-warning-light: #fde68a;
-  --color-error: #ef4444;
-  --color-error-light: #fecdd3;
-  --color-info: #2dd4bf;
-  
-  /* Accent Colors (for metric cards) */
-  --color-accent-blue: #60a5fa;
-  --color-accent-green: #22c55e;
-  --color-accent-orange: #f59e0b;
-  --color-accent-pink: #fb7185;
-  --color-accent-teal: #2dd4bf;
-  --color-accent-purple: #c084fc;
-  
-  /* Neutral Colors */
-  --color-white: #ffffff;
-  --color-gray-50: rgba(255, 255, 255, 0.95);
-  --color-gray-100: rgba(255, 255, 255, 0.8);
-  --color-gray-200: rgba(255, 255, 255, 0.7);
-  --color-gray-300: rgba(255, 255, 255, 0.62);
-  --color-gray-400: rgba(255, 255, 255, 0.6);
-  --color-gray-500: rgba(148, 163, 184, 0.8);
-  --color-gray-600: rgba(148, 163, 184, 0.6);
-  
-  /* Background Colors */
-  --color-bg-primary: #020817;
-  --color-bg-secondary: #040b18;
-  --color-bg-tertiary: #01060f;
-  --color-bg-card: rgba(5, 11, 22, 0.86);
-  --color-bg-card-hover: rgba(5, 11, 22, 0.95);
-  --color-bg-input: rgba(5, 11, 22, 0.5);
-  --color-bg-overlay: rgba(0, 0, 0, 0.6);
-  
-  /* Border Colors */
-  --color-border-primary: rgba(96, 165, 250, 0.22);
-  --color-border-secondary: rgba(148, 163, 184, 0.18);
-  --color-border-tertiary: rgba(148, 163, 184, 0.1);
-  --color-border-input: rgba(148, 163, 184, 0.3);
-  --color-border-focus: rgba(96, 165, 250, 0.6);
-  
+
+  --color-page: #FAFAF7;
+  --color-surface: #FFFFFF;
+  --color-surface-raised: #FFFFFF;
+  --color-surface-sunken: #F4F1EA;
+  --color-surface-hover: #F4F2EC;
+
   /* ========================================
-     SPACING SCALE
+     INK (TEXT)
      ======================================== */
-  
+
+  --color-ink-primary: #111111;
+  --color-ink-secondary: #4B5563;
+  --color-ink-tertiary: #6B7280;
+  --color-ink-disabled: #9CA3AF;
+  --color-ink-on-accent: #FFFFFF;
+  --color-ink-inverse: #FFFFFF;
+
+  /* ========================================
+     ACCENT — Deep navy (fountain pen blue)
+     The single loud color in the system.
+     ======================================== */
+
+  --color-accent: #1E3A8A;
+  --color-accent-hover: #1E40AF;
+  --color-accent-pressed: #172554;
+  --color-accent-tint: #EEF2FF;
+  --color-accent-soft: #E0E7FF;
+  --color-accent-border: #C7D2FE;
+
+  /* ========================================
+     RULE — Hairline divider
+     The structural device that replaces cards.
+     ======================================== */
+
+  --color-rule: #E7E5DF;
+  --color-rule-strong: #111111;
+
+  /* ========================================
+     STATUS — used sparingly at WCAG-AA contrast
+     on the paper background.
+     ======================================== */
+
+  --color-success-text: #15803D;
+  --color-success-bg: #ECFDF5;
+  --color-success-border: #A7F3D0;
+
+  --color-warning-text: #B45309;
+  --color-warning-bg: #FFFBEB;
+  --color-warning-border: #FDE68A;
+
+  --color-error-text: #B91C1C;
+  --color-error-bg: #FEF2F2;
+  --color-error-border: #FECACA;
+
+  --color-info-text: #1E40AF;
+  --color-info-bg: #EEF2FF;
+  --color-info-border: #C7D2FE;
+
+  --color-neutral-text: #4B5563;
+  --color-neutral-bg: #F4F1EA;
+  --color-neutral-border: #E7E5DF;
+
+  /* ========================================
+     LEGACY ALIASES — mapped to the new system
+     Kept so existing CSS that references
+     --color-primary, --color-bg-card, --color-gray-*, etc.
+     still resolves to sensible values.
+     ======================================== */
+
+  --color-primary: var(--color-accent);
+  --color-primary-light: var(--color-accent-soft);
+  --color-primary-dark: var(--color-accent-pressed);
+
+  --color-accent-blue: var(--color-accent);
+  --color-accent-green: var(--color-success-text);
+  --color-accent-orange: var(--color-warning-text);
+  --color-accent-pink: #9D174D;
+  --color-accent-teal: var(--color-info-text);
+  --color-accent-purple: #6B21A8;
+
+  --color-white: #FFFFFF;
+  --color-gray-50: var(--color-ink-primary);
+  --color-gray-100: var(--color-ink-primary);
+  --color-gray-200: var(--color-ink-secondary);
+  --color-gray-300: var(--color-ink-secondary);
+  --color-gray-400: var(--color-ink-tertiary);
+  --color-gray-500: var(--color-ink-tertiary);
+  --color-gray-600: var(--color-ink-disabled);
+
+  --color-bg-primary: var(--color-page);
+  --color-bg-secondary: var(--color-surface);
+  --color-bg-tertiary: var(--color-surface-sunken);
+  --color-bg-card: var(--color-surface);
+  --color-bg-card-hover: var(--color-surface-hover);
+  --color-bg-input: var(--color-surface);
+  --color-bg-overlay: rgba(17, 17, 17, 0.40);
+
+  --color-border-primary: var(--color-accent);
+  --color-border-secondary: var(--color-rule);
+  --color-border-tertiary: var(--color-rule);
+  --color-border-input: var(--color-ink-primary);
+  --color-border-focus: var(--color-accent);
+
+  /* ========================================
+     SPACING — 24 / 48 / 96 rhythm
+     ======================================== */
+
   --spacing-1: 4px;
   --spacing-2: 8px;
   --spacing-3: 12px;
@@ -69,89 +127,86 @@
   --spacing-10: 40px;
   --spacing-12: 48px;
   --spacing-16: 64px;
-  
+  --spacing-24: 96px;
+
   /* ========================================
-     TYPOGRAPHY SCALE
+     TYPOGRAPHY
      ======================================== */
-  
-  /* Font Families */
-  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-family-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
-  
-  /* Font Sizes */
+
+  --font-family-display: 'Source Serif 4', 'Source Serif Pro', 'Iowan Old Style', 'Apple Garamond', Georgia, serif;
+  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+
   --font-size-xs: 12px;
   --font-size-sm: 13px;
   --font-size-base: 14px;
   --font-size-lg: 16px;
   --font-size-xl: 18px;
-  --font-size-2xl: 24px;
+  --font-size-2xl: 22px;
   --font-size-3xl: 28px;
-  --font-size-4xl: 30px;
-  --font-size-5xl: 32px;
-  
-  /* Font Weights */
+  --font-size-4xl: 36px;
+  --font-size-5xl: 48px;
+  --font-size-display: 64px;
+
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  --font-weight-extrabold: 800;
-  
-  /* Line Heights */
-  --line-height-tight: 1.25;
+
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.35;
   --line-height-normal: 1.5;
-  --line-height-relaxed: 1.75;
-  
-  /* Letter Spacing */
-  --letter-spacing-tight: -0.01em;
+  --line-height-relaxed: 1.7;
+  --line-height-reading: 1.75;
+
+  --letter-spacing-tight: -0.02em;
   --letter-spacing-normal: 0;
-  --letter-spacing-wide: 0.1em;
+  --letter-spacing-wide: 0.08em;
   --letter-spacing-wider: 0.12em;
-  
+
   /* ========================================
-     BORDER RADIUS
+     BORDER RADIUS — restrained
+     No rounded-full. Cards are gone.
      ======================================== */
-  
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
-  --radius-xl: 12px;
-  --radius-2xl: 18px;
-  --radius-3xl: 22px;
-  --radius-4xl: 24px;
-  --radius-full: 9999px;
-  
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-full: 0;
+
   /* ========================================
-     SHADOWS
+     SHADOWS — removed for most surfaces
+     Only modals and floating toasts carry shadow.
      ======================================== */
-  
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  --shadow-glow-blue: 0 0 20px rgba(96, 165, 250, 0.3);
-  --shadow-glow-green: 0 0 20px rgba(34, 197, 94, 0.3);
-  
+
+  --shadow-sm: 0 1px 0 0 rgba(17, 17, 17, 0.04);
+  --shadow-md: 0 1px 0 0 rgba(17, 17, 17, 0.06);
+  --shadow-lg: 0 1px 0 0 rgba(17, 17, 17, 0.08);
+  --shadow-xl: 0 8px 24px -8px rgba(17, 17, 17, 0.18);
+  --shadow-2xl: 0 16px 40px -12px rgba(17, 17, 17, 0.22);
+  --shadow-focus: 0 1px 0 0 var(--color-accent);
+  --shadow-focus-error: 0 1px 0 0 var(--color-error-text);
+
   /* ========================================
      BREAKPOINTS
      ======================================== */
-  
+
   --breakpoint-mobile: 768px;
   --breakpoint-tablet: 1024px;
   --breakpoint-desktop: 1200px;
-  
+
   /* ========================================
      TRANSITIONS
      ======================================== */
-  
+
   --transition-fast: 150ms ease-in-out;
   --transition-base: 200ms ease-in-out;
   --transition-slow: 300ms ease-in-out;
-  
+
   /* ========================================
      Z-INDEX SCALE
      ======================================== */
-  
+
   --z-index-base: 1;
   --z-index-dropdown: 100;
   --z-index-sticky: 200;
@@ -159,5 +214,3 @@
   --z-index-modal: 1000;
   --z-index-toast: 1100;
 }
-
-/* Made with Bob */

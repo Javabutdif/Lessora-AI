@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { verifyResetToken, resetPassword } from "../services/api";
+import styles from "../styles/PortalTheme.module.css";
 
 const PASSWORD_REQUIREMENTS = {
   minLength: { regex: /.{8,}/, label: "At least 8 characters" },
@@ -43,22 +44,26 @@ export default function ResetPasswordPage() {
   }, [token]);
 
   const shell = (content: JSX.Element) => (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px", background: "linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%)", color: "#0f172a" }}>
-      {content}
-    </div>
+    <div className={styles.userAuthPage}>{content}</div>
   );
 
   if (isVerifying) {
-    return shell(<div style={{ textAlign: "center" }}><p style={{ color: "#475569" }}>Verifying your link...</p></div>);
+    return shell(
+      <div style={{ textAlign: "center" }}>
+        <p style={{ color: "var(--color-ink-secondary)" }}>Verifying your link...</p>
+      </div>
+    );
   }
 
   if (!tokenValid) {
     return shell(
-      <div style={{ width: "100%", maxWidth: "440px", background: "#fff", border: "1px solid #dbe4f0", borderRadius: "24px", padding: "40px 28px", boxShadow: "0 20px 50px rgba(15, 23, 42, 0.08)", textAlign: "center" }}>
-        <h2 style={{ margin: "0 0 12px", fontSize: "24px" }}>Link expired</h2>
-        <p style={{ margin: "0 0 24px", color: "#475569", lineHeight: "1.6" }}>{tokenError || "This password reset link is no longer valid."}</p>
-        <a href="/login" style={{ display: "inline-block", padding: "12px 24px", borderRadius: "10px", background: "linear-gradient(135deg, #3b82f6 0%, #7c3aed 100%)", color: "#fff", textDecoration: "none", fontSize: "14px", fontWeight: "600" }}>Back to login</a>
-      </div>,
+      <div className={styles.resetShellCardCompact}>
+        <h2 className={styles.resetShellTitle}>Link expired</h2>
+        <p className={styles.resetShellSubtitle} style={{ margin: "0 0 24px" }}>
+          {tokenError || "This password reset link is no longer valid."}
+        </p>
+        <a href="/login" className={styles.flatButton}>Back to login</a>
+      </div>
     );
   }
 
@@ -82,36 +87,68 @@ export default function ResetPasswordPage() {
   }
 
   return shell(
-    <div style={{ width: "100%", maxWidth: "440px", background: "#fff", border: "1px solid #dbe4f0", borderRadius: "24px", padding: "28px", boxShadow: "0 20px 50px rgba(15, 23, 42, 0.08)" }}>
-      <div style={{ marginBottom: "20px" }}>
-        <h1 style={{ margin: 0, fontSize: "32px" }}>Reset password</h1>
-        <p style={{ margin: "10px 0 0", color: "#475569" }}>Create a strong new password for your account.</p>
+    <div className={styles.resetShellCard}>
+      <div style={{ marginBottom: 20 }}>
+        <h1 className={styles.userAuthTitle} style={{ textAlign: "left", marginBottom: 0 }}>
+          Reset password
+        </h1>
+        <p className={styles.userAuthSubtitle} style={{ textAlign: "left", margin: "10px 0 0" }}>
+          Create a strong new password for your account.
+        </p>
       </div>
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-        <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          <span style={{ fontSize: "14px", fontWeight: "600" }}>New password</span>
-          <div style={{ position: "relative" }}>
-            <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter new password" style={{ width: "100%", padding: "12px 14px", paddingRight: "80px", borderRadius: "10px", border: "1px solid #cbd5e1", background: "#fff", color: "#0f172a", fontSize: "14px", boxSizing: "border-box" }} />
-            <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "#475569", cursor: "pointer", fontSize: "14px" }}>
+      <form onSubmit={handleSubmit} className={styles.resetShellForm}>
+        <label className={styles.userAuthField}>
+          <span className={styles.userAuthLabel}>New password</span>
+          <div className={styles.passwordFieldWrap}>
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter new password"
+              className={styles.passwordFieldInput}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className={styles.passwordFieldToggle}
+            >
               {showPassword ? "Hide" : "Show"}
             </button>
           </div>
         </label>
-        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+        <div className={styles.passwordRequirements}>
           {Object.entries(PASSWORD_REQUIREMENTS).map(([key, req]) => {
             const isMet = req.regex.test(password);
-            return <div key={key} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: isMet ? "#16a34a" : "#64748b" }}>{isMet ? "✓" : "○"} {req.label}</div>;
+            return (
+              <div
+                key={key}
+                className={`${styles.passwordRequirement} ${isMet ? styles.passwordRequirementMet : ""}`}
+              >
+                <span>{isMet ? "✓" : "○"}</span>
+                <span>{req.label}</span>
+              </div>
+            );
           })}
         </div>
-        <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          <span style={{ fontSize: "14px", fontWeight: "600" }}>Confirm password</span>
-          <input type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm new password" style={{ padding: "12px 14px", borderRadius: "10px", border: "1px solid #cbd5e1", background: "#fff", color: "#0f172a", fontSize: "14px" }} />
+        <label className={styles.userAuthField}>
+          <span className={styles.userAuthLabel}>Confirm password</span>
+          <input
+            type={showPassword ? "text" : "password"}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirm new password"
+            className={styles.userAuthInput}
+          />
         </label>
-        {error && <div style={{ padding: "12px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "8px", color: "#b91c1c", fontSize: "14px" }}>{error}</div>}
-        <button type="submit" disabled={isResetting || !allRequirementsMet || !passwordsMatch} style={{ padding: "12px 16px", borderRadius: "10px", border: "none", background: "linear-gradient(135deg, #3b82f6 0%, #7c3aed 100%)", color: "#fff", fontSize: "14px", fontWeight: "600", cursor: isResetting || !allRequirementsMet || !passwordsMatch ? "not-allowed" : "pointer", opacity: isResetting || !allRequirementsMet || !passwordsMatch ? 0.7 : 1 }}>
+        {error ? <div className={styles.userAuthError}>{error}</div> : null}
+        <button
+          type="submit"
+          disabled={isResetting || !allRequirementsMet || !passwordsMatch}
+          className={styles.flatButton}
+        >
           {isResetting ? "Resetting..." : "Reset password"}
         </button>
       </form>
-    </div>,
+    </div>
   );
 }

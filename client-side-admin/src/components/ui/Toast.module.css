@@ -1,19 +1,16 @@
 @import '../../styles/tokens.css';
 
-/* Toast */
 .toast {
   display: flex;
   align-items: center;
   gap: var(--spacing-3);
   min-width: 300px;
   max-width: 500px;
-  padding: var(--spacing-4);
-  background: var(--color-bg-card);
-  border: 1px solid;
-  border-radius: var(--radius-xl);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: var(--shadow-xl);
+  padding: var(--spacing-4) var(--spacing-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-ink-primary);
+  border-left-width: 3px;
+  border-radius: 0;
   animation: slideInRight var(--transition-base);
   z-index: var(--z-index-toast);
 }
@@ -29,68 +26,60 @@
   }
 }
 
-/* Mobile adjustments */
 @media (max-width: 768px) {
   .toast {
     min-width: 280px;
-    max-width: calc(100vw - var(--spacing-4));
-    padding: var(--spacing-3);
+    max-width: calc(100vw - var(--spacing-8));
+    padding: var(--spacing-3) var(--spacing-5);
   }
 }
 
-/* Variant Styles */
 .success {
-  border-color: var(--color-success);
-  background: rgba(34, 197, 94, 0.1);
+  border-left-color: var(--color-success-text);
 }
 
 .success .iconWrapper {
-  color: var(--color-success);
+  color: var(--color-success-text);
 }
 
 .error {
-  border-color: var(--color-error);
-  background: rgba(239, 68, 68, 0.1);
+  border-left-color: var(--color-error-text);
 }
 
 .error .iconWrapper {
-  color: var(--color-error);
+  color: var(--color-error-text);
 }
 
 .warning {
-  border-color: var(--color-warning);
-  background: rgba(245, 158, 11, 0.1);
+  border-left-color: var(--color-warning-text);
 }
 
 .warning .iconWrapper {
-  color: var(--color-warning);
+  color: var(--color-warning-text);
 }
 
 .info {
-  border-color: var(--color-info);
-  background: rgba(45, 212, 191, 0.1);
+  border-left-color: var(--color-info-text);
 }
 
 .info .iconWrapper {
-  color: var(--color-info);
+  color: var(--color-info-text);
 }
 
-/* Icon Wrapper */
 .iconWrapper {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
 }
 
-/* Message */
 .message {
   flex: 1;
   font-family: var(--font-family-base);
   font-size: var(--font-size-base);
-  color: var(--color-gray-100);
+  color: var(--color-ink-primary);
   margin: 0;
   line-height: var(--line-height-normal);
 }
@@ -101,7 +90,6 @@
   }
 }
 
-/* Close Button */
 .closeButton {
   display: flex;
   align-items: center;
@@ -111,33 +99,25 @@
   padding: 0;
   background: transparent;
   border: none;
-  border-radius: var(--radius-sm);
-  color: var(--color-gray-400);
+  border-radius: 0;
+  color: var(--color-ink-tertiary);
   cursor: pointer;
-  transition: all var(--transition-base);
   flex-shrink: 0;
+  transition: color var(--transition-fast);
 }
 
 .closeButton:hover {
-  background: var(--color-bg-input);
-  color: var(--color-gray-100);
+  color: var(--color-ink-primary);
 }
 
 .closeButton:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
 
-.closeButton:active {
-  transform: scale(0.95);
-}
-
-/* Mobile touch target */
 @media (max-width: 768px) {
   .closeButton {
     width: 32px;
     height: 32px;
   }
 }
-
-/* Made with Bob */

@@ -1,6 +1,5 @@
 @import '../../styles/tokens.css';
 
-/* Content */
 .content {
   display: flex;
   flex-direction: column;
@@ -9,37 +8,32 @@
   text-align: center;
 }
 
-/* Icon Wrapper */
 .iconWrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
-  border-radius: var(--radius-full);
-  margin-bottom: var(--spacing-2);
+  width: 56px;
+  height: 56px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
 }
 
 .iconWrapper.danger {
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--color-error);
+  color: var(--color-error-text);
 }
 
 .iconWrapper.warning {
-  background: rgba(245, 158, 11, 0.1);
-  color: var(--color-warning);
+  color: var(--color-warning-text);
 }
 
 .iconWrapper.info {
-  background: rgba(45, 212, 191, 0.1);
-  color: var(--color-info);
+  color: var(--color-info-text);
 }
 
-/* Message */
 .message {
   font-family: var(--font-family-base);
   font-size: var(--font-size-base);
-  color: var(--color-gray-300);
+  color: var(--color-ink-secondary);
   line-height: var(--line-height-relaxed);
   margin: 0;
   max-width: 400px;
@@ -51,12 +45,10 @@
   }
 }
 
-/* Actions */
 .actions {
   display: flex;
   gap: var(--spacing-3);
   width: 100%;
-  margin-top: var(--spacing-2);
 }
 
 @media (max-width: 768px) {
@@ -64,5 +56,3 @@
     flex-direction: column-reverse;
   }
 }
-
-/* Made with Bob */

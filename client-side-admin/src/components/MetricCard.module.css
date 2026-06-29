@@ -1,23 +1,20 @@
-.metricCard {
-  min-height: 148px;
-  border: 1px solid rgba(96, 165, 250, 0.22);
-  border-radius: var(--radius-2xl);
-  padding: var(--spacing-4);
-  background: rgba(2, 8, 23, 0.88);
-  transition: all var(--transition-base);
-}
+/* MetricCard — minimalist ledger style.
+   Huge serif number, small-caps label, hairline rule above.
+   No fill, no shadow, no top stripe. */
 
-.metricCard:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+.metricCard {
+  display: grid;
+  gap: var(--spacing-4);
+  padding: var(--spacing-6) 0;
+  border-top: 1px solid var(--color-ink-primary);
+  min-height: 148px;
 }
 
 .header {
   display: flex;
-  align-items: flex-start;
+  align-items: baseline;
   justify-content: space-between;
   gap: var(--spacing-3);
-  margin-bottom: var(--spacing-4);
 }
 
 .titleGroup {
@@ -26,62 +23,65 @@
 
 .title {
   margin: 0;
-  color: var(--color-gray-200);
-  font-size: var(--font-size-xs);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
-  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink-tertiary);
 }
 
 .icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-xl);
-  color: var(--color-primary);
-  background: rgba(96, 165, 250, 0.12);
+  width: 24px;
+  height: 24px;
+  color: var(--color-ink-tertiary);
   flex-shrink: 0;
 }
 
 .value {
-  margin: 0 0 var(--spacing-2);
-  color: var(--color-white);
-  font-size: var(--font-size-5xl);
-  font-weight: var(--font-weight-extrabold);
+  margin: 0;
+  color: var(--color-ink-primary);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
 }
 
 .helper,
 .updated,
 .error {
   margin: 0;
-  color: var(--color-gray-300);
+  color: var(--color-ink-secondary);
   font-size: var(--font-size-sm);
   line-height: var(--line-height-normal);
 }
 
 .updated {
-  margin-top: var(--spacing-2);
-  color: var(--color-gray-400);
-  font-size: var(--font-size-xs);
+  color: var(--color-ink-tertiary);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
 }
 
 .error {
-  color: var(--color-error-light);
+  color: var(--color-error-text);
 }
 
 .skeletonTitle,
 .skeletonValue,
 .skeletonHelper {
   display: block;
-  border-radius: var(--radius-md);
   background: linear-gradient(
     90deg,
-    rgba(148, 163, 184, 0.12),
-    rgba(148, 163, 184, 0.24),
-    rgba(148, 163, 184, 0.12)
+    var(--color-surface-sunken) 0%,
+    var(--color-rule) 50%,
+    var(--color-surface-sunken) 100%
   );
   background-size: 200% 100%;
   animation: shimmer 1.2s ease-in-out infinite;
@@ -89,25 +89,24 @@
 
 .skeletonTitle {
   width: 120px;
-  height: 14px;
+  height: 12px;
 }
 
 .skeletonValue {
   width: 92px;
-  height: 46px;
+  height: 48px;
   margin-bottom: var(--spacing-3);
 }
 
 .skeletonHelper {
   width: 76%;
-  height: 14px;
+  height: 12px;
 }
 
 @keyframes shimmer {
   0% {
     background-position: 200% 0;
   }
-
   100% {
     background-position: -200% 0;
   }
@@ -116,11 +115,10 @@
 @media (max-width: 767px) {
   .metricCard {
     min-height: 136px;
-    padding: var(--spacing-5);
   }
 
   .value {
-    font-size: var(--font-size-4xl);
+    font-size: var(--font-size-5xl);
   }
 }
 
@@ -131,9 +129,5 @@
   .skeletonHelper {
     transition: none;
     animation: none;
-  }
-
-  .metricCard:hover {
-    transform: none;
   }
 }

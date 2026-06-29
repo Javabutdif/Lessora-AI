@@ -1,16 +1,15 @@
 @import '../../styles/tokens.css';
 
-/* Base Skeleton Styles */
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgba(148, 163, 184, 0.1) 0%,
-    rgba(148, 163, 184, 0.2) 50%,
-    rgba(148, 163, 184, 0.1) 100%
+    var(--color-surface-sunken) 0%,
+    var(--color-rule) 50%,
+    var(--color-surface-sunken) 100%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
-  border-radius: var(--radius-md);
+  border-radius: 0;
 }
 
 @keyframes shimmer {
@@ -22,25 +21,20 @@
   }
 }
 
-/* Skeleton Group */
 .skeletonGroup {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-3);
 }
 
-/* Text Variant */
 .text {
-  height: 16px;
+  height: 14px;
   width: 100%;
-  border-radius: var(--radius-sm);
 }
 
-/* Card Variant */
 .card {
   height: 200px;
   width: 100%;
-  border-radius: var(--radius-3xl);
 }
 
 @media (max-width: 768px) {
@@ -49,11 +43,9 @@
   }
 }
 
-/* Metric Variant */
 .metric {
   height: 120px;
   width: 100%;
-  border-radius: var(--radius-3xl);
 }
 
 @media (max-width: 768px) {
@@ -62,21 +54,18 @@
   }
 }
 
-/* Table Variant */
 .table {
   height: 48px;
   width: 100%;
-  border-radius: var(--radius-md);
 }
 
 @media (max-width: 768px) {
   .table {
     height: 120px;
-    border-radius: var(--radius-3xl);
   }
 }
 
-/* Pulse animation for subtle effect */
+/* Subtle pulse layered over shimmer for liveliness. */
 .skeleton {
   animation: shimmer 1.5s ease-in-out infinite, pulse 2s ease-in-out infinite;
 }
@@ -86,8 +75,12 @@
     opacity: 1;
   }
   50% {
-    opacity: 0.8;
+    opacity: 0.7;
   }
 }
 
-/* Made with Bob */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: shimmer 3s ease-in-out infinite;
+  }
+}

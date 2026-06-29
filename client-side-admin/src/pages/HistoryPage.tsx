@@ -13,6 +13,7 @@ import {
   logoutUser,
   LessonPlanHistoryItem,
 } from "../services/api";
+import styles from "../styles/PortalTheme.module.css";
 
 export default function HistoryPage() {
   const [plans, setPlans] = useState<LessonPlanHistoryItem[]>([]);
@@ -64,159 +65,71 @@ export default function HistoryPage() {
   });
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%)",
-        color: "#0f172a",
-      }}
-    >
-      <div
-        style={{
-          background: "rgba(255,255,255,0.82)",
-          borderBottom: "1px solid rgba(148,163,184,0.2)",
-          backdropFilter: "blur(12px)",
-          padding: "16px 24px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: "16px",
-          flexWrap: "wrap",
-        }}
-      >
-        <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "800" }}>
-          Lessora AI
-        </h1>
-        <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <span style={{ fontSize: "14px", color: "#475569" }}>
-            {user?.name || "User"}
-          </span>
+    <div className={styles.userAppPage}>
+      <header className={styles.userAppHeader}>
+        <h1 className={styles.userAppBrand}>Lessora AI</h1>
+        <div className={styles.userAppHeaderActions}>
+          <span className={styles.userAppUser}>{user?.name || "User"}</span>
           <button
+            type="button"
             onClick={() => navigate("/generate")}
-            style={{
-              padding: "8px 16px",
-              background: "#eff6ff",
-              border: "1px solid #bfdbfe",
-              borderRadius: "8px",
-              color: "#1d4ed8",
-              cursor: "pointer",
-              fontSize: "14px",
-              fontWeight: "600",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
+            className={styles.softSecondary}
           >
             <FaPlus />
             Generate
           </button>
           <button
+            type="button"
             onClick={handleLogout}
-            style={{
-              padding: "8px 16px",
-              background: "#fef2f2",
-              border: "1px solid #fecaca",
-              borderRadius: "8px",
-              color: "#b91c1c",
-              cursor: "pointer",
-              fontSize: "14px",
-              fontWeight: "600",
-            }}
+            className={styles.softDanger}
           >
             Logout
           </button>
         </div>
-      </div>
+      </header>
 
-      <div
-        style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 24px" }}
-      >
-        <div style={{ marginBottom: "32px" }}>
-          <h2
-            style={{
-              margin: "0 0 8px",
-              fontSize: "32px",
-              fontWeight: "800",
-              color: "#475569",
-            }}
-          >
-            Lesson Plan History
-          </h2>
-          <p style={{ margin: 0, fontSize: "16px", color: "#475569" }}>
+      <div className={styles.userAppContainer}>
+        <div className={styles.userAppHero}>
+          <h2 className={styles.userAppHeroTitle}>Lesson Plan History</h2>
+          <p className={styles.userAppHeroDescription}>
             View and manage your generated lesson plans
           </p>
         </div>
 
-        <div style={{ marginBottom: "24px" }}>
+        <div style={{ marginBottom: 24 }}>
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by title, subject, or grade level..."
-            style={{
-              width: "100%",
-              padding: "12px 16px",
-              borderRadius: "10px",
-              border: "1px solid #cbd5e1",
-              background: "#fff",
-              color: "#0f172a",
-              fontSize: "14px",
-              outline: "none",
-            }}
+            className={styles.searchInputLg}
           />
         </div>
 
         {isLoading && (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "60px 20px",
-              color: "#64748b",
-            }}
-          >
-            <FaSpinner style={{ fontSize: "40px", marginBottom: "16px" }} />
-            <p style={{ margin: 0, fontSize: "16px" }}>
-              Loading your lesson plans...
-            </p>
+          <div className={styles.userAppCenter}>
+            <FaSpinner className={styles.userAppIconLarge} style={{ animation: "spin 1s linear infinite" }} />
+            <p style={{ margin: 0, fontSize: 16 }}>Loading your lesson plans...</p>
           </div>
         )}
 
         {error && !isLoading && (
-          <div
-            style={{
-              borderRadius: "12px",
-              padding: "20px",
-              background: "#fef2f2",
-              color: "#b91c1c",
-              border: "1px solid #fecaca",
-              textAlign: "center",
-            }}
-          >
-            <FaExclamationTriangle
-              style={{ fontSize: "32px", marginBottom: "12px" }}
-            />
-            <p style={{ margin: "0 0 12px", fontWeight: "600" }}>
-              Failed to load history
-            </p>
-            <p style={{ margin: "0 0 16px", fontSize: "14px" }}>{error}</p>
+          <div className={styles.errorPanel}>
+            <FaExclamationTriangle className={styles.userAppIconMedium} />
+            <p style={{ margin: "0 0 12px", fontWeight: 600 }}>Failed to load history</p>
+            <p style={{ margin: "0 0 16px", fontSize: 14 }}>{error}</p>
             <button
+              type="button"
               onClick={loadPlans}
               style={{
                 padding: "8px 16px",
                 background: "#fee2e2",
                 border: "1px solid #fca5a5",
-                borderRadius: "8px",
+                borderRadius: 8,
                 color: "#b91c1c",
                 cursor: "pointer",
-                fontSize: "14px",
-                fontWeight: "600",
+                fontSize: 14,
+                fontWeight: 600,
               }}
             >
               Try Again
@@ -228,54 +141,16 @@ export default function HistoryPage() {
           !error &&
           filteredPlans.length === 0 &&
           plans.length === 0 && (
-            <div
-              style={{
-                textAlign: "center",
-                padding: "60px 20px",
-                background: "#ffffff",
-                border: "1px solid rgba(148,163,184,0.22)",
-                borderRadius: "16px",
-              }}
-            >
-              <FaHistory
-                style={{
-                  fontSize: "64px",
-                  marginBottom: "16px",
-                  color: "#2563eb",
-                }}
-              />
-              <h3
-                style={{
-                  margin: "0 0 8px",
-                  fontSize: "20px",
-                  fontWeight: "700",
-                }}
-              >
-                No Lesson Plans Yet
-              </h3>
-              <p
-                style={{
-                  margin: "0 0 24px",
-                  fontSize: "14px",
-                  color: "#64748b",
-                }}
-              >
+            <div className={styles.userAppCenter} style={{ background: "var(--color-surface)", border: "1px solid var(--color-border-secondary)", borderRadius: 16 }}>
+              <FaHistory className={styles.userAppIconXL} />
+              <h3 className={styles.userAppCenterTitle}>No Lesson Plans Yet</h3>
+              <p className={styles.userAppCenterText} style={{ marginBottom: 24 }}>
                 Start creating your first lesson plan with AI
               </p>
               <button
+                type="button"
                 onClick={() => navigate("/generate")}
-                style={{
-                  padding: "12px 24px",
-                  background:
-                    "linear-gradient(135deg, #3b82f6 0%, #7c3aed 100%)",
-                  border: "none",
-                  borderRadius: "10px",
-                  color: "#fff",
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  fontWeight: "700",
-                  boxShadow: "0 8px 24px rgba(59, 130, 246, 0.3)",
-                }}
+                className={styles.flatButton}
               >
                 Generate Lesson Plan
               </button>
@@ -286,112 +161,31 @@ export default function HistoryPage() {
           !error &&
           filteredPlans.length === 0 &&
           plans.length > 0 && (
-            <div
-              style={{
-                textAlign: "center",
-                padding: "60px 20px",
-                background: "#ffffff",
-                border: "1px solid rgba(148,163,184,0.22)",
-                borderRadius: "16px",
-              }}
-            >
-              <FaSearch
-                style={{
-                  fontSize: "48px",
-                  marginBottom: "16px",
-                  color: "#2563eb",
-                }}
-              />
-              <h3
-                style={{
-                  margin: "0 0 8px",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                }}
-              >
-                No Results Found
-              </h3>
-              <p style={{ margin: 0, fontSize: "14px", color: "#64748b" }}>
-                Try a different search term
-              </p>
+            <div className={styles.userAppCenter} style={{ background: "var(--color-surface)", border: "1px solid var(--color-border-secondary)", borderRadius: 16 }}>
+              <FaSearch className={styles.userAppIconLarge} style={{ fontSize: 48 }} />
+              <h3 className={styles.userAppCenterTitle}>No Results Found</h3>
+              <p className={styles.userAppCenterText}>Try a different search term</p>
             </div>
           )}
 
         {!isLoading && !error && filteredPlans.length > 0 && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-              gap: "20px",
-            }}
-          >
+          <div className={styles.planGrid}>
             {filteredPlans.map((plan) => (
               <div
                 key={plan.id}
+                className={styles.planTile}
                 onClick={() => navigate(`/preview/${plan.id}`)}
-                style={{
-                  background: "#ffffff",
-                  border: "1px solid rgba(148,163,184,0.22)",
-                  borderRadius: "12px",
-                  padding: "20px",
-                  cursor: "pointer",
-                  transition: "all 0.3s",
-                }}
               >
-                <h3
-                  style={{
-                    margin: "0 0 8px",
-                    fontSize: "18px",
-                    fontWeight: "700",
-                    color: "#0f172a",
-                  }}
-                >
-                  {plan.title}
-                </h3>
-                <div
-                  style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: "8px",
-                    marginBottom: "12px",
-                  }}
-                >
-                  <span
-                    style={{
-                      padding: "4px 10px",
-                      background: "#eff6ff",
-                      border: "1px solid #bfdbfe",
-                      borderRadius: "6px",
-                      fontSize: "12px",
-                      color: "#1d4ed8",
-                      fontWeight: "600",
-                    }}
-                  >
+                <h3 className={styles.planTileTitle}>{plan.title}</h3>
+                <div className={styles.planTileChipRow}>
+                  <span className={`${styles.chip} ${styles.chipAccent}`}>
                     {plan.subject}
                   </span>
-                  <span
-                    style={{
-                      padding: "4px 10px",
-                      background: "#f5f3ff",
-                      border: "1px solid #ddd6fe",
-                      borderRadius: "6px",
-                      fontSize: "12px",
-                      color: "#6d28d9",
-                      fontWeight: "600",
-                    }}
-                  >
+                  <span className={`${styles.chip} ${styles.chipPurple}`}>
                     {plan.gradeLevel}
                   </span>
                 </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    fontSize: "13px",
-                    color: "#64748b",
-                  }}
-                >
+                <div className={styles.planTileMeta}>
                   <span>{plan.totalDuration} min</span>
                   <span>{formatDate(plan.updatedAt)}</span>
                 </div>

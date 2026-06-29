@@ -14,6 +14,7 @@ import {
   logoutUser,
   LessonPlanTemplate,
 } from "../services/api";
+import styles from "../styles/PortalTheme.module.css";
 
 const gradeOptions = [
   { label: "Preschool", value: "preschool" },
@@ -107,89 +108,44 @@ export default function GeneratePlanPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%)", color: "#0f172a" }}>
-      <div
-        style={{
-          background: "rgba(255,255,255,0.82)",
-          borderBottom: "1px solid rgba(148,163,184,0.2)",
-          backdropFilter: "blur(12px)",
-          padding: "16px 24px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: "16px",
-          flexWrap: "wrap",
-        }}
-      >
-        <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "800" }}>Lessora AI</h1>
-        <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "14px", color: "#475569" }}>{user?.name || "User"}</span>
+    <div className={styles.userAppPage}>
+      <header className={styles.userAppHeader}>
+        <h1 className={styles.userAppBrand}>Lessora AI</h1>
+        <div className={styles.userAppHeaderActions}>
+          <span className={styles.userAppUser}>{user?.name || "User"}</span>
           <button
+            type="button"
             onClick={() => navigate("/history")}
-            style={{
-              padding: "8px 16px",
-              background: "#eff6ff",
-              border: "1px solid #bfdbfe",
-              borderRadius: "8px",
-              color: "#1d4ed8",
-              cursor: "pointer",
-              fontSize: "14px",
-              fontWeight: "600",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
+            className={styles.softSecondary}
           >
             <FaHistory />
             History
           </button>
           <button
+            type="button"
             onClick={handleLogout}
-            style={{
-              padding: "8px 16px",
-              background: "#fef2f2",
-              border: "1px solid #fecaca",
-              borderRadius: "8px",
-              color: "#b91c1c",
-              cursor: "pointer",
-              fontSize: "14px",
-              fontWeight: "600",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
+            className={styles.softDanger}
           >
             <FaSignOutAlt />
             Logout
           </button>
         </div>
-      </div>
+      </header>
 
-      <div style={{ maxWidth: "800px", margin: "0 auto", padding: "32px 16px 48px" }}>
-        <div style={{ marginBottom: "32px" }}>
-          <h2 style={{ margin: "0 0 8px", fontSize: "clamp(28px, 5vw, 40px)", fontWeight: "800", color: "#0f172a" }}>
-            Generate Lesson Plan
-          </h2>
-          <p style={{ margin: 0, fontSize: "16px", color: "#475569" }}>
+      <div className={styles.userAppContainerNarrow}>
+        <div className={styles.userAppHero}>
+          <h2 className={styles.userAppHeroTitle}>Generate Lesson Plan</h2>
+          <p className={styles.userAppHeroDescription}>
             Create a professional lesson plan in minutes with AI
           </p>
         </div>
 
-        <form
-          onSubmit={handleGenerate}
-          style={{
-            background: "#ffffff",
-            border: "1px solid rgba(148,163,184,0.22)",
-            borderRadius: "16px",
-            padding: "24px",
-            boxShadow: "0 12px 32px rgba(15, 23, 42, 0.06)",
-          }}
-        >
-          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-            <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <span style={{ fontSize: "14px", fontWeight: "600" }}>
-                <FaBookOpen style={{ display: "inline", marginRight: "8px", verticalAlign: "middle" }} />
-                Topic/Subject <span style={{ color: "#ef4444" }}>*</span>
+        <form onSubmit={handleGenerate} className={styles.planCard}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+            <label className={styles.userAuthField}>
+              <span className={styles.userAuthLabel}>
+                <FaBookOpen style={{ display: "inline", marginRight: 8, verticalAlign: "middle" }} />
+                Topic/Subject <span style={{ color: "var(--color-error)" }}>*</span>
               </span>
               <input
                 type="text"
@@ -198,37 +154,22 @@ export default function GeneratePlanPage() {
                 placeholder="e.g., Photosynthesis, World War II, Fractions"
                 disabled={isGenerating}
                 required
-                style={{
-                  padding: "12px 14px",
-                  borderRadius: "10px",
-                  border: "1px solid #cbd5e1",
-                  background: "#fff",
-                  color: "#0f172a",
-                  fontSize: "14px",
-                  outline: "none",
-                }}
+                className={styles.userAuthInput}
               />
             </label>
 
-            <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <span style={{ fontSize: "14px", fontWeight: "600" }}>
-                <FaGraduationCap style={{ display: "inline", marginRight: "8px", verticalAlign: "middle" }} />
-                Grade Level <span style={{ color: "#ef4444" }}>*</span>
+            <label className={styles.userAuthField}>
+              <span className={styles.userAuthLabel}>
+                <FaGraduationCap style={{ display: "inline", marginRight: 8, verticalAlign: "middle" }} />
+                Grade Level <span style={{ color: "var(--color-error)" }}>*</span>
               </span>
               <select
                 value={selectedGrade}
                 onChange={(e) => setSelectedGrade(e.target.value)}
                 disabled={isGenerating}
                 required
-                style={{
-                  padding: "12px 14px",
-                  borderRadius: "10px",
-                  border: "1px solid #cbd5e1",
-                  background: "#fff",
-                  color: "#0f172a",
-                  fontSize: "14px",
-                  outline: "none",
-                }}
+                className={styles.userAuthInput}
+                style={{ cursor: "pointer" }}
               >
                 <option value="">Select grade level</option>
                 {gradeOptions.map((grade) => (
@@ -239,25 +180,18 @@ export default function GeneratePlanPage() {
               </select>
             </label>
 
-            <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <span style={{ fontSize: "14px", fontWeight: "600" }}>
-                <FaLanguage style={{ display: "inline", marginRight: "8px", verticalAlign: "middle" }} />
-                Language <span style={{ color: "#ef4444" }}>*</span>
+            <label className={styles.userAuthField}>
+              <span className={styles.userAuthLabel}>
+                <FaLanguage style={{ display: "inline", marginRight: 8, verticalAlign: "middle" }} />
+                Language <span style={{ color: "var(--color-error)" }}>*</span>
               </span>
               <select
                 value={selectedLanguage}
                 onChange={(e) => setSelectedLanguage(e.target.value)}
                 disabled={isGenerating}
                 required
-                style={{
-                  padding: "12px 14px",
-                  borderRadius: "10px",
-                  border: "1px solid #cbd5e1",
-                  background: "#fff",
-                  color: "#0f172a",
-                  fontSize: "14px",
-                  outline: "none",
-                }}
+                className={styles.userAuthInput}
+                style={{ cursor: "pointer" }}
               >
                 <option value="">Select language</option>
                 {languageOptions.map((language) => (
@@ -268,47 +202,31 @@ export default function GeneratePlanPage() {
               </select>
             </label>
 
-            <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <span style={{ fontSize: "14px", fontWeight: "600" }}>
-                <FaBookOpen style={{ display: "inline", marginRight: "8px", verticalAlign: "middle" }} />
-                Duration (minutes) <span style={{ color: "#ef4444" }}>*</span>
+            <label className={styles.userAuthField}>
+              <span className={styles.userAuthLabel}>
+                <FaBookOpen style={{ display: "inline", marginRight: 8, verticalAlign: "middle" }} />
+                Duration (minutes) <span style={{ color: "var(--color-error)" }}>*</span>
               </span>
               <input
                 type="number"
                 value={duration}
                 onChange={(e) => setDuration(e.target.value)}
                 placeholder="e.g., 60"
-                min="5"
+                min={5}
                 disabled={isGenerating}
                 required
-                style={{
-                  padding: "12px 14px",
-                  borderRadius: "10px",
-                  border: "1px solid #cbd5e1",
-                  background: "#fff",
-                  color: "#0f172a",
-                  fontSize: "14px",
-                  outline: "none",
-                }}
+                className={styles.userAuthInput}
               />
             </label>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <span style={{ fontSize: "14px", fontWeight: "600" }}>
-                Template
-              </span>
+            <label className={styles.userAuthField}>
+              <span className={styles.userAuthLabel}>Template</span>
               <select
                 value={selectedTemplate}
                 onChange={(e) => setSelectedTemplate(e.target.value as LessonPlanTemplate)}
                 disabled={isGenerating}
-                style={{
-                  padding: "12px 14px",
-                  borderRadius: "10px",
-                  border: "1px solid #cbd5e1",
-                  background: "#fff",
-                  color: "#0f172a",
-                  fontSize: "14px",
-                }}
+                className={styles.userAuthInput}
+                style={{ cursor: "pointer" }}
               >
                 {templateOptions.map((template) => (
                   <option key={template.value} value={template.value}>
@@ -316,10 +234,10 @@ export default function GeneratePlanPage() {
                   </option>
                 ))}
               </select>
-            </div>
+            </label>
 
-            <label style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <span style={{ fontSize: "14px", fontWeight: "600" }}>
+            <label className={styles.userAuthField}>
+              <span className={styles.userAuthLabel}>
                 Learning Goals/Standards (Optional)
               </span>
               <textarea
@@ -328,54 +246,16 @@ export default function GeneratePlanPage() {
                 placeholder="Add any specific learning objectives, standards, or notes..."
                 disabled={isGenerating}
                 rows={4}
-                style={{
-                  padding: "12px 14px",
-                  borderRadius: "10px",
-                  border: "1px solid #cbd5e1",
-                  background: "#fff",
-                  color: "#0f172a",
-                  fontSize: "14px",
-                  outline: "none",
-                  resize: "vertical",
-                  fontFamily: "inherit",
-                }}
+                className={styles.userAuthTextarea}
               />
             </label>
 
-            {error && (
-              <div
-                style={{
-                  borderRadius: "10px",
-                  padding: "12px",
-                  background: "#fef2f2",
-                  color: "#b91c1c",
-                  border: "1px solid #fecaca",
-                  fontSize: "14px",
-                }}
-              >
-                {error}
-              </div>
-            )}
+            {error ? <div className={styles.userAuthError}>{error}</div> : null}
 
             <button
               type="submit"
               disabled={isGenerating}
-              style={{
-                padding: "16px",
-                borderRadius: "10px",
-                border: "none",
-                background: "linear-gradient(135deg, #3b82f6 0%, #7c3aed 100%)",
-                color: "#fff",
-                cursor: isGenerating ? "not-allowed" : "pointer",
-                fontWeight: 700,
-                fontSize: "16px",
-                opacity: isGenerating ? 0.7 : 1,
-                boxShadow: "0 8px 24px rgba(59, 130, 246, 0.3)",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "10px",
-              }}
+              className={`${styles.flatButton} ${styles.flatButtonXLarge}`}
             >
               <FaRobot />
               {isGenerating ? "Generating..." : "Generate Lesson Plan"}

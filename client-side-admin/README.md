@@ -29,6 +29,7 @@ The Lessora Admin Dashboard is a fully responsive web application designed for m
 - **Mobile-First Responsive Design**: Seamlessly adapts from mobile (375px) to desktop (1920px+)
 - **Comprehensive Component Library**: 9 reusable UI components with consistent styling
 - **Design System**: CSS custom properties for maintainable, scalable styling
+- **Light Theme**: Clean white surfaces with restrained indigo accent and elevation by hairline borders + soft shadows (no glass-morphism)
 - **Accessibility**: WCAG AA compliant with keyboard navigation and screen reader support
 - **Performance Optimized**: Loading skeletons, optimized animations, and efficient rendering
 - **Type-Safe**: Full TypeScript support with comprehensive type definitions
@@ -54,24 +55,43 @@ All design tokens are defined in [`src/styles/tokens.css`](src/styles/tokens.css
 
 #### Color Palette
 
-**Primary Colors**
-- `--color-primary`: #60a5fa (Blue)
-- `--color-primary-light`: #93c5fd
-- `--color-primary-dark`: #3b82f6
+The light theme uses a small, deliberate palette. Ink colors carry the visual hierarchy; indigo is the single accent; status colors expose text/bg/border triples so chips and banners stay readable on light surfaces.
 
-**Status Colors**
-- `--color-success`: #22c55e (Green)
-- `--color-warning`: #f59e0b (Orange)
-- `--color-error`: #ef4444 (Red)
-- `--color-info`: #2dd4bf (Teal)
+**Page & surfaces**
+- `--color-page`: `#F7F8FB` (app background)
+- `--color-surface`: `#FFFFFF` (cards, modals, inputs)
+- `--color-surface-hover`: `#F4F6FA`
 
-**Accent Colors** (for metric cards)
-- Blue, Green, Orange, Pink, Teal, Purple
+**Ink (text)**
+- `--color-ink-primary`: `#0B1220` (body & headings)
+- `--color-ink-secondary`: `#475569` (helper text)
+- `--color-ink-tertiary`: `#64748B` (captions)
 
-**Background Colors**
-- `--color-bg-primary`: #020817 (Main background)
-- `--color-bg-card`: rgba(5, 11, 22, 0.86) (Glass-morphism cards)
-- `--color-bg-overlay`: rgba(0, 0, 0, 0.6) (Modal backdrop)
+**Accent — indigo**
+- `--color-accent`: `#4F46E5`
+- `--color-accent-hover`: `#4338CA`
+- `--color-accent-pressed`: `#3730A3`
+- `--color-accent-tint`: `#EEF2FF` (selected row, accent fill)
+- `--color-accent-border`: `#C7D2FE`
+
+**Status (text / bg / border)**
+
+| Status | Text     | Background | Border     |
+| ------ | -------- | ---------- | ---------- |
+| Success | `#15803D` | `#ECFDF5`  | `#A7F3D0`  |
+| Warning | `#B45309` | `#FFFBEB`  | `#FDE68A`  |
+| Error   | `#B91C1C` | `#FEF2F2`  | `#FECACA`  |
+| Info    | `#0E7490` | `#ECFEFF`  | `#A5F3FC`  |
+
+#### Typography
+
+- **Display**: `Inter Tight` (set in `--font-family-display`) — page hero numbers and section headings
+- **Body**: `Inter` (system fallback stack in `--font-family-base`) — paragraphs, table cells, buttons
+- **Mono**: `JetBrains Mono` (set in `--font-family-mono`) — tokens, IDs, eyebrow labels
+
+**Font sizes**: `--font-size-xs: 12px`, `--font-size-sm: 13px`, `--font-size-base: 14px`, `--font-size-lg: 16px`, `--font-size-xl: 18px`, `--font-size-2xl: 24px`, `--font-size-5xl: 32px`.
+
+**Font weights**: 400 / 500 / 600 / 700 / 800.
 
 #### Spacing Scale
 

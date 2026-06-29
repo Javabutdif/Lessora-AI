@@ -1,19 +1,30 @@
 /**
  * UserManagement Page Styles
- * Reference: Admin Dashboard Redesign Specification - Phase 4
+ * Minimalist — table-first, hairline rows, no card chrome.
  */
 
-/* Page Layout */
 .page {
   min-height: 100vh;
-  color: var(--color-white);
-  padding: var(--spacing-6);
-  background: linear-gradient(
-    180deg,
-    var(--color-bg-primary),
-    var(--color-bg-secondary) 35%,
-    var(--color-bg-tertiary)
-  );
+  color: var(--color-ink-primary);
+  padding: var(--spacing-12) var(--spacing-6);
+  background: var(--color-page);
+}
+
+.page::before {
+  content: "";
+  display: block;
+  height: 3px;
+  background: var(--color-ink-primary);
+  margin: calc(-1 * var(--spacing-12)) calc(-1 * var(--spacing-6)) var(--spacing-12);
+}
+
+@media (min-width: 768px) {
+  .page {
+    padding: var(--spacing-16) var(--spacing-8);
+  }
+  .page::before {
+    margin: calc(-1 * var(--spacing-16)) calc(-1 * var(--spacing-8)) var(--spacing-12);
+  }
 }
 
 .container {
@@ -21,17 +32,14 @@
   margin: 0 auto;
 }
 
-/* Header Section */
 .header {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  margin-bottom: var(--spacing-6);
-  border-radius: var(--radius-4xl);
-  padding: var(--spacing-5) var(--spacing-5);
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border-primary);
-  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-16);
+  padding-bottom: var(--spacing-8);
+  border-bottom: 1px solid var(--color-ink-primary);
+  gap: var(--spacing-6);
 }
 
 .headerContent {
@@ -39,49 +47,46 @@
 }
 
 .headerLabel {
-  margin: 0 0 var(--spacing-2);
-  color: var(--color-primary);
-  font-size: var(--font-size-xs);
+  margin: 0 0 var(--spacing-3);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
   letter-spacing: var(--letter-spacing-wider);
   text-transform: uppercase;
-  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink-tertiary);
 }
 
 .headerTitle {
   margin: 0;
+  font-family: var(--font-family-display);
   font-size: var(--font-size-4xl);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-ink-primary);
 }
 
 .headerDescription {
-  margin: var(--spacing-2) 0 0;
-  color: var(--color-gray-300);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-normal);
+  margin: var(--spacing-3) 0 0;
+  color: var(--color-ink-secondary);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-relaxed);
 }
 
-/* Error Banner */
 .errorBanner {
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-3) var(--spacing-4);
-  background: rgba(239, 68, 68, 0.16);
-  color: var(--color-error-light);
-  border: 1px solid rgba(248, 113, 113, 0.26);
-  margin-bottom: var(--spacing-4);
+  padding: var(--spacing-3) 0;
+  color: var(--color-error-text);
+  border-top: 1px solid var(--color-error-text);
+  border-bottom: 1px solid var(--color-error-text);
+  margin-bottom: var(--spacing-6);
   font-size: var(--font-size-base);
-  line-height: var(--line-height-normal);
 }
 
-/* Table Container */
 .tableContainer {
-  border-radius: var(--radius-4xl);
-  padding: var(--spacing-5);
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border-secondary);
+  padding: 0;
+  border-top: 1px solid var(--color-ink-primary);
 }
 
-/* Toast Container */
 .toastContainer {
   position: fixed;
   top: var(--spacing-6);
@@ -89,12 +94,12 @@
   z-index: var(--z-index-toast);
 }
 
-/* Responsive Styles */
-
-/* Tablet (768px - 1023px) */
 @media (max-width: 1023px) {
   .page {
-    padding: var(--spacing-5);
+    padding: var(--spacing-12) var(--spacing-5);
+  }
+  .page::before {
+    margin: calc(-1 * var(--spacing-12)) calc(-1 * var(--spacing-5)) var(--spacing-8);
   }
 
   .header {
@@ -107,14 +112,17 @@
   }
 }
 
-/* Mobile (<768px) */
 @media (max-width: 767px) {
   .page {
-    padding: var(--spacing-4);
+    padding: var(--spacing-8) var(--spacing-4);
+  }
+  .page::before {
+    margin: calc(-1 * var(--spacing-8)) calc(-1 * var(--spacing-4)) var(--spacing-6);
   }
 
   .header {
-    padding: var(--spacing-4);
+    padding-bottom: var(--spacing-6);
+    margin-bottom: var(--spacing-8);
   }
 
   .headerTitle {
@@ -122,11 +130,7 @@
   }
 
   .headerDescription {
-    font-size: var(--font-size-sm);
-  }
-
-  .tableContainer {
-    padding: var(--spacing-4);
+    font-size: var(--font-size-base);
   }
 
   .toastContainer {
@@ -135,5 +139,3 @@
     left: var(--spacing-4);
   }
 }
-
-/* Made with Bob */
