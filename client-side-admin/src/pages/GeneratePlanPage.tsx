@@ -56,6 +56,8 @@ export default function GeneratePlanPage() {
   const [selectedGrade, setSelectedGrade] = useState("");
   const [duration, setDuration] = useState("");
   const [goalsStandards, setGoalsStandards] = useState("");
+  const [selectedActivityPreferences, setSelectedActivityPreferences] = useState<string[]>([]);
+  const [activityPreferenceNotes, setActivityPreferenceNotes] = useState("");
   const [selectedTemplate, setSelectedTemplate] =
     useState<LessonPlanTemplate>("lessora-ai");
   const [selectedLanguage, setSelectedLanguage] = useState("english");
@@ -90,6 +92,9 @@ export default function GeneratePlanPage() {
         duration: parsedDuration,
         numberOfSessions: 1,
         userDraftText: goalsStandards.trim() || undefined,
+        templateNotes: goalsStandards.trim() || undefined,
+        activityPreferences: selectedActivityPreferences,
+        activityPreferenceNotes: activityPreferenceNotes.trim() || undefined,
         templateId: selectedTemplate,
         language: selectedLanguage,
       });
@@ -178,6 +183,58 @@ export default function GeneratePlanPage() {
                   </option>
                 ))}
               </select>
+            </label>
+
+            <div className={styles.userAuthField}>
+              <span className={styles.userAuthLabel}>
+                Activity Preferences
+              </span>
+              <div className={styles.userAuthCheckboxGroup} style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                {[
+                  "Gamified",
+                  "Collaborative Learning",
+                  "Hands-on Learning",
+                  "Inquiry-Based",
+                  "Discussion-Based",
+                  "Lecture-Based",
+                  "Project-Based",
+                  "Individual Work",
+                  "Pair Work",
+                  "Group Work",
+                  "ICT-Assisted",
+                  "Creative Activities",
+                ].map((option) => (
+                  <label key={option} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <input
+                      type="checkbox"
+                      checked={selectedActivityPreferences.includes(option)}
+                      disabled={isGenerating}
+                      onChange={() => {
+                        setSelectedActivityPreferences((current) =>
+                          current.includes(option)
+                            ? current.filter((item) => item !== option)
+                            : [...current, option],
+                        );
+                      }}
+                    />
+                    {option}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <label className={styles.userAuthField}>
+              <span className={styles.userAuthLabel}>
+                Additional Activity Preferences (optional)
+              </span>
+              <input
+                type="text"
+                value={activityPreferenceNotes}
+                onChange={(e) => setActivityPreferenceNotes(e.target.value)}
+                placeholder="Examples: Avoid role playing, Use simple classroom materials"
+                disabled={isGenerating}
+                className={styles.userAuthInput}
+              />
             </label>
 
             <label className={styles.userAuthField}>

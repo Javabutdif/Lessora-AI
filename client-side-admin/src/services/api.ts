@@ -346,6 +346,8 @@ export type GenerateLessonPlanPayload = {
   userDraftText?: string;
   templateNotes?: string;
   language: string;
+  activityPreferences?: string[];
+  activityPreferenceNotes?: string;
   templateId?: LessonPlanTemplate;
 };
 

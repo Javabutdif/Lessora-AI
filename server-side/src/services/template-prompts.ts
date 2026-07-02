@@ -5,6 +5,34 @@ export type LessonPlanTemplateId =
   | "daily-lesson-log"
   | "matatag";
 
+export function buildActivityTypePrompt(request: GenerateLessonPlanRequest) {
+  const selected = request.activityPreferences?.filter(Boolean) || [];
+  const other = request.activityPreferenceNotes?.trim();
+
+  if (!selected.length && !other) {
+    return "";
+  }
+
+  const lines: string[] = [];
+
+  if (selected.length) {
+    lines.push(`Activity Preferences: ${selected.join(", ")}`);
+  }
+
+  if (other) {
+    lines.push(`Additional Activity Preferences: ${other}`);
+  }
+
+  lines.push(
+    "Use the selected activity types to shape the student activities, procedures, and teacher prompts.",
+  );
+  lines.push(
+    "If no activity type input is provided, use balanced learner-centered activities appropriate for the grade level.",
+  );
+
+  return lines.join("\n");
+}
+
 export function buildTemplatePrompt(
   request: GenerateLessonPlanRequest,
   _user: any,
@@ -41,6 +69,7 @@ function buildDetailedLessonPlanPrompt(request: GenerateLessonPlanRequest) {
     request.userDraftText
       ? `Teacher Notes: ${request.userDraftText}`
       : "Teacher Notes: Not provided",
+    buildActivityTypePrompt(request),
     `Required sections: Objectives, Content, Learning Resources, Procedures, Reflection.`,
     `The Procedures section must be detailed, classroom-ready, and step-by-step.`,
     `The Reflection section must include teacher reflection prompts, not placeholders.`,
@@ -116,6 +145,7 @@ function buildDailyLessonLogPrompt(request: GenerateLessonPlanRequest) {
     request.userDraftText
       ? `Teacher Notes: ${request.userDraftText}`
       : "Teacher Notes: Not provided",
+    buildActivityTypePrompt(request),
     `Required sections: Objectives, Content, Learning Resources, Procedures, Remarks, Reflection.`,
     `Remarks and Reflection must contain real teaching notes, not placeholder text.`,
     JSON.stringify({
@@ -215,6 +245,7 @@ function buildMatatagPrompt(request: GenerateLessonPlanRequest) {
     request.userDraftText
       ? `Teacher Notes: ${request.userDraftText}`
       : "Teacher Notes: Not provided",
+    buildActivityTypePrompt(request),
     `Required sections: Curriculum Content, Standards, Lesson Competencies, Learning Resources, Teaching and Learning Procedure, Evaluating Learning, Teacher Remarks, and Teacher Reflection.`,
     `The procedure section should be lesson-specific and should not reuse a fixed pattern across all subjects or grade levels.`,
     `Keep every block specific, instructional, and free of placeholder text.`,

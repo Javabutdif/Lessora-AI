@@ -65,6 +65,9 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
   const [duration, setDuration] = React.useState("");
   const [goalsStandards, setGoalsStandards] = React.useState("");
   const [selectedLanguage, setSelectedLanguage] = React.useState("english");
+  const [selectedActivityPreferences, setSelectedActivityPreferences] =
+    React.useState<string[]>([]);
+  const [activityPreferenceNotes, setActivityPreferenceNotes] = React.useState("");
   const [selectedTemplate, setSelectedTemplate] =
     React.useState<LessonPlanTemplate>("lessora-ai");
   const [isGenerating, setIsGenerating] = React.useState(false);
@@ -80,6 +83,8 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
     setDuration("");
     setGoalsStandards("");
     setSelectedLanguage("english");
+    setSelectedActivityPreferences([]);
+    setActivityPreferenceNotes("");
     setSelectedTemplate("lessora-ai");
   }, []);
 
@@ -99,6 +104,7 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
   const handleGenerate = async () => {
     const trimmedTopicSubject = topicSubject.trim();
     const trimmedGoalsStandards = goalsStandards.trim();
+    const trimmedActivityPreferenceNotes = activityPreferenceNotes.trim();
     const parsedDuration = Number(duration);
 
     if (!trimmedTopicSubject || !selectedGrade || !duration.trim()) {
@@ -131,6 +137,8 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
         userDraftText: trimmedGoalsStandards || undefined,
         templateNotes: trimmedGoalsStandards || undefined,
         language: selectedLanguage,
+        activityPreferences: selectedActivityPreferences,
+        activityPreferenceNotes: trimmedActivityPreferenceNotes || undefined,
         templateId: selectedTemplate,
       });
 
@@ -315,6 +323,63 @@ export default function GeneratePlanScreen({ route, navigation }: Props) {
                   onChangeText={setDuration}
                 />
               </View>
+            </View>
+
+            <View className="space-y-4">
+              <View>
+                <Text className="text-secondary font-poppins-semi text-sm mb-3">
+                  Activity Type
+                </Text>
+                <View className="flex-row flex-wrap gap-2">
+                  {[
+                    "Gamified",
+                    "Collaborative Learning",
+                    "Hands-on Learning",
+                    "Inquiry-Based",
+                    "Discussion-Based",
+                    "Lecture-Based",
+                    "Project-Based",
+                    "Individual Work",
+                    "Pair Work",
+                    "Group Work",
+                    "ICT-Assisted",
+                    "Creative Activities",
+                  ].map((option) => {
+                    const selected = selectedActivityPreferences.includes(option);
+                    return (
+                      <TouchableOpacity
+                        key={option}
+                        onPress={() => {
+                          setSelectedActivityPreferences((current) =>
+                            current.includes(option)
+                              ? current.filter((item) => item !== option)
+                              : [...current, option],
+                          );
+                        }}
+                        className={`rounded-full px-4 py-2 border ${
+                          selected
+                            ? "bg-soft-blue border-soft-blue"
+                            : "bg-white border-gray-300"
+                        }`}>
+                        <Text
+                          className={`font-poppins text-sm ${
+                            selected ? "text-royal" : "text-secondary"
+                          }`}
+                        >
+                          {option}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              </View>
+
+              <Input
+                label="Additional Activity Preferences (optional)"
+                placeholder="Examples: Avoid role playing, Use simple classroom materials"
+                value={activityPreferenceNotes}
+                onChangeText={setActivityPreferenceNotes}
+              />
             </View>
 
             <Input

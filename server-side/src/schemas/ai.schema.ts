@@ -19,6 +19,8 @@ export const generateLessonPlanSchema = z.object({
     .default(1),
   userDraftText: z.string().max(12000).optional(),
   language: z.string().min(2).max(50).default("english"),
+  activityPreferences: z.array(z.string()).optional().default([]),
+  activityPreferenceNotes: z.string().max(200).optional(),
   templateNotes: z.string().max(4000).optional(),
   templateId: z
     .enum([
