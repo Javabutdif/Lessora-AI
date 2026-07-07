@@ -8,7 +8,10 @@ import {
   updateUser,
   softDeleteUser,
 } from "../services/admin-users.service";
-import { getDashboardMetrics } from "../services/admin.service";
+import {
+  getDashboardMetrics,
+  listAdminLessonPlans,
+} from "../services/admin.service";
 
 export async function loginAdminController(
   req: Request,
@@ -118,6 +121,22 @@ export async function listUsersController(
     const users = await getAllUsers();
     res.json({
       data: users,
+      error: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function listAdminLessonPlansController(
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const lessonPlans = await listAdminLessonPlans();
+    res.json({
+      data: lessonPlans,
       error: null,
     });
   } catch (error) {

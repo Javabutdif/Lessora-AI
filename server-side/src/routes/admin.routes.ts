@@ -4,6 +4,7 @@ import {
   getLandingMetricsController,
   getAdminStats,
   loginAdminController,
+  listAdminLessonPlansController,
   listUsersController,
   updateUserController,
   deleteUserController,
@@ -16,6 +17,7 @@ router.post("/login", loginAdminController);
 router.get("/metrics/landing", getLandingMetricsController);
 router.get("/stats", requireAdmin, getAdminStats);
 router.get("/metrics/dashboard", requireAdmin, getDashboardMetricsController);
+router.get("/lesson-plans", requireAdmin, listAdminLessonPlansController);
 
 // User management routes
 router.get("/users", requireAdmin, listUsersController);

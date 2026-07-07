@@ -429,6 +429,21 @@ export type LessonPlanHistoryDetail = LessonPlanHistoryItem & {
   model?: string;
 };
 
+export type AdminLessonPlanHistoryItem = {
+  id: string;
+  title: string;
+  subject: string;
+  gradeLevel: string;
+  totalDuration: number;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: {
+    id: string;
+    name: string;
+    email: string;
+  };
+};
+
 export async function generateLessonPlan(payload: GenerateLessonPlanPayload) {
   return apiRequest<GenerateLessonPlanResponse>(
     "/api/ai/lesson-plan/generate",
@@ -458,6 +473,10 @@ export async function getLessonPlanById(lessonPlanId: string) {
     },
     true, // use user auth
   );
+}
+
+export async function fetchAdminLessonPlans() {
+  return apiRequest<AdminLessonPlanHistoryItem[]>("/api/admin/lesson-plans");
 }
 
 // ============================================

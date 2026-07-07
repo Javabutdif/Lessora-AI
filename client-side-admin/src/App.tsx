@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminLessonPlansPage from "./pages/AdminLessonPlansPage";
 import UserManagement from "./pages/UserManagement";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
@@ -89,6 +90,14 @@ function App() {
           element={
             <ProtectedRoute>
               <UserManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/lesson-plans"
+          element={
+            <ProtectedRoute>
+              <AdminLessonPlansPage />
             </ProtectedRoute>
           }
         />

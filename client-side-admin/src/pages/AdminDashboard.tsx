@@ -165,6 +165,14 @@ export default function AdminDashboard() {
             <Button
               variant="secondary"
               size="medium"
+              onClick={() => navigate("/admin/lesson-plans")}
+              ariaLabel="Navigate to lesson plan history"
+            >
+              Lesson plans
+            </Button>
+            <Button
+              variant="secondary"
+              size="medium"
               onClick={() => navigate("/admin/users")}
               ariaLabel="Navigate to user management"
             >
