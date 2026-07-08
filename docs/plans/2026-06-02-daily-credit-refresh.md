@@ -2,7 +2,7 @@
 
 **Goal:** Implement automatic daily reset of user AI response credits starting June 9, 2026.
 
-**Architecture:** Node.js cron scheduler running daily at midnight UTC, executes bulk user credit update with simple console logging.
+**Architecture:** Node.js cron scheduler running daily at 00:00 Asia/Manila, executes bulk user credit update with simple console logging.
 
 **Tech Stack:** node-cron, Express, TypeScript, MongoDB.
 
@@ -19,11 +19,11 @@
 
 - [x] Install `node-cron` in server-side
 - [ ] Add environment variables to `.env`:
-  - `CREDIT_REFRESH_START_DATE=2026-06-09T00:00:00Z`
+  - `CREDIT_REFRESH_START_DATE=2026-06-09T00:00:00+08:00`
   - `CREDIT_MAX_PER_USER=5`
 - [x] Create `server-side/src/services/credit-refresh.scheduler.ts`
   - Implement startup date check and delay activation
-  - Implement cron job at midnight UTC
+  - Implement cron job at 00:00 Asia/Manila
   - Add console logging for execution
 - [x] Register scheduler in `server-side/src/app.ts` after DB connection
 

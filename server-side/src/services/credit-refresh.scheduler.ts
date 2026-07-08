@@ -1,8 +1,9 @@
 import cron, { ScheduledTask } from "node-cron";
 import { User } from "../schemas/user.schema";
 
-const DEFAULT_REFRESH_START_DATE = "2026-06-09T00:00:00Z";
+const DEFAULT_REFRESH_START_DATE = "2026-06-09T00:00:00+08:00";
 const DEFAULT_MAX_CREDITS = 5;
+const CREDIT_REFRESH_TIME_ZONE = "Asia/Manila";
 
 function getRefreshStartDate() {
   const configuredDate =
@@ -49,7 +50,16 @@ export class CreditRefreshScheduler {
     if (now < refreshStartDate) {
       const delayMs = refreshStartDate.getTime() - now.getTime();
       console.log(
-        `Credit refresh scheduler will start on ${refreshStartDate.toISOString().slice(0, 10)} UTC (in ${Math.round(delayMs / 1000)} seconds)`,
+        `Credit refresh scheduler will start on ${refreshStartDate.toLocaleString("en-PH", {
+          timeZone: CREDIT_REFRESH_TIME_ZONE,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        })} ${CREDIT_REFRESH_TIME_ZONE} (in ${Math.round(delayMs / 1000)} seconds)`,
       );
       this.startTimeout = setTimeout(() => {
         this.startTimeout = null;
@@ -93,10 +103,12 @@ export class CreditRefreshScheduler {
         }
       },
       {
-        timezone: "UTC",
+        timezone: CREDIT_REFRESH_TIME_ZONE,
       },
     );
 
-    console.log("Credit refresh scheduler started for midnight UTC");
+    console.log(
+      `Credit refresh scheduler started for 00:00 ${CREDIT_REFRESH_TIME_ZONE}`,
+    );
   }
 }

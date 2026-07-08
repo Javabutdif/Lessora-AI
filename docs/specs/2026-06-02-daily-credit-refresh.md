@@ -2,7 +2,7 @@
 
 ## Feature overview
 
-Users receive a daily refresh of their AI response credits, resetting to 5 credits each day at midnight UTC. The refresh system launches on June 9, 2026 and continues daily thereafter.
+Users receive a daily refresh of their AI response credits, resetting to 5 credits each day at 00:00 Asia/Manila. The refresh system launches on June 9, 2026 and continues daily thereafter.
 
 ## Current state
 
@@ -17,7 +17,7 @@ Users receive a daily refresh of their AI response credits, resetting to 5 credi
 Add to `.env`:
 
 ```
-CREDIT_REFRESH_START_DATE=2026-06-09T00:00:00Z
+CREDIT_REFRESH_START_DATE=2026-06-09T00:00:00+08:00
 CREDIT_MAX_PER_USER=5
 ```
 
@@ -47,7 +47,7 @@ export class CreditRefreshScheduler {
   }
 
   private static startScheduler() {
-    // Run daily at midnight UTC
+    // Run daily at 00:00 Asia/Manila
     cron.schedule("0 0 * * *", async () => {
       try {
         const result = await User.updateMany(
@@ -77,7 +77,7 @@ CreditRefreshScheduler.initialize();
 
 ## Behavior
 
-- Runs daily at **midnight UTC** starting June 9, 2026
+- Runs daily at **00:00 Asia/Manila** starting June 9, 2026
 - Resets all `isActive: true` users to 5 credits
 - Runs silently (just console logs for verification)
 - Credits do NOT accumulate (always reset to max, not add to current)
