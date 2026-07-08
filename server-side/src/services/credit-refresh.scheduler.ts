@@ -1,9 +1,11 @@
 import cron, { ScheduledTask } from "node-cron";
 import { User } from "../schemas/user.schema";
+import { ResendService } from "./resend.service";
 
 const DEFAULT_REFRESH_START_DATE = "2026-06-09T00:00:00+08:00";
 const DEFAULT_MAX_CREDITS = 5;
 const CREDIT_REFRESH_TIME_ZONE = "Asia/Manila";
+const CREDIT_REFRESH_NOTIFICATION_EMAIL = "jamesgenabio31@gmail.com";
 
 function getRefreshStartDate() {
   const configuredDate =
@@ -34,6 +36,62 @@ function getMaxCredits() {
   }
 
   return configuredCredits;
+}
+
+function formatRefreshTimestamp(date: Date) {
+  return date.toLocaleString("en-PH", {
+    timeZone: CREDIT_REFRESH_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+}
+
+function buildCreditRefreshEmailHtml(params: {
+  status: "success" | "failed";
+  timestamp: Date;
+  matchedCount?: number;
+  modifiedCount?: number;
+  maxCredits?: number;
+  errorMessage?: string;
+}) {
+  const heading =
+    params.status === "success"
+      ? "Credit Refresh Completed"
+      : "Credit Refresh Failed";
+  const intro =
+    params.status === "success"
+      ? "The daily AI response credit refresh ran on the server."
+      : "The daily AI response credit refresh encountered an error on the server.";
+
+  const details =
+    params.status === "success"
+      ? `
+      <ul>
+        <li>Run time: ${formatRefreshTimestamp(params.timestamp)} ${CREDIT_REFRESH_TIME_ZONE}</li>
+        <li>Active users matched: ${params.matchedCount ?? 0}</li>
+        <li>Users updated: ${params.modifiedCount ?? 0}</li>
+        <li>Credits set per active user: ${params.maxCredits ?? DEFAULT_MAX_CREDITS}</li>
+      </ul>
+    `
+      : `
+      <ul>
+        <li>Failure time: ${formatRefreshTimestamp(params.timestamp)} ${CREDIT_REFRESH_TIME_ZONE}</li>
+        <li>Error: ${params.errorMessage || "Unknown error"}</li>
+      </ul>
+    `;
+
+  return `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827;">
+      <h2 style="margin-bottom: 8px;">Lessora AI ${heading}</h2>
+      <p style="margin-top: 0;">${intro}</p>
+      ${details}
+    </div>
+  `;
 }
 
 export class CreditRefreshScheduler {
@@ -85,6 +143,26 @@ export class CreditRefreshScheduler {
     };
   }
 
+  private static async sendRefreshNotification(params: {
+    status: "success" | "failed";
+    timestamp: Date;
+    matchedCount?: number;
+    modifiedCount?: number;
+    maxCredits?: number;
+    errorMessage?: string;
+  }) {
+    const subject =
+      params.status === "success"
+        ? `Lessora AI Credit Refresh Success - ${formatRefreshTimestamp(params.timestamp)}`
+        : `Lessora AI Credit Refresh Failed - ${formatRefreshTimestamp(params.timestamp)}`;
+
+    await ResendService.send({
+      to: CREDIT_REFRESH_NOTIFICATION_EMAIL,
+      subject,
+      html: buildCreditRefreshEmailHtml(params),
+    });
+  }
+
   private static startScheduler() {
     if (this.task) {
       return;
@@ -95,11 +173,39 @@ export class CreditRefreshScheduler {
       async () => {
         try {
           const result = await this.refreshCreditsNow();
+          const refreshedAt = new Date();
           console.log(
             `Credit refresh completed: ${result.modifiedCount}/${result.matchedCount} active users set to ${result.maxCredits} credits`,
           );
+          try {
+            await this.sendRefreshNotification({
+              status: "success",
+              timestamp: refreshedAt,
+              matchedCount: result.matchedCount,
+              modifiedCount: result.modifiedCount,
+              maxCredits: result.maxCredits,
+            });
+          } catch (notificationError) {
+            console.error(
+              "Credit refresh success notification failed:",
+              notificationError,
+            );
+          }
         } catch (error) {
           console.error("Credit refresh failed:", error);
+          try {
+            await this.sendRefreshNotification({
+              status: "failed",
+              timestamp: new Date(),
+              errorMessage:
+                error instanceof Error ? error.message : "Unknown error",
+            });
+          } catch (notificationError) {
+            console.error(
+              "Credit refresh failure notification failed:",
+              notificationError,
+            );
+          }
         }
       },
       {

@@ -4,6 +4,8 @@
 
 Users receive a daily refresh of their AI response credits, resetting to 5 credits each day at 00:00 Asia/Manila. The refresh system launches on June 9, 2026 and continues daily thereafter.
 
+An email notification is sent after each scheduled run so the owner can confirm whether the refresh succeeded or failed.
+
 ## Current state
 
 - Users have `aiResponseCredits` field in User schema (default: 5)
@@ -79,7 +81,7 @@ CreditRefreshScheduler.initialize();
 
 - Runs daily at **00:00 Asia/Manila** starting June 9, 2026
 - Resets all `isActive: true` users to 5 credits
-- Runs silently (just console logs for verification)
+- Sends an email notification with success or failure details after each scheduled run
 - Credits do NOT accumulate (always reset to max, not add to current)
 
 ## Dependencies

@@ -25,6 +25,7 @@
   - Implement startup date check and delay activation
   - Implement cron job at 00:00 Asia/Manila
   - Add console logging for execution
+  - Send email notification after each scheduled run with success or failure details
 - [x] Register scheduler in `server-side/src/app.ts` after DB connection
 
 ### Phase 2: Testing (1 day)
@@ -33,6 +34,7 @@
 - [x] Add `CreditRefreshScheduler.initialize(now)` and `refreshCreditsNow()` seams for manual date/DB testing
 - [ ] Verify database updates: create test users, trigger refresh, check credits reset to 5
 - [ ] Verify console logs show execution
+- [ ] Verify notification email is sent for both success and failure paths
 - [x] Run `npx tsc --noEmit`
 
 ## Validation
@@ -40,6 +42,7 @@
 - [x] `npx tsc --noEmit` passes
 - [ ] Manual test: users' credits reset to 5 after refresh
 - [ ] Console logs confirm daily execution
+- [ ] Notification email confirms refresh result
 
 ## Risks
 
