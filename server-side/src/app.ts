@@ -4,6 +4,7 @@ import { authRouter } from "./routes/auth.routes";
 import { aiRouter } from "./routes/ai.routes";
 import { adminRouter } from "./routes/admin.routes";
 import { userRouter } from "./routes/user.routes";
+import { supportRouter } from "./routes/support.routes";
 import { errorHandler } from "./middleware/errorHandler";
 import mongoose from "mongoose";
 import { config } from "dotenv";
@@ -78,6 +79,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/ai", apiRateLimit, aiRateLimit, aiRouter);
 app.use("/api/admin", apiRateLimit, adminRouter);
 app.use("/api/user", apiRateLimit, userRouter);
+app.use("/api/support", supportRouter);
 
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });

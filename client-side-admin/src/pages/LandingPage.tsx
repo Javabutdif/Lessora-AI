@@ -50,6 +50,7 @@ export default function LandingPage() {
     <div className={styles.userLanding}>
       <header className={styles.userLandingNav}>
         <Link to="/about">About</Link>
+        <Link to="/support">Support</Link>
         <Link to="/privacy-policy">Privacy Policy</Link>
         <Link to="/terms-and-conditions">Terms & Conditions</Link>
       </header>
@@ -82,6 +83,13 @@ export default function LandingPage() {
           >
             Download App
           </a>
+          <button
+            type="button"
+            onClick={() => navigate("/support")}
+            className={styles.userLandingSecondaryButton}
+          >
+            Support the project
+          </button>
           <button
             type="button"
             onClick={() => navigate("/login")}

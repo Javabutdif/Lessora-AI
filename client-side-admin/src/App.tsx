@@ -15,6 +15,7 @@ import GeneratePlanPage from "./pages/GeneratePlanPage";
 import HistoryPage from "./pages/HistoryPage";
 import PreviewPage from "./pages/PreviewPage";
 import InfoPage from "./pages/InfoPage";
+import SupportDonationPage from "./pages/SupportDonationPage";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/privacy-policy" element={<InfoPage page="privacy" />} />
+        <Route path="/support" element={<SupportDonationPage />} />
         <Route
           path="/terms-and-conditions"
           element={<InfoPage page="terms" />}

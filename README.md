@@ -54,7 +54,7 @@ Lessora AI follows a client-server architecture with three main components:
 - **Features**:
   - Teacher portal: signup, login, password reset, AI lesson-plan generation, history, preview, export
   - Admin portal: login, platform dashboard with metric cards, user management with edit/delete
-  - Public: landing page (hero + features + Android CTA), privacy / terms / about docs
+  - Public: landing page (hero + features + Android CTA), support donation page, privacy / terms / about docs
   - Responsive design for desktop and mobile browsers
 
 ### Server (`server-side/`)
@@ -69,6 +69,7 @@ Lessora AI follows a client-server architecture with three main components:
 /api/auth          - User authentication (register, login)
 /api/admin         - Admin operations (user management)
 /api/ai            - AI lesson plan generation and history
+/api/support       - Public support donation checkout and webhook flow
 ```
 
 ## 🚀 Getting Started

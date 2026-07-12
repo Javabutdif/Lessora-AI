@@ -441,6 +441,35 @@
   gap: var(--spacing-8);
 }
 
+.supportDonationTierGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-8);
+}
+
+.supportDonationTier {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-6) 0;
+  border-top: 1px solid var(--color-rule);
+}
+
+.supportDonationTierMeta {
+  min-height: var(--line-height-normal);
+  margin: var(--spacing-2) 0 var(--spacing-3);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-ink-tertiary);
+}
+
+.supportDonationTier .flatButton {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
 .workspaceCard {
   padding: var(--spacing-6) 0;
   border-top: 1px solid var(--color-rule);
@@ -721,6 +750,16 @@
 }
 
 @media (max-width: 720px) {
+  .supportDonationHeader {
+    justify-content: center;
+    padding: var(--spacing-4);
+  }
+
+  .supportDonationNav {
+    justify-content: center;
+    gap: var(--spacing-3);
+  }
+
   /* Match Landing's mobile nav: single row, centered. */
   .infoPageHeader {
     justify-content: center;
@@ -731,6 +770,18 @@
     justify-content: center;
     gap: var(--spacing-3);
     flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 900px) {
+  .supportDonationTierGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .supportDonationTierGrid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -798,6 +849,33 @@
   gap: var(--spacing-4);
   flex-wrap: wrap;
   border-bottom: 1px solid var(--color-rule);
+}
+
+.supportDonationHeader {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--spacing-6) var(--spacing-8);
+}
+
+.supportDonationNav {
+  display: flex;
+  gap: var(--spacing-6);
+  flex-wrap: wrap;
+}
+
+.supportDonationNav :global(a) {
+  color: var(--color-ink-secondary);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.supportDonationNav :global(a:hover),
+.supportDonationNav :global(a[aria-current="page"]) {
+  color: var(--color-ink-primary);
 }
 
 .userAppBrand {

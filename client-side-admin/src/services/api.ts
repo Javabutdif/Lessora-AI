@@ -139,6 +139,64 @@ export async function fetchLandingMetrics() {
   return payload.data;
 }
 
+export type SupportDonationTier = {
+  id: string;
+  amount: number;
+  label: string;
+  description: string;
+  recommended?: boolean;
+};
+
+export type SupportDonationConfig = {
+  title: string;
+  description: string;
+  currency: string;
+  successMessage: string;
+  tiers: SupportDonationTier[];
+};
+
+export type SupportDonationCheckoutResponse = {
+  checkoutUrl: string;
+  referenceNumber: string;
+};
+
+export type SupportDonationStatus = {
+  referenceNumber: string;
+  status: "pending" | "paid" | "failed" | "canceled";
+  amount: number;
+  currency: string;
+  checkoutSessionId?: string;
+  paymentId?: string;
+  updatedAt: string;
+};
+
+export async function fetchSupportDonationConfig() {
+  return apiRequest<SupportDonationConfig>("/api/support/donations/config", {
+    method: "GET",
+  });
+}
+
+export async function createSupportDonationCheckoutSession(payload: {
+  amount: number;
+}) {
+  return apiRequest<SupportDonationCheckoutResponse>(
+    "/api/support/donations/checkout",
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    },
+  );
+}
+
+export async function fetchSupportDonationStatus(referenceNumber: string) {
+  return apiRequest<SupportDonationStatus>(
+    `/api/support/donations/${encodeURIComponent(referenceNumber)}`,
+    {
+      method: "GET",
+    },
+  );
+}
+
 export interface User {
   id: string;
   email: string;
