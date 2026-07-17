@@ -18,11 +18,13 @@ The platform uses OpenAI's GPT models to generate comprehensive, curriculum-alig
 ### For Teachers
 - **AI-Powered Lesson Generation**: Create complete lesson plans from topic, grade level, duration, and learning goals
 - **Multiple Templates**: Support for various lesson plan formats including DepEd semi-detailed templates
-- **Lesson Plan History**: View, edit, and reuse previously generated lesson plans
+- **Lesson Plan History**: View, edit, refine, and reuse previously generated lesson plans
 - **Document Export**: Export lesson plans in DOC, PDF, and DOCX formats
-- **User Authentication**: Secure account registration and login
+- **Analytics & Profile**: Track usage patterns and manage account settings
+- **User Authentication**: Secure account registration and login with forgot/reset password flow
 - **AI Response Credits**: Fair usage system with credit-based generation limits
 - **Mobile & Web Access**: Use the mobile app or web portal based on preference
+- **Offline-Ready**: Built with Expo for smooth performance on iOS and Android
 
 ### For Administrators
 - **User Management**: Create, view, and manage teacher accounts
@@ -36,38 +38,41 @@ Lessora AI follows a client-server architecture with three main components:
 ### Client Applications
 
 #### Mobile App (`client-side/`)
-- **Technology**: React Native with Expo SDK 54.0.0
+- **Technology**: React Native with Expo SDK 54
 - **UI Framework**: NativeWind (Tailwind CSS for React Native)
 - **Navigation**: React Navigation with bottom tabs
 - **Key Screens**:
-  - Onboarding and authentication
-  - Dashboard with recent plans
-  - Lesson plan generation
-  - History and preview
-  - Export functionality
+  - Onboarding, landing, authentication (login/register/password reset)
+  - Dashboard with home, generate, history, preview, refine, analytics, profile
+  - Export functionality (DOC, PDF, DOCX)
+- **Production Builds**: Configured for Expo Application Services (EAS) — cloud builds for Android APK/AAB and iOS
 
 #### Web Portal (`client-side-admin/`)
 
 - **Technology**: React 18 + TypeScript + Vite
 - **Styling**: CSS Modules + CSS custom properties (tokens in `src/styles/tokens.css`)
 - **Visual language**: "Academic notebook" — paper background, navy ink, Source Serif 4 display, hairline rules. No cards, no pill chips, no gradients. See [`client-side-admin/README.md`](client-side-admin/README.md) for the full design system.
-- **Features**:
-  - Teacher portal: signup, login, password reset, AI lesson-plan generation, history, preview, export
-  - Admin portal: login, platform dashboard with metric cards, user management with edit/delete
-  - Public: landing page (hero + features + Android CTA), support donation page, privacy / terms / about docs
-  - Responsive design for desktop and mobile browsers
+- **Teacher features**: signup, login, password reset, AI lesson-plan generation, history, preview, refine plans, export
+- **Admin features**: login, platform dashboard with metrics, user management, lesson plan oversight
+- **Public pages**: landing page (hero + features + Android CTA), support donation, privacy / terms / about docs
+- **Responsive design** for desktop and mobile browsers
 
 ### Server (`server-side/`)
 - **Technology**: Node.js + Express + TypeScript
 - **Database**: MongoDB with Mongoose ODM
 - **Authentication**: JWT tokens with bcrypt password hashing
 - **AI Integration**: OpenAI API (GPT-4o-mini)
+- **Email**: Resend for password reset and notifications
+- **Payments**: PayMongo integration for support donations
+- **Scheduling**: Cron jobs for credit refresh and activity reports
+- **Rate Limiting**: Per-route middleware with configurable windows
 - **Architecture Pattern**: Routes → Controllers → Services → Schemas/Models
 
 #### API Structure
 ```
-/api/auth          - User authentication (register, login)
-/api/admin         - Admin operations (user management)
+/api/auth          - User authentication (register, login, password reset)
+/api/user          - User-specific operations (lesson plans, credits)
+/api/admin         - Admin operations (user management, metrics, lesson plans)
 /api/ai            - AI lesson plan generation and history
 /api/support       - Public support donation checkout and webhook flow
 ```
@@ -108,25 +113,48 @@ Lessora AI follows a client-server architecture with three main components:
 
 3. **Configure environment variables**
 
-   Create `.env` files in the `server-side/`, `client-side/`, and `client-side-admin/` directories.
-   
-   See **[Environment Configuration](docs/ai/quickstart.md#environment-configuration)** for detailed setup instructions and security guidelines.
+    Create `.env` files in the `server-side/`, `client-side/`, and `client-side-admin/` directories.
+    
+    See **[Environment Configuration](docs/ai/quickstart.md#environment-configuration)** for detailed setup instructions.
 
 4. **Start the development servers**
 
-   ```bash
-   # Terminal 1: Start the backend server
-   cd server-side
-   npm run dev
+    ```bash
+    # Terminal 1: Start the backend server
+    cd server-side
+    npm run dev
 
-   # Terminal 2: Start the mobile app
-   cd client-side
-   npm start
+    # Terminal 2: Start the mobile app
+    cd ../client-side
+    npm start
 
-   # Terminal 3: Start the web portal
-   cd client-side-admin
-   npm run dev
-   ```
+    # Terminal 3: Start the web portal
+    cd ../client-side-admin
+    npm run dev
+    ```
+
+### Mobile App: Production Builds
+
+For Android and iOS production builds, the project uses [Expo Application Services (EAS)](https://expo.dev/eas):
+
+```bash
+# Install EAS CLI
+npm install -g eas-cli
+
+# Login to Expo
+eas login
+
+# Build for Android (APK)
+eas build -p android --profile preview
+
+# Build for Android (App Bundle)
+eas build -p android --profile production
+
+# Build for iOS
+eas build -p ios
+```
+
+EAS workflows are defined in `client-side/.eas/workflows/create-production-builds.yml`.
 
 ### Quick Start with Scripts
 
@@ -152,27 +180,35 @@ lessora-ai/
 │   │   ├── components/   # Reusable UI components
 │   │   ├── context/      # React contexts (Auth, Loading)
 │   │   ├── navigation/   # Navigation configuration
-│   │   ├── screens/      # Screen components
+│   │   ├── screens/      # Screen components (Auth, Dashboard, Landing)
 │   │   ├── services/     # API service layer
-│   │   └── utils/        # Utility functions
+│   │   ├── types/        # TypeScript declarations
+│   │   └── utils/        # Utility functions (document export)
 │   └── App.tsx           # App entry point
 ├── client-side-admin/    # React web portal (admin + teacher + landing)
 │   ├── src/
 │   │   ├── components/   # Reusable UI components (Button, Card, Input, Modal, ...)
-│   │   ├── pages/        # Route components (Landing, Login, Register, Generate, History, Preview, ...)
+│   │   ├── pages/        # Route components (Landing, Login, Register, Generate, History, Preview, Support, ...)
 │   │   ├── services/     # API service layer
 │   │   ├── styles/       # Design tokens + shared CSS modules
+│   │   ├── types/        # Component prop types
 │   │   └── utils/        # Helpers (e.g. SEO metadata)
-│   └── index.html        # Web entry point (loads Source Serif 4 + Inter + JetBrains Mono)
+│   ├── index.html        # Web entry point (loads Source Serif 4 + Inter + JetBrains Mono)
+│   └── src/App.tsx       # Route definitions (public, teacher, admin)
 ├── server-side/          # Node.js backend
 │   ├── src/
+│   │   ├── app.ts        # Express app setup (middleware, routes, rate limiting)
+│   │   ├── server.ts     # Server entry point
 │   │   ├── controllers/  # Request handlers
-│   │   ├── middleware/   # Express middleware
-│   │   ├── routes/       # API routes
+│   │   ├── middleware/   # Auth, error handling, rate limiting
+│   │   ├── routes/       # API routes (auth, ai, admin, user, support)
 │   │   ├── schemas/      # Mongoose & Zod schemas
-│   │   ├── services/     # Business logic
-│   │   └── config/       # Configuration files
-│   └── server.ts         # Server entry point
+│   │   ├── services/     # Business logic (OpenAI, email, payments, schedulers)
+│   │   ├── config/       # Configuration files
+│   │   ├── bootstrap/    # Database seeding
+│   │   ├── emails/       # Email templates
+│   │   ├── types/        # Shared TypeScript types
+│   │   └── utils/        # Utility functions
 ├── docs/                 # Documentation
 │   ├── ai/              # AI agent documentation
 │   ├── specs/           # Feature specifications
@@ -248,11 +284,13 @@ npm run workflow -- finalize
 
 ## 🔑 Key Technologies
 
-- **Frontend**: React Native (Expo), React, TypeScript, NativeWind (mobile), CSS Modules + tokens (web)
-- **Backend**: Node.js, Express, TypeScript, MongoDB, Mongoose
+- **Frontend (Mobile)**: React Native (Expo SDK 54), TypeScript, NativeWind (Tailwind CSS for RN), React Navigation, EAS
+- **Frontend (Web)**: React 18, TypeScript, Vite, CSS Modules + design tokens, React Router DOM, React Query
+- **Backend**: Node.js, Express, TypeScript, MongoDB, Mongoose, Zod validation
 - **AI**: OpenAI API (GPT-4o-mini)
 - **Authentication**: JWT, bcrypt
-- **Validation**: Zod
+- **Email**: Resend
+- **Payments**: PayMongo
 - **Development**: Vite, Metro bundler, ESLint, Prettier
 
 ### Web design system (academic notebook)
