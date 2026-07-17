@@ -1,9 +1,13 @@
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { forgotPassword } from "../services/api";
+import { setSeoMetadata } from "../utils/seo";
 import styles from "../styles/PortalTheme.module.css";
 
 export default function ForgotPasswordPage() {
+  useEffect(() => {
+    setSeoMetadata({ title: "Forgot Password | Lessora AI", description: "Reset your Lessora AI password.", robots: "noindex, follow" });
+  }, []);
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");

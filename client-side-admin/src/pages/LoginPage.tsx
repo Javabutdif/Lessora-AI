@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginAdmin } from "../services/api";
+import { setSeoMetadata } from "../utils/seo";
 import styles from "../styles/PortalTheme.module.css";
 
 export default function LoginPage() {
+  useEffect(() => {
+    setSeoMetadata({ title: "Admin Login | Lessora AI", description: "Admin login for Lessora AI.", robots: "noindex, follow" });
+  }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);

@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { verifyResetToken, resetPassword } from "../services/api";
+import { setSeoMetadata } from "../utils/seo";
 import styles from "../styles/PortalTheme.module.css";
 
 const PASSWORD_REQUIREMENTS = {
@@ -12,6 +13,10 @@ const PASSWORD_REQUIREMENTS = {
 };
 
 export default function ResetPasswordPage() {
+  useEffect(() => {
+    setSeoMetadata({ title: "Reset Password | Lessora AI", description: "Create a new password for your Lessora AI account.", robots: "noindex, follow" });
+  }, []);
+
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get("token") || "";

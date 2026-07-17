@@ -1,6 +1,12 @@
+import { useEffect } from "react";
+import { setSeoMetadata } from "../utils/seo";
 import styles from "../styles/PortalTheme.module.css";
 
 export default function ResetPasswordSuccessPage() {
+  useEffect(() => {
+    setSeoMetadata({ title: "Password Reset | Lessora AI", description: "Your password has been reset successfully.", robots: "noindex, follow" });
+  }, []);
+
   return (
     <div className={styles.userAuthPage}>
       <div className={styles.resetShellCardCompact}>

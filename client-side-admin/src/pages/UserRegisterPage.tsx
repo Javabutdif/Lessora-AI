@@ -1,10 +1,14 @@
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { registerUser } from "../services/api";
 import LessoraLogo from "../assets/Transparent Logo.png";
+import { setSeoMetadata } from "../utils/seo";
 import styles from "../styles/PortalTheme.module.css";
 
 export default function UserRegisterPage() {
+  useEffect(() => {
+    setSeoMetadata({ title: "Create Account | Lessora AI", description: "Sign up for Lessora AI and start creating lesson plans.", robots: "noindex, follow" });
+  }, []);
   const [name, setName] = useState("");
   const [school, setSchool] = useState("");
   const [email, setEmail] = useState("");

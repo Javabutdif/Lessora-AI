@@ -1,16 +1,34 @@
 type SeoMetadata = {
   title: string;
   description: string;
+  robots?: string;
 };
 
-export function setSeoMetadata({ title, description }: SeoMetadata) {
+const DOMAIN = "https://lessora-ai.ajgenabio.me";
+
+export function setSeoMetadata({ title, description, robots = "index, follow" }: SeoMetadata) {
   document.title = title;
 
   updateMetaTag("name", "description", description);
-  updateMetaTag("name", "application-name", "Lessora AI");
-  updateMetaTag("name", "robots", "index, follow");
+  updateMetaTag("name", "robots", robots);
   updateMetaTag("property", "og:title", title);
   updateMetaTag("property", "og:description", description);
+  updateMetaTag("name", "twitter:card", "summary");
+  updateMetaTag("name", "twitter:title", title);
+  updateMetaTag("name", "twitter:description", description);
+
+  setCanonical();
+}
+
+function setCanonical() {
+  const selector = 'link[rel="canonical"]';
+  let link = document.head.querySelector<HTMLLinkElement>(selector);
+  if (!link) {
+    link = document.createElement("link");
+    link.rel = "canonical";
+    document.head.appendChild(link);
+  }
+  link.href = `${DOMAIN}${window.location.pathname}`;
 }
 
 function updateMetaTag(
