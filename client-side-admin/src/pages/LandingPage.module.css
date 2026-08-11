@@ -1,6 +1,6 @@
 /* LandingPage — minimalist "Academic notebook"
-   Names mirror the tsx (`styles.userLanding*`) so the page is fully styled.
-   Decorations: NO gradients, hairlines, paper bg, navy accent, serif display. */
+   Teacher-first tone: calm, encouraging, human.
+   Single primary CTA. No pill shapes. Paper + ink + navy. */
 
 .userLanding {
   min-height: 100vh;
@@ -38,7 +38,7 @@
   margin: 0 auto;
   padding: var(--spacing-12) var(--spacing-6);
   display: grid;
-  gap: var(--spacing-12);
+  gap: var(--spacing-10);
 }
 
 /* Ambient paper-warm radial gradient behind hero — signature move. */
@@ -77,15 +77,18 @@
 @media (min-width: 768px) {
   .userLandingHero {
     padding: var(--spacing-16) var(--spacing-8);
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-12);
+    align-items: center;
   }
 }
 
 .userLandingLogo {
-  display: none; /* Spec: minimalist — logo is implied via wordmark */
+  display: none;
 }
 
 .userLandingEyebrow {
-  margin: 0 0 var(--spacing-4);
+  margin: 0 0 var(--spacing-3);
   font-family: var(--font-family-mono);
   font-size: 11px;
   font-weight: var(--font-weight-medium);
@@ -97,7 +100,7 @@
 .userLandingTitle {
   margin: 0 0 var(--spacing-4);
   font-family: var(--font-family-display);
-  font-size: clamp(36px, 6vw, 64px);
+  font-size: clamp(32px, 5vw, 56px);
   line-height: var(--line-height-tight);
   letter-spacing: var(--letter-spacing-tight);
   color: var(--color-ink-primary);
@@ -105,11 +108,20 @@
 }
 
 .userLandingDescription {
-  margin: 0;
+  margin: 0 0 var(--spacing-4);
   max-width: 36rem;
   color: var(--color-ink-secondary);
   font-size: var(--font-size-lg);
   line-height: var(--line-height-relaxed);
+}
+
+/* Onboarding helper line — warm, guiding */
+.userLandingOnboarding {
+  margin: 0 0 var(--spacing-6);
+  color: var(--color-warm-green-text);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  font-style: italic;
 }
 
 .userLandingCallout {
@@ -130,14 +142,15 @@
   color: var(--color-ink-tertiary);
 }
 
-.userLandingDownloadLink {
+/* Single primary CTA — navy filled */
+.userLandingPrimaryCta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-3) var(--spacing-6);
-  min-height: 44px;
-  border: 1px solid var(--color-ink-primary);
-  background: var(--color-ink-primary);
+  padding: var(--spacing-3) var(--spacing-8);
+  min-height: 48px;
+  border: 1px solid var(--color-accent);
+  background: var(--color-accent);
   color: var(--color-ink-on-accent);
   border-radius: var(--radius-md);
   font-family: var(--font-family-base);
@@ -145,49 +158,79 @@
   font-weight: var(--font-weight-semibold);
   text-decoration: none;
   width: fit-content;
+  cursor: pointer;
   transition: background-color var(--transition-fast), border-color var(--transition-fast);
 }
 
-.userLandingDownloadLink:hover {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  color: var(--color-ink-on-accent);
+.userLandingPrimaryCta:hover {
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
 }
 
-.userLandingSecondaryButton {
+.userLandingPrimaryCta:active {
+  transform: scale(0.98);
+}
+
+/* Secondary links below callout — flat outline style */
+.userLandingSecondaryLinks {
+  display: flex;
+  gap: var(--spacing-4);
+  flex-wrap: wrap;
+}
+
+.userLandingSecondaryLink {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: var(--spacing-3) var(--spacing-6);
   min-height: 44px;
-  border: 1px solid var(--color-ink-primary);
+  border: 1px solid var(--color-rule);
   background: transparent;
-  color: var(--color-ink-primary);
+  color: var(--color-ink-secondary);
   border-radius: var(--radius-md);
   font-family: var(--font-family-base);
   font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   width: fit-content;
-  transition: background-color var(--transition-fast), color var(--transition-fast);
+  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
 }
 
-.userLandingSecondaryButton:hover {
-  background: var(--color-ink-primary);
-  color: var(--color-ink-on-accent);
+.userLandingSecondaryLink:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-ink-primary);
+  border-color: var(--color-ink-tertiary);
 }
 
 .userLandingFeatureGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--spacing-8);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0;
+  border-top: 1px solid var(--color-rule);
 }
 
 .userLandingFeatureCard {
   display: grid;
   gap: var(--spacing-3);
   padding: var(--spacing-6) 0;
-  border-top: 1px solid var(--color-rule);
+  border-bottom: 1px solid var(--color-rule);
+  transition: border-bottom-color var(--transition-fast);
+}
+
+.userLandingFeatureCard:hover {
+  border-bottom-color: var(--color-accent);
+}
+
+@media (min-width: 768px) {
+  .userLandingFeatureCard {
+    padding: var(--spacing-8) var(--spacing-6);
+    border-bottom: none;
+    border-right: 1px solid var(--color-rule);
+  }
+
+  .userLandingFeatureCard:hover {
+    border-right-color: var(--color-accent);
+  }
 }
 
 .userLandingFeatureIcon {
@@ -195,8 +238,8 @@
   height: 40px;
   display: grid;
   place-items: center;
-  border: 1px solid var(--color-ink-primary);
-  color: var(--color-ink-primary);
+  border: 1px solid var(--color-rule);
+  color: var(--color-warm-green);
   font-size: var(--font-size-lg);
 }
 
@@ -213,48 +256,15 @@
   margin: 0;
   color: var(--color-ink-secondary);
   line-height: var(--line-height-relaxed);
-}
-
-.userLandingAndroid {
-  display: grid;
-  gap: var(--spacing-3);
-  padding: var(--spacing-12) 0;
-  border-top: 1px solid var(--color-ink-primary);
-  border-bottom: 1px solid var(--color-rule);
-}
-
-.userLandingAndroidLabel {
-  margin: 0;
-  font-family: var(--font-family-mono);
-  font-size: 11px;
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-spacing-wider);
-  text-transform: uppercase;
-  color: var(--color-ink-tertiary);
-}
-
-.userLandingAndroidTitle {
-  margin: 0;
-  font-family: var(--font-family-display);
-  font-size: clamp(28px, 3.5vw, 40px);
-  line-height: var(--line-height-tight);
-  letter-spacing: var(--letter-spacing-tight);
-  color: var(--color-ink-primary);
-  font-weight: var(--font-weight-semibold);
-}
-
-.userLandingAndroidBody {
-  margin: 0;
-  max-width: 48rem;
-  color: var(--color-ink-secondary);
-  font-size: var(--font-size-lg);
-  line-height: var(--line-height-relaxed);
+  font-size: var(--font-size-sm);
 }
 
 .userLandingMetricGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: var(--spacing-8);
+  padding-top: var(--spacing-8);
+  border-top: 1px solid var(--color-rule);
 }
 
 .userLandingMetricCard {
@@ -277,7 +287,7 @@
 .userLandingMetricValue {
   margin: 0;
   font-family: var(--font-family-display);
-  font-size: clamp(36px, 5vw, 48px);
+  font-size: clamp(32px, 4vw, 48px);
   line-height: var(--line-height-tight);
   letter-spacing: var(--letter-spacing-tight);
   font-weight: var(--font-weight-semibold);
@@ -288,6 +298,7 @@
   margin: 0;
   color: var(--color-ink-secondary);
   line-height: var(--line-height-relaxed);
+  font-size: var(--font-size-sm);
 }
 
 @media (max-width: 720px) {
@@ -300,8 +311,12 @@
     padding: var(--spacing-8) var(--spacing-4);
   }
 
-  .userLandingDownloadLink,
-  .userLandingSecondaryButton {
+  .userLandingPrimaryCta,
+  .userLandingSecondaryLink {
     width: 100%;
+  }
+
+  .userLandingSecondaryLinks {
+    flex-direction: column;
   }
 }

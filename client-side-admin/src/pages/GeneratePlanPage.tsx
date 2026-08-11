@@ -1,11 +1,10 @@
 import { useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  FaBookOpen,
-  FaGraduationCap,
-  FaLanguage,
-  FaRobot,
-} from "react-icons/fa";
+  BookOpen,
+  GraduationCap,
+  Translate,
+} from "@phosphor-icons/react";
 import {
   generateLessonPlan,
   LessonPlanTemplate,
@@ -48,6 +47,21 @@ const languageOptions = [
   { label: "Tagalog", value: "tagalog" },
 ];
 
+const activityOptions = [
+  "Gamified",
+  "Collaborative Learning",
+  "Hands-on Learning",
+  "Inquiry-Based",
+  "Discussion-Based",
+  "Lecture-Based",
+  "Project-Based",
+  "Individual Work",
+  "Pair Work",
+  "Group Work",
+  "ICT-Assisted",
+  "Creative Activities",
+];
+
 export default function GeneratePlanPage() {
   const [topicSubject, setTopicSubject] = useState("");
   const [selectedGrade, setSelectedGrade] = useState("");
@@ -60,6 +74,7 @@ export default function GeneratePlanPage() {
   const [selectedLanguage, setSelectedLanguage] = useState("english");
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState("");
+  const [showPreferences, setShowPreferences] = useState(false);
   const navigate = useNavigate();
 
   async function handleGenerate(event: FormEvent<HTMLFormElement>) {
@@ -121,6 +136,14 @@ export default function GeneratePlanPage() {
     }
   }
 
+  function toggleActivity(option: string) {
+    setSelectedActivityPreferences((current) =>
+      current.includes(option)
+        ? current.filter((item) => item !== option)
+        : [...current, option],
+    );
+  }
+
   return (
     <div className={styles.userAppPage}>
       <header className={styles.userAppHeader}>
@@ -131,7 +154,7 @@ export default function GeneratePlanPage() {
             onClick={() => navigate("/discover")}
             className={styles.softSecondary}
           >
-            Discover
+            Browse
           </button>
         </div>
       </header>
@@ -140,16 +163,25 @@ export default function GeneratePlanPage() {
         <div className={styles.userAppHero}>
           <h2 className={styles.userAppHeroTitle}>Generate Lesson Plan</h2>
           <p className={styles.userAppHeroDescription}>
-            Create a professional lesson plan in minutes with AI. No account needed.
+            Tell us what you are teaching and we will build a complete, structured plan for you.
+          </p>
+        </div>
+
+        <div className={styles.formHelperBanner}>
+          <p className={styles.formHelperBannerText}>
+            Fields marked with an asterisk are required. Everything else is optional — only fill in what helps your class.
           </p>
         </div>
 
         <form onSubmit={handleGenerate} className={styles.planCard}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+          <div className={styles.formColumn}>
+            {/* REQUIRED SECTION */}
+            <h3 className={styles.formSectionTitle}>The basics</h3>
+
             <label className={styles.userAuthField}>
               <span className={styles.userAuthLabel}>
-                <FaBookOpen style={{ display: "inline", marginRight: 8, verticalAlign: "middle" }} />
-                Topic/Subject <span style={{ color: "var(--color-error)" }}>*</span>
+                <BookOpen weight="fill" size={14} className={styles.labelIcon} />
+                Topic / Subject <span className={styles.errorAsterisk}>*</span>
               </span>
               <input
                 type="text"
@@ -160,12 +192,13 @@ export default function GeneratePlanPage() {
                 required
                 className={styles.userAuthInput}
               />
+              <span className={styles.fieldHelper}>What are your students learning about this lesson?</span>
             </label>
 
             <label className={styles.userAuthField}>
               <span className={styles.userAuthLabel}>
-                <FaGraduationCap style={{ display: "inline", marginRight: 8, verticalAlign: "middle" }} />
-                Grade Level <span style={{ color: "var(--color-error)" }}>*</span>
+                <GraduationCap weight="fill" size={14} className={styles.labelIcon} />
+                Grade Level <span className={styles.errorAsterisk}>*</span>
               </span>
               <select
                 value={selectedGrade}
@@ -173,7 +206,6 @@ export default function GeneratePlanPage() {
                 disabled={isGenerating}
                 required
                 className={styles.userAuthInput}
-                style={{ cursor: "pointer" }}
               >
                 <option value="">Select grade level</option>
                 {gradeOptions.map((grade) => (
@@ -184,84 +216,9 @@ export default function GeneratePlanPage() {
               </select>
             </label>
 
-            <div className={styles.userAuthField}>
-              <span className={styles.userAuthLabel}>
-                Activity Preferences
-              </span>
-              <div className={styles.userAuthCheckboxGroup} style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-                {[
-                  "Gamified",
-                  "Collaborative Learning",
-                  "Hands-on Learning",
-                  "Inquiry-Based",
-                  "Discussion-Based",
-                  "Lecture-Based",
-                  "Project-Based",
-                  "Individual Work",
-                  "Pair Work",
-                  "Group Work",
-                  "ICT-Assisted",
-                  "Creative Activities",
-                ].map((option) => (
-                  <label key={option} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <input
-                      type="checkbox"
-                      checked={selectedActivityPreferences.includes(option)}
-                      disabled={isGenerating}
-                      onChange={() => {
-                        setSelectedActivityPreferences((current) =>
-                          current.includes(option)
-                            ? current.filter((item) => item !== option)
-                            : [...current, option],
-                        );
-                      }}
-                    />
-                    {option}
-                  </label>
-                ))}
-              </div>
-            </div>
-
             <label className={styles.userAuthField}>
               <span className={styles.userAuthLabel}>
-                Additional Activity Preferences (optional)
-              </span>
-              <input
-                type="text"
-                value={activityPreferenceNotes}
-                onChange={(e) => setActivityPreferenceNotes(e.target.value)}
-                placeholder="Examples: Avoid role playing, Use simple classroom materials"
-                disabled={isGenerating}
-                className={styles.userAuthInput}
-              />
-            </label>
-
-            <label className={styles.userAuthField}>
-              <span className={styles.userAuthLabel}>
-                <FaLanguage style={{ display: "inline", marginRight: 8, verticalAlign: "middle" }} />
-                Language <span style={{ color: "var(--color-error)" }}>*</span>
-              </span>
-              <select
-                value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
-                disabled={isGenerating}
-                required
-                className={styles.userAuthInput}
-                style={{ cursor: "pointer" }}
-              >
-                <option value="">Select language</option>
-                {languageOptions.map((language) => (
-                  <option key={language.value} value={language.value}>
-                    {language.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className={styles.userAuthField}>
-              <span className={styles.userAuthLabel}>
-                <FaBookOpen style={{ display: "inline", marginRight: 8, verticalAlign: "middle" }} />
-                Duration (minutes) <span style={{ color: "var(--color-error)" }}>*</span>
+                Duration (minutes) <span className={styles.errorAsterisk}>*</span>
               </span>
               <input
                 type="number"
@@ -273,47 +230,118 @@ export default function GeneratePlanPage() {
                 required
                 className={styles.userAuthInput}
               />
+              <span className={styles.fieldHelper}>How long is your class period?</span>
             </label>
 
-            <label className={styles.userAuthField}>
-              <span className={styles.userAuthLabel}>Template</span>
-              <select
-                value={selectedTemplate}
-                onChange={(e) => setSelectedTemplate(e.target.value as LessonPlanTemplate)}
-                disabled={isGenerating}
-                className={styles.userAuthInput}
-                style={{ cursor: "pointer" }}
-              >
-                {templateOptions.map((template) => (
-                  <option key={template.value} value={template.value}>
-                    {template.label} - {template.description}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <hr className={styles.sectionDivider} />
 
-            <label className={styles.userAuthField}>
-              <span className={styles.userAuthLabel}>
-                Learning Goals/Standards (Optional)
-              </span>
-              <textarea
-                value={goalsStandards}
-                onChange={(e) => setGoalsStandards(e.target.value)}
-                placeholder="Add any specific learning objectives, standards, or notes..."
-                disabled={isGenerating}
-                rows={4}
-                className={styles.userAuthTextarea}
-              />
-            </label>
+            {/* OPTIONAL SECTION */}
+            <button
+              type="button"
+              onClick={() => setShowPreferences((v) => !v)}
+              className={styles.compactToggle}
+            >
+              {showPreferences ? "Hide preferences" : "Show preferences"}
+            </button>
 
-            {error ? <div className={styles.userAuthError}>{error}</div> : null}
+            {showPreferences && (
+              <div className={styles.formColumnNoTopPad}>
+                <label className={styles.prefField}>
+                  <span className={styles.prefFieldLabel}>
+                    <Translate weight="fill" size={14} className={styles.labelIcon} />
+                    Language
+                  </span>
+                  <select
+                    value={selectedLanguage}
+                    onChange={(e) => setSelectedLanguage(e.target.value)}
+                    disabled={isGenerating}
+                    className={styles.userAuthInput}
+                  >
+                    {languageOptions.map((language) => (
+                      <option key={language.value} value={language.value}>
+                        {language.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className={styles.prefField}>
+                  <span className={styles.prefFieldLabel}>Template</span>
+                  <select
+                    value={selectedTemplate}
+                    onChange={(e) => setSelectedTemplate(e.target.value as LessonPlanTemplate)}
+                    disabled={isGenerating}
+                    className={styles.userAuthInput}
+                  >
+                    {templateOptions.map((template) => (
+                      <option key={template.value} value={template.value}>
+                        {template.label} — {template.description}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <div className={styles.prefField}>
+                  <span className={styles.prefFieldLabel}>Activity Preferences</span>
+                  <div className={styles.activityGroup}>
+                    {activityOptions.map((option) => {
+                      const isActive = selectedActivityPreferences.includes(option);
+                      return (
+                        <label
+                          key={option}
+                          className={`${styles.activityChip} ${isActive ? styles.activityChipSelected : ""} ${isGenerating ? styles.activityChipDisabled : ""}`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isActive}
+                            disabled={isGenerating}
+                            onChange={() => toggleActivity(option)}
+                            className={styles.selectPointer}
+                          />
+                          <span className={`${styles.activityChipText} ${isActive ? styles.activityChipTextSelected : ""}`}>
+                            {option}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <label className={styles.prefField}>
+                  <span className={styles.prefFieldLabel}>Additional Activity Notes (optional)</span>
+                  <input
+                    type="text"
+                    value={activityPreferenceNotes}
+                    onChange={(e) => setActivityPreferenceNotes(e.target.value)}
+                    placeholder="e.g., Avoid role playing, Use simple classroom materials"
+                    disabled={isGenerating}
+                    className={styles.userAuthInput}
+                  />
+                </label>
+
+                <label className={styles.prefField}>
+                  <span className={styles.prefFieldLabel}>Learning Goals / Standards (optional)</span>
+                  <textarea
+                    value={goalsStandards}
+                    onChange={(e) => setGoalsStandards(e.target.value)}
+                    placeholder="Add any specific learning objectives, standards, or notes..."
+                    disabled={isGenerating}
+                    rows={4}
+                    className={styles.userAuthTextarea}
+                  />
+                </label>
+              </div>
+            )}
+
+            {error ? (
+              <div className={styles.userAuthError} role="alert">{error}</div>
+            ) : null}
 
             <button
               type="submit"
               disabled={isGenerating}
               className={`${styles.flatButton} ${styles.flatButtonXLarge}`}
             >
-              <FaRobot />
               {isGenerating ? "Generating..." : "Generate Lesson Plan"}
             </button>
           </div>

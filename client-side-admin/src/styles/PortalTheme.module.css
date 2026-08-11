@@ -1532,8 +1532,413 @@
 }
 
 /* ========================================
-   USER-APP FLAT BUTTON (no gradient — the visual language is flat navy)
+   SECTION DIVIDER — hairline between form sections
    ======================================== */
+
+.sectionDivider {
+  border: none;
+  border-top: 1px solid var(--color-rule);
+  margin: var(--spacing-8) 0;
+}
+
+/* ========================================
+   COMPACT TOGGLE — expand/collapse optional fields
+   ======================================== */
+
+.compactToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) 0;
+  border: none;
+  background: transparent;
+  color: var(--color-warm-green);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.compactToggle:hover {
+  color: var(--color-warm-green-hover);
+  text-decoration: underline;
+}
+
+/* ========================================
+   GENTLE SUCCESS — warm green positive state
+   ======================================== */
+
+.gentleSuccess {
+  padding: var(--spacing-3) var(--spacing-4);
+  background: var(--color-warm-green-soft);
+  border-left: 3px solid var(--color-warm-green);
+  color: var(--color-warm-green-text);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+/* ========================================
+   PLAN TILE HOVER — accent underline on hover
+   ======================================== */
+
+.planTileHover {
+  transition: border-bottom-color var(--transition-fast);
+}
+
+.planTileHover:hover {
+  border-bottom-color: var(--color-accent);
+}
+
+/* ========================================
+   PREF FIELD — wrapper for optional preference fields
+   ======================================== */
+
+.prefField {
+  display: grid;
+  gap: var(--spacing-2);
+}
+
+.prefFieldLabel {
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-ink-tertiary);
+}
+
+/* ========================================
+   FIELD HELPER — contextual help under inputs
+   ======================================== */
+
+.fieldHelper {
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-tertiary);
+  line-height: var(--line-height-relaxed);
+  font-style: italic;
+}
+
+/* ========================================
+   FORM SECTION TITLE
+   ======================================== */
+
+.formSectionTitle {
+  margin: 0 0 var(--spacing-4);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-ink-primary);
+}
+
+/* ========================================
+   FORM HELPER BANNER
+   ======================================== */
+
+.formHelperBanner {
+  padding: var(--spacing-4) var(--spacing-6);
+  background: var(--color-warm-green-soft);
+  border-left: 3px solid var(--color-warm-green);
+  margin-bottom: var(--spacing-8);
+}
+
+.formHelperBannerText {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-warm-green-text);
+  line-height: var(--line-height-relaxed);
+}
+
+/* ========================================
+   FILTER BAR — search + selects row
+   ======================================== */
+
+.filterBar {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.filterBarSearch {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filterSelect {
+  padding: var(--spacing-3) var(--spacing-4);
+  font-family: var(--font-family-base);
+  font-size: 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-rule);
+  border-radius: 0;
+  color: var(--color-ink-primary);
+  cursor: pointer;
+}
+
+/* ========================================
+   CENTER STATE HELPERS
+   ======================================== */
+
+.centerTextSmall {
+  margin: 0;
+  font-size: 16px;
+}
+
+.centerLoading {
+  color: var(--color-ink-tertiary);
+}
+
+.centerTitle {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.centerText {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+.centerTextWithBottom {
+  margin: 0 0 16px;
+  font-size: 14px;
+}
+
+.centerTextWithMoreBottom {
+  margin: 0 0 24px;
+  font-size: 14px;
+}
+
+/* ========================================
+   ICON SPACING HELPERS
+   ======================================== */
+
+.iconWithBottom {
+  margin-bottom: 10px;
+}
+
+.iconWithBottomLarge {
+  margin-bottom: 16px;
+}
+
+/* ========================================
+   FORM COLUMN
+   ======================================== */
+
+.formColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.formColumnNoTopPad {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-top: 0;
+}
+
+/* ========================================
+   ACTIVITY CHECKBOX GROUP
+   ======================================== */
+
+.activityGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.activityChip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--color-rule);
+  background: transparent;
+  border-radius: 0;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.activityChipSelected {
+  border-color: var(--color-warm-green);
+  background: var(--color-warm-green-soft);
+}
+
+.activityChipDisabled {
+  cursor: not-allowed;
+}
+
+.activityChipText {
+  font-size: 14px;
+  color: var(--color-ink-primary);
+}
+
+.activityChipTextSelected {
+  color: var(--color-warm-green-text);
+}
+
+/* ========================================
+   LABEL ICON — inline icon in label text
+   ======================================== */
+
+.labelIcon {
+  display: inline;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* ========================================
+   ERROR ASTERISK
+   ======================================== */
+
+.errorAsterisk {
+  color: var(--color-error-text);
+}
+
+/* ========================================
+   SELECT POPOVER
+   ======================================== */
+
+.selectPointer {
+  cursor: pointer;
+}
+
+/* ========================================
+   CHIP ROW MARGIN
+   ======================================== */
+
+.chipRowTopMargin {
+  margin-top: var(--spacing-3);
+}
+
+/* ========================================
+   FIELD HELPER WITH MARGINS
+   ======================================== */
+
+.fieldHelperWithMargins {
+  margin-top: 4px;
+  margin-bottom: var(--spacing-4);
+}
+
+/* ========================================
+   REFINE SECTION GRID
+   ======================================== */
+
+.refineGrid {
+  display: grid;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-4);
+}
+
+/* ========================================
+   REFINE SECTION BUTTON
+   ======================================== */
+
+.refineSectionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 1px solid var(--color-rule);
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-family-base);
+  font-size: 14px;
+  color: var(--color-ink-primary);
+  text-align: left;
+  width: 100%;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.refineSectionBtnSelected {
+  border-left: 3px solid var(--color-warm-green);
+  background: var(--color-warm-green-soft);
+  color: var(--color-warm-green-text);
+}
+
+/* ========================================
+   ACTION ROW
+   ======================================== */
+
+.actionRow {
+  display: flex;
+  gap: var(--spacing-3);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-6);
+}
+
+/* ========================================
+   INLINE WARNING ICON
+   ======================================== */
+
+.inlineWarning {
+  margin-right: 8px;
+  display: inline;
+}
+
+/* ========================================
+   ERROR BANNER MARGIN
+   ======================================== */
+
+.errorBannerMargin {
+  margin: var(--spacing-4) 0;
+}
+
+/* ========================================
+   LINK MARGIN
+   ======================================== */
+
+.linkMarginLeft {
+  margin-left: 12px;
+}
+
+/* ========================================
+   PLAN DOC CONTAINER
+   ======================================== */
+
+.planDocContainer {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* ========================================
+   BLOCK RENDER HELPERS
+   ======================================== */
+
+.headingBlock {
+  margin: 0 0 14px;
+  font-weight: 800;
+  color: var(--color-ink-primary);
+  letter-spacing: -0.02em;
+}
+
+.headingBlockNotFirst {
+  margin: 28px 0 12px;
+}
+
+.paragraphBlock {
+  margin: 0 0 16px;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #334155;
+}
+
+.listBlock {
+  margin: 0 0 18px;
+  padding-left: 22px;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #334155;
+}
+
+.listItem {
+  margin-bottom: 8px;
+}
 
 .flatButton {
   display: inline-flex;

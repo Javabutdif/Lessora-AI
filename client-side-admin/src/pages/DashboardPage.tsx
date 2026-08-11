@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaSpinner } from "react-icons/fa";
+import { Spinner } from "@phosphor-icons/react";
 import styles from "../styles/PortalTheme.module.css";
 
 export default function DashboardPage() {
@@ -13,7 +13,7 @@ export default function DashboardPage() {
   return (
     <div className={styles.userAppPage}>
       <div className={styles.userAppCenter}>
-        <FaSpinner className={styles.spin} style={{ fontSize: 28, marginBottom: 16 }} />
+        <Spinner weight="fill" size={28} className={styles.spin} />
         <p style={{ color: "var(--color-ink-tertiary)" }}>Redirecting...</p>
       </div>
     </div>

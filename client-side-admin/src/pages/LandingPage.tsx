@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
-  FaMobileAlt,
-  FaRobot,
-  FaBullseye,
-  FaCheckCircle,
-} from "react-icons/fa";
+  CheckCircle,
+  Target,
+  Clock,
+  Browser,
+} from "@phosphor-icons/react";
 import LessoraLogo from "../assets/Transparent Logo.png";
 import { fetchLandingMetrics } from "../services/api";
 import { setSeoMetadata } from "../utils/seo";
@@ -26,9 +26,9 @@ export default function LandingPage() {
 
   useEffect(() => {
     setSeoMetadata({
-      title: "Lessora AI | AI-Powered Lesson Planning for Educators",
+      title: "Lessora AI | Lesson Plans Made Simply",
       description:
-        "Lessora AI helps educators create structured lesson plans, objectives, activities, and assessments in minutes.",
+        "Lessora AI helps educators create structured lesson plans, objectives, activities, and assessments — no account required.",
     });
   }, []);
 
@@ -36,7 +36,7 @@ export default function LandingPage() {
     {
       label: "Lesson plans created",
       value: landingMetrics?.totalLessonPlans,
-      helper: "Generated plans saved on the platform",
+      helper: "Plans shared with teachers across the platform",
     },
   ];
 
@@ -45,8 +45,8 @@ export default function LandingPage() {
       <header className={styles.userLandingNav}>
         <Link to="/about">About</Link>
         <Link to="/support">Support</Link>
-        <Link to="/privacy-policy">Privacy Policy</Link>
-        <Link to="/terms-and-conditions">Terms & Conditions</Link>
+        <Link to="/privacy-policy">Privacy</Link>
+        <Link to="/terms-and-conditions">Terms</Link>
       </header>
       <div className={styles.userLandingHero}>
         <img
@@ -59,12 +59,15 @@ export default function LandingPage() {
             Less Planning, More Teaching
           </p>
           <h1 className={styles.userLandingTitle}>
-            AI-Powered Lesson Planning for Educators
+            Lesson Plans, Made Simply
           </h1>
           <p className={styles.userLandingDescription}>
-            Create structured, professional lesson plans in minutes. Transform
-            simple teacher inputs into organized activities, objectives, and
-            assessments. No account required.
+            Transform your topic and grade level into a structured, professional
+            lesson plan — complete with activities, objectives, and assessments.
+            No account needed.
+          </p>
+          <p className={styles.userLandingOnboarding}>
+            Just tell us what you are teaching. We handle the rest.
           </p>
         </div>
         <div className={styles.userLandingCallout}>
@@ -72,21 +75,23 @@ export default function LandingPage() {
           <button
             type="button"
             onClick={() => navigate("/generate")}
-            className={styles.userLandingDownloadLink}
+            className={styles.userLandingPrimaryCta}
           >
-            Generate Free Lesson Plan
+            Start Planning
           </button>
+        </div>
+        <div className={styles.userLandingSecondaryLinks}>
           <button
             type="button"
             onClick={() => navigate("/discover")}
-            className={styles.userLandingSecondaryButton}
+            className={styles.userLandingSecondaryLink}
           >
             Browse Plans
           </button>
           <button
             type="button"
             onClick={() => navigate("/support")}
-            className={styles.userLandingSecondaryButton}
+            className={styles.userLandingSecondaryLink}
           >
             Support the project
           </button>
@@ -94,24 +99,24 @@ export default function LandingPage() {
         <div className={styles.userLandingFeatureGrid}>
           {[
             {
-              icon: <FaCheckCircle />,
-              title: "Structured Plans",
-              desc: "Professional format",
+              icon: <CheckCircle weight="fill" size={24} />,
+              title: "Professional Format",
+              desc: "Structured, curriculum-ready plans you can use immediately",
             },
             {
-              icon: <FaBullseye />,
-              title: "Minutes Not Hours",
-              desc: "Create plans instantly",
+              icon: <Clock weight="fill" size={24} />,
+              title: "Save Your Evenings",
+              desc: "Create a full lesson plan in minutes, not hours",
             },
             {
-              icon: <FaRobot />,
-              title: "AI-Powered",
-              desc: "Smart generation",
+              icon: <Target weight="fill" size={24} />,
+              title: "Guided by Your Input",
+              desc: "Your topic, your standards, your classroom context",
             },
             {
-              icon: <FaMobileAlt />,
-              title: "Browser Access",
-              desc: "No download needed",
+              icon: <Browser weight="fill" size={24} />,
+              title: "Works Anywhere",
+              desc: "Open it in any browser — no download, no install",
             },
           ].map((feature, index) => (
             <ScrollReveal key={feature.title} delay={index * 80}>

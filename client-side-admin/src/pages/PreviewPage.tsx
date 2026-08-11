@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FaBookOpen, FaClock, FaExclamationTriangle, FaPlus, FaSpinner, FaDownload } from "react-icons/fa";
+import {
+  BookOpen,
+  Clock,
+  Warning,
+  Plus,
+  Spinner,
+  DownloadSimple,
+} from "@phosphor-icons/react";
 import {
   getLessonPlanById,
   getPublicLessonPlanById,
@@ -103,16 +110,13 @@ export default function PreviewPage() {
   function renderBlock(block: any, index: number) {
     if (block.type === "heading") {
       const HeadingTag = `h${block.level}` as keyof JSX.IntrinsicElements;
-      const fontSize = block.level === 1 ? "28px" : block.level === 2 ? "22px" : "18px";
+      const isFirst = index === 0;
       return (
         <HeadingTag
           key={index}
+          className={isFirst ? styles.headingBlock : styles.headingBlockNotFirst}
           style={{
-            margin: index === 0 ? "0 0 14px" : "28px 0 12px",
-            fontSize,
-            fontWeight: 800,
-            color: "var(--color-ink-primary)",
-            letterSpacing: "-0.02em",
+            fontSize: block.level === 1 ? 28 : block.level === 2 ? 22 : 18,
           }}
         >
           {block.text}
@@ -124,12 +128,7 @@ export default function PreviewPage() {
       return (
         <p
           key={index}
-          style={{
-            margin: "0 0 16px",
-            fontSize: 16,
-            lineHeight: 1.8,
-            color: "#334155",
-          }}
+          className={styles.paragraphBlock}
         >
           {block.text}
         </p>
@@ -141,16 +140,10 @@ export default function PreviewPage() {
       return (
         <ListTag
           key={index}
-          style={{
-            margin: "0 0 18px",
-            paddingLeft: 22,
-            fontSize: 16,
-            lineHeight: 1.8,
-            color: "#334155",
-          }}
+          className={styles.listBlock}
         >
           {block.items.map((item: string, itemIndex: number) => (
-            <li key={itemIndex} style={{ marginBottom: 8 }}>
+            <li key={itemIndex} className={styles.listItem}>
               {item}
             </li>
           ))}
@@ -171,14 +164,14 @@ export default function PreviewPage() {
             onClick={() => navigate("/generate")}
             className={styles.softSecondary}
           >
-            <FaPlus /> Generate
+            <Plus weight="bold" size={16} /> New Plan
           </button>
           <button
             type="button"
             onClick={() => navigate("/discover")}
             className={styles.softSecondary}
           >
-            Discover
+            Browse
           </button>
         </div>
       </header>
@@ -186,25 +179,22 @@ export default function PreviewPage() {
       <div className={styles.userAppContainerDoc}>
         {isLoading && (
           <div className={styles.userAppCenterLarge}>
-            <FaSpinner
-              className={styles.userAppIconLarge}
-              style={{ fontSize: 36, animation: "spin 1s linear infinite" }}
-            />
-            <p style={{ margin: 0, fontSize: 16 }}>Loading lesson plan...</p>
+            <Spinner weight="fill" size={36} className={styles.spin} />
+            <p className={styles.centerTextSmall}>Loading lesson plan...</p>
           </div>
         )}
 
         {error && !isLoading && (
-          <div className={styles.errorPanel} style={{ borderRadius: 14 }}>
-            <FaExclamationTriangle style={{ fontSize: 28, marginBottom: 10 }} />
-            <p style={{ margin: "0 0 10px", fontWeight: 700 }}>Failed to load lesson plan</p>
-            <p style={{ margin: "0 0 16px", fontSize: 14 }}>{error}</p>
+          <div className={styles.errorPanel}>
+            <Warning size={28} className={styles.iconWithBottom} />
+            <p className={styles.centerTitle}>Failed to load lesson plan</p>
+            <p className={styles.centerText}>{error}</p>
             <button
               type="button"
-              onClick={() => navigate("/history")}
+              onClick={() => navigate("/generate")}
               className={styles.softDanger}
             >
-              Back to History
+              Back to Generate
             </button>
           </div>
         )}
@@ -216,14 +206,14 @@ export default function PreviewPage() {
               <h1 className={styles.planCardHeading}>{plan.title}</h1>
               <div className={styles.chipRow}>
                 <span className={`${styles.chip} ${styles.chipAccent}`}>
-                  <FaBookOpen />
+                  <BookOpen weight="fill" size={12} />
                   {plan.subject}
                 </span>
                 <span className={`${styles.chip} ${styles.chipPurple}`}>
                   Grade: {plan.gradeLevel}
                 </span>
                 <span className={`${styles.chip} ${styles.chipSuccess}`}>
-                  <FaClock />
+                  <Clock weight="fill" size={12} />
                   {plan.totalDuration} minutes
                 </span>
               </div>
@@ -233,18 +223,18 @@ export default function PreviewPage() {
             </section>
 
             <section className={styles.planCardBody}>
-              <div style={{ maxWidth: 760, margin: "0 auto" }}>
+              <div className={styles.planDocContainer}>
                 {plan.document.blocks.map((block, index) => renderBlock(block, index))}
               </div>
             </section>
 
-            <div className={styles.userAppActionRow}>
+            <div className={styles.actionRow}>
               <button
                 type="button"
                 onClick={() => navigate("/generate")}
                 className={styles.flatButton}
               >
-                <FaPlus /> Generate New Plan
+                <Plus weight="bold" size={16} /> Create New Plan
               </button>
               {id && (
                 <button
@@ -253,7 +243,7 @@ export default function PreviewPage() {
                   className={styles.softSecondary}
                   disabled={isPublic}
                 >
-                  Refine
+                  Refine This Plan
                 </button>
               )}
               <button
@@ -262,7 +252,7 @@ export default function PreviewPage() {
                 className={styles.softSecondary}
                 disabled={isExporting}
               >
-                <FaDownload /> {isExporting && exportingFormat === "PDF" ? "Exporting..." : "Export PDF"}
+                <DownloadSimple weight="bold" size={16} /> {isExporting && exportingFormat === "PDF" ? "Preparing..." : "Download PDF"}
               </button>
               <button
                 type="button"
@@ -270,7 +260,7 @@ export default function PreviewPage() {
                 className={styles.softSecondary}
                 disabled={isExporting}
               >
-                <FaDownload /> {isExporting && exportingFormat === "DOCX" ? "Exporting..." : "Export DOC"}
+                <DownloadSimple weight="bold" size={16} /> {isExporting && exportingFormat === "DOCX" ? "Preparing..." : "Download Word"}
               </button>
             </div>
           </>

@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  FaSpinner,
-  FaExclamationTriangle,
-  FaCheck,
-} from "react-icons/fa";
+  Spinner,
+  Warning,
+  Check,
+} from "@phosphor-icons/react";
 import {
   getLessonPlanById,
   refineLessonPlan,
@@ -131,14 +131,14 @@ export default function RefineLessonPage() {
             onClick={() => navigate("/generate")}
             className={styles.softSecondary}
           >
-            Generate
+            New Plan
           </button>
           <button
             type="button"
             onClick={() => navigate("/discover")}
             className={styles.softSecondary}
           >
-            Discover
+            Browse
           </button>
         </nav>
       </header>
@@ -148,14 +148,14 @@ export default function RefineLessonPage() {
           <p className={styles.eyebrow}>Refine</p>
           <h2 className={styles.userAppHeroTitle}>Refine Lesson Plan</h2>
           <p className={styles.userAppHeroDescription}>
-            Choose the parts you want AI to improve, then describe what to change.
+            Choose the parts you want to improve, then describe what to change.
           </p>
         </div>
 
         {isLoading && (
           <div className={styles.userAppCenter}>
-            <FaSpinner className={styles.spin} style={{ fontSize: 28, marginBottom: 16 }} />
-            <p style={{ color: "var(--color-ink-tertiary)" }}>Loading plan...</p>
+            <Spinner weight="fill" size={28} className={styles.spin} />
+            <p className={styles.centerLoading}>Loading plan...</p>
           </div>
         )}
 
@@ -168,7 +168,7 @@ export default function RefineLessonPage() {
             <section className={styles.workspacePanel}>
             <div className={styles.workspaceCard}>
               <p className={styles.planCardTitle}>Plan: {plan.title}</p>
-              <div className={styles.chipRow} style={{ marginTop: "var(--spacing-3)" }}>
+              <div className={`${styles.chipRow} ${styles.chipRowTopMargin}`}>
                 <span className={`${styles.chip} ${styles.chipAccent}`}>{plan.subject}</span>
                 <span className={`${styles.chip} ${styles.chipPurple}`}>{plan.gradeLevel}</span>
                 <span className={`${styles.chip} ${styles.chipSuccess}`}>{plan.totalDuration} min</span>
@@ -177,7 +177,10 @@ export default function RefineLessonPage() {
 
             <div className={styles.workspaceCard}>
               <h3 className={styles.panelTitle}>What to refine?</h3>
-              <div style={{ display: "grid", gap: "var(--spacing-3)", marginTop: "var(--spacing-4)" }}>
+              <p className={styles.fieldHelperWithMargins}>
+                Click a section to select it. You can pick multiple.
+              </p>
+              <div className={styles.refineGrid}>
                 {options.map((opt) => {
                   const checked = selectedSections.includes(opt.key);
                   return (
@@ -185,25 +188,10 @@ export default function RefineLessonPage() {
                       key={opt.key}
                       type="button"
                       onClick={() => toggleSection(opt.key)}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        padding: "var(--spacing-3) var(--spacing-4)",
-                        border: `1px solid ${checked ? "var(--color-accent)" : "var(--color-rule)"}`,
-                        background: checked ? "var(--color-accent-soft)" : "transparent",
-                        borderRadius: 0,
-                        cursor: "pointer",
-                        fontFamily: "var(--font-family-base)",
-                        fontSize: 14,
-                        color: checked ? "var(--color-accent)" : "var(--color-ink-primary)",
-                        textAlign: "left",
-                        width: "100%",
-                        transition: "border-color var(--transition-fast), background-color var(--transition-fast)",
-                      }}
+                      className={`${styles.refineSectionBtn} ${checked ? styles.refineSectionBtnSelected : ""}`}
                     >
                       <span>{opt.label}</span>
-                      {checked && <FaCheck color="var(--color-accent)" />}
+                      {checked && <Check weight="fill" size={16} color="var(--color-warm-green)" />}
                     </button>
                   );
                 })}
@@ -211,48 +199,36 @@ export default function RefineLessonPage() {
             </div>
 
             <div className={styles.workspaceCard}>
-              <h3 className={styles.panelTitle}>Refinement Prompt</h3>
+              <h3 className={styles.panelTitle}>Your refinement request</h3>
+              <p className={styles.fieldHelperWithMargins}>
+                Tell us what you would like different. Be specific — the more context, the better the result.
+              </p>
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="e.g. Make the procedure more engaging and add clearer student instructions"
                 rows={4}
                 disabled={isSubmitting}
-                style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  borderBottom: "1px solid var(--color-ink-primary)",
-                  borderRadius: 0,
-                  color: "var(--color-ink-primary)",
-                  padding: "var(--spacing-3) 0",
-                  fontSize: 16,
-                  fontFamily: "var(--font-family-base)",
-                  outline: "none",
-                  resize: "vertical",
-                  lineHeight: "var(--line-height-relaxed)",
-                  boxSizing: "border-box",
-                }}
+                className={styles.userAuthTextarea}
               />
             </div>
 
             {error && (
-              <div className={styles.errorBanner} role="alert" style={{ margin: "var(--spacing-4) 0" }}>
-                <FaExclamationTriangle style={{ marginRight: 8 }} />
+              <div className={`${styles.errorBanner} ${styles.errorBannerMargin}`} role="alert">
+                <Warning size={16} className={styles.inlineWarning} />
                 {error}
                 <button
                   type="button"
                   onClick={handleRefine}
                   disabled={isSubmitting}
                   className={styles.inlineLink}
-                  style={{ marginLeft: 12 }}
                 >
                   Try again
                 </button>
               </div>
             )}
 
-            <div style={{ display: "flex", gap: "var(--spacing-3)", flexWrap: "wrap", marginTop: "var(--spacing-6)" }}>
+            <div className={styles.actionRow}>
               <button
                 type="button"
                 onClick={() => navigate("/generate")}

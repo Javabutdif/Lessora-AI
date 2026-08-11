@@ -67,6 +67,17 @@
   --color-info-bg: #EEF2FF;
   --color-info-border: #C7D2FE;
 
+  /* ========================================
+      WARM GREEN — gentle, teacherly positive state
+      Used sparingly for credits, success hints, helper text
+      ======================================== */
+
+  --color-warm-green: #5B8A72;
+  --color-warm-green-hover: #4A7A62;
+  --color-warm-green-soft: #E8F0EC;
+  --color-warm-green-border: #C5D9CC;
+  --color-warm-green-text: #2D5A42;
+
   --color-neutral-text: #4B5563;
   --color-neutral-bg: #F4F1EA;
   --color-neutral-border: #E7E5DF;
