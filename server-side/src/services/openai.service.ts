@@ -166,8 +166,9 @@ class OpenAIService {
     const creditedUser = await this.reserveResponseCredit(ownerId, isAnonymous);
 
     // Fetch full user data for DepEd template (only for registered users)
+    // Matatag does not use teacher name in its prompt — keep it anonymous.
     let user = null;
-    if (!isAnonymous) {
+    if (!isAnonymous && request.templateId !== 'matatag') {
       user = await User.findById(ownerId);
       if (!user) {
         throw new NotFoundError('User');
@@ -923,8 +924,8 @@ ${this.buildGradeLevelAdaptationRequirement()}`,
   }
 
   private buildDepEdPrompt(request: GenerateLessonPlanRequest, user: any) {
-    const teacherName = `${user.firstName} ${user.lastName}`.trim();
-    const schoolName = user.school || 'Not specified';
+    const teacherName = user ? `${user.firstName} ${user.lastName}`.trim() : 'Anonymous Teacher';
+    const schoolName = user?.school || 'Not specified';
     const currentDate = new Date().toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
