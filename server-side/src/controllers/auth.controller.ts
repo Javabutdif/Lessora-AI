@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { loginSchema, registerSchema } from "../schemas/auth.schema";
 import { loginUser, registerUser } from "../services/auth.service";
 import { User } from "../schemas/user.schema";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import {
   generateResetToken,
   hashResetToken,

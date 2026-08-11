@@ -3,7 +3,7 @@
 # AI Workflow
 docs/ai/handoffs/
 tmp/
-
+.archiona
 # Node and Expo
 node_modules/
 client-side/node_modules/

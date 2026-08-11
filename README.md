@@ -16,15 +16,13 @@ The platform uses OpenAI's GPT models to generate comprehensive, curriculum-alig
 ## ✨ Key Features
 
 ### For Teachers
-- **AI-Powered Lesson Generation**: Create complete lesson plans from topic, grade level, duration, and learning goals
+- **AI-Powered Lesson Generation**: Create complete lesson plans from topic, grade level, duration, and learning goals — no account required
 - **Multiple Templates**: Support for various lesson plan formats including DepEd semi-detailed templates
-- **Lesson Plan History**: View, edit, refine, and reuse previously generated lesson plans
+- **Lesson Plan History**: View, edit, refine, and reuse previously generated lesson plans (session-based)
 - **Document Export**: Export lesson plans in DOC, PDF, and DOCX formats
-- **Analytics & Profile**: Track usage patterns and manage account settings
-- **User Authentication**: Secure account registration and login with forgot/reset password flow
-- **AI Response Credits**: Fair usage system with credit-based generation limits
-- **Mobile & Web Access**: Use the mobile app or web portal based on preference
-- **Offline-Ready**: Built with Expo for smooth performance on iOS and Android
+- **Public Discover Page**: Browse lesson plans created by other teachers on the platform
+- **AI Response Credits**: Fair usage system with daily credit reset (3 free generations per day, no signup)
+- **Web Access**: Browser-based access at any time
 
 ### For Administrators
 - **User Management**: Create, view, and manage teacher accounts
@@ -52,15 +50,15 @@ Lessora AI follows a client-server architecture with three main components:
 - **Technology**: React 18 + TypeScript + Vite
 - **Styling**: CSS Modules + CSS custom properties (tokens in `src/styles/tokens.css`)
 - **Visual language**: "Academic notebook" — paper background, navy ink, Source Serif 4 display, hairline rules. No cards, no pill chips, no gradients. See [`client-side-admin/README.md`](client-side-admin/README.md) for the full design system.
-- **Teacher features**: signup, login, password reset, AI lesson-plan generation, history, preview, refine plans, export
+- **Teacher features**: AI lesson-plan generation, history, preview, refine plans, export, public discover page — no account required
 - **Admin features**: login, platform dashboard with metrics, user management, lesson plan oversight
-- **Public pages**: landing page (hero + features + Android CTA), support donation, privacy / terms / about docs
+- **Public pages**: landing page (hero + features), support donation, privacy / terms / about docs
 - **Responsive design** for desktop and mobile browsers
 
 ### Server (`server-side/`)
 - **Technology**: Node.js + Express + TypeScript
 - **Database**: MongoDB with Mongoose ODM
-- **Authentication**: JWT tokens with bcrypt password hashing
+- **Authentication**: JWT tokens for admin, anonymous session tokens for teachers (localStorage)
 - **AI Integration**: OpenAI API (GPT-4o-mini)
 - **Email**: Resend for password reset and notifications
 - **Payments**: PayMongo integration for support donations
@@ -70,10 +68,10 @@ Lessora AI follows a client-server architecture with three main components:
 
 #### API Structure
 ```
-/api/auth          - User authentication (register, login, password reset)
-/api/user          - User-specific operations (lesson plans, credits)
+/api/auth          - Admin authentication (login only, no user auth needed)
+/api/user          - User-specific operations (legacy, kept for registered accounts)
 /api/admin         - Admin operations (user management, metrics, lesson plans)
-/api/ai            - AI lesson plan generation and history
+/api/ai            - AI lesson plan generation, history, refinement, and public browse
 /api/support       - Public support donation checkout and webhook flow
 ```
 
@@ -83,7 +81,6 @@ Lessora AI follows a client-server architecture with three main components:
 - Node.js 18+ and npm
 - MongoDB instance (local or cloud)
 - OpenAI API key
-- Expo CLI (for mobile development)
 
 ### Installation
 
@@ -95,15 +92,8 @@ Lessora AI follows a client-server architecture with three main components:
 
 2. **Install dependencies**
    ```bash
-   # Install root dependencies
-   npm install
-
    # Install server dependencies
    cd server-side
-   npm install
-
-   # Install mobile app dependencies
-   cd ../client-side
    npm install
 
    # Install web portal dependencies
@@ -113,78 +103,27 @@ Lessora AI follows a client-server architecture with three main components:
 
 3. **Configure environment variables**
 
-    Create `.env` files in the `server-side/`, `client-side/`, and `client-side-admin/` directories.
-    
-    See **[Environment Configuration](docs/ai/quickstart.md#environment-configuration)** for detailed setup instructions.
+     Create `.env` files in the `server-side/` and `client-side-admin/` directories.
+     
+     See **[Environment Configuration](docs/ai/quickstart.md#environment-configuration)** for detailed setup instructions.
 
 4. **Start the development servers**
 
-    ```bash
-    # Terminal 1: Start the backend server
-    cd server-side
-    npm run dev
+     ```bash
+     # Terminal 1: Start the backend server
+     cd server-side
+     npm run dev
 
-    # Terminal 2: Start the mobile app
-    cd ../client-side
-    npm start
-
-    # Terminal 3: Start the web portal
-    cd ../client-side-admin
-    npm run dev
-    ```
-
-### Mobile App: Production Builds
-
-For Android and iOS production builds, the project uses [Expo Application Services (EAS)](https://expo.dev/eas):
-
-```bash
-# Install EAS CLI
-npm install -g eas-cli
-
-# Login to Expo
-eas login
-
-# Build for Android (APK)
-eas build -p android --profile preview
-
-# Build for Android (App Bundle)
-eas build -p android --profile production
-
-# Build for iOS
-eas build -p ios
-```
-
-EAS workflows are defined in `client-side/.eas/workflows/create-production-builds.yml`.
-
-### Quick Start with Scripts
-
-The repository includes bootstrap scripts for quick setup:
-
-**PowerShell (Windows)**
-```powershell
-./scripts/bootstrap.ps1
-```
-
-**Bash (macOS/Linux)**
-```bash
-./scripts/bootstrap.sh
-```
+     # Terminal 2: Start the web portal
+     cd ../client-side-admin
+     npm run dev
+     ```
 
 ## 🛠️ Development Workflow
 
 ### Project Structure
 ```
 lessora-ai/
-├── client-side/          # React Native mobile app
-│   ├── src/
-│   │   ├── components/   # Reusable UI components
-│   │   ├── context/      # React contexts (Auth, Loading)
-│   │   ├── navigation/   # Navigation configuration
-│   │   ├── screens/      # Screen components (Auth, Dashboard, Landing)
-│   │   ├── services/     # API service layer
-│   │   ├── types/        # TypeScript declarations
-│   │   └── utils/        # Utility functions (document export)
-│   └── App.tsx           # App entry point
 ├── client-side-admin/    # React web portal (admin + teacher + landing)
 │   ├── src/
 │   │   ├── components/   # Reusable UI components (Button, Card, Input, Modal, ...)
@@ -213,7 +152,7 @@ lessora-ai/
 │   ├── ai/              # AI agent documentation
 │   ├── specs/           # Feature specifications
 │   └── plans/           # Implementation plans
-└── scripts/             # Automation scripts
+└── .archiona/            # Archiona pre-coding gate (plans, skills, config)
 ```
 
 ### Making Changes
@@ -221,37 +160,34 @@ lessora-ai/
 For any feature work involving client-server communication:
 
 1. **Read the documentation**
-   - `docs/ai/commands.md` - Available commands
-   - `docs/ai/standards.md` - Coding standards
-   - `docs/ai/lessora-structure-workflow.md` - API development workflow
+   - `.archiona/workflow.md` — pre-coding gate rules
+   - `docs/ai/commands.md` — available commands
+   - `docs/ai/standards.md` — coding standards
+   - `docs/ai/lessora-structure-workflow.md` — API development workflow
 
-2. **Create task artifacts**
+2. **Create an Archiona plan**
    ```bash
-   npm run workflow -- scaffold --slug <topic> --artifacts bundle
+   archiona plan --slug <topic> --title "<Title>"
    ```
+   Fill every section, then tick `- [x] **Approved**`.
 
 3. **Follow the layer order**
    - Server: Routes → Controllers → Services → Schemas/Models
-   - Client: Screens → Services → API
+   - Client: Pages → Services → API
 
 4. **Validate your changes**
    ```bash
-   # PowerShell
-   ./scripts/check.ps1
-
-   # Bash
-   ./scripts/check.sh
+   # TypeScript checks
+   cd server-side && npx tsc --noEmit
+   cd ../client-side-admin && npx tsc --noEmit
    ```
 
 ### Testing
 
 ```bash
-# Run all validation checks
-npm run workflow -- check
-
-# Type checking
-cd client-side && npx tsc --noEmit
+# Run TypeScript checks for both packages
 cd server-side && npx tsc --noEmit
+cd ../client-side-admin && npx tsc --noEmit
 
 # Run tests (when available)
 npm test
@@ -269,29 +205,26 @@ npm test
 
 ### Task Management
 
-The project uses a structured workflow for managing development tasks:
+The project uses Archiona for pre-coding planning. Before writing code, create and approve a plan:
 
-- **Specs** (`docs/specs/`) - What should change and why
-- **Plans** (`docs/plans/`) - How the work will be carried out
-- **Tasks** (`docs/ai/tasks/`) - Current execution state
-
-Use the workflow CLI to manage these artifacts:
 ```bash
-npm run workflow -- scaffold --slug <topic> --artifacts bundle
-npm run workflow -- check
-npm run workflow -- finalize
+archiona plan --slug <topic> --title "<Title>"
+archiona validate
 ```
+
+Plans live under `.archiona/plans/<slug>.md`. Skills under `.archiona/skills/` define project conventions.
+
+Specs and plans that drove previous work are kept in `docs/specs/` and `docs/plans/` for historical reference.
 
 ## 🔑 Key Technologies
 
-- **Frontend (Mobile)**: React Native (Expo SDK 54), TypeScript, NativeWind (Tailwind CSS for RN), React Navigation, EAS
 - **Frontend (Web)**: React 18, TypeScript, Vite, CSS Modules + design tokens, React Router DOM, React Query
 - **Backend**: Node.js, Express, TypeScript, MongoDB, Mongoose, Zod validation
 - **AI**: OpenAI API (GPT-4o-mini)
-- **Authentication**: JWT, bcrypt
+- **Authentication**: JWT (admin), anonymous session tokens via localStorage (teachers)
 - **Email**: Resend
 - **Payments**: PayMongo
-- **Development**: Vite, Metro bundler, ESLint, Prettier
+- **Development**: Vite, ESLint, Prettier
 
 ### Web design system (academic notebook)
 

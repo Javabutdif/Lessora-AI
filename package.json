@@ -2,6 +2,13 @@
   "name": "lessora-ai",
   "private": true,
   "scripts": {
-    "workflow": "node scripts/workflow.mjs"
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write \"**/*.{ts,tsx,css,json,md}\""
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0"
   }
 }

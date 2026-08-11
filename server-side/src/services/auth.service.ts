@@ -3,6 +3,7 @@ import { User } from "../schemas/user.schema";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { createActivityLog } from "./activity-log.service";
+import { ValidationError, AuthenticationError } from "../types/errors";
 
 const JWT_EXPIRES_IN = "1h";
 
@@ -15,7 +16,12 @@ type AuthUser = {
 };
 
 function getJwtSecret() {
-  return process.env.JWT_SECRET || "lessora-dev-secret-change-me";
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    console.error("FATAL: JWT_SECRET environment variable is not set. Server cannot start securely.");
+    process.exit(1);
+  }
+  return secret;
 }
 
 function signAuthToken(user: AuthUser) {
@@ -26,7 +32,7 @@ export async function registerUser({ name, email, password, school }: RegisterPa
   const existing = await User.findOne({ email });
 
   if (existing) {
-    throw new Error("Account already exists for this email");
+    throw new ValidationError("Account already exists for this email");
   }
 
   const nameParts = name.trim().split(" ");
@@ -59,12 +65,12 @@ export async function loginUser({ email, password }: LoginPayload) {
   const user = await User.findOne({ email }).select("+passwordHash");
 
   if (!user) {
-    throw new Error("Invalid email or password");
+    throw new AuthenticationError("Invalid email or password");
   }
 
   const isValidPassword = await bcrypt.compare(password, user.passwordHash);
   if (!isValidPassword) {
-    throw new Error("Invalid email or password");
+    throw new AuthenticationError("Invalid email or password");
   }
 
   const name = `${user.firstName} ${user.lastName}`.trim();

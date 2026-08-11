@@ -22,7 +22,8 @@ export interface ISession {
 
 export interface ILessonPlan extends Document {
   _id: mongoose.Types.ObjectId;
-  userId: Types.ObjectId; // Reference to User
+  userId?: Types.ObjectId; // Reference to User (null for anonymous sessions)
+  sessionId?: string; // Session ID for anonymous users
   templateId?:
     | "lessora-ai"
     | "deped-semi-detailed"
@@ -94,7 +95,10 @@ const LessonPlanSchema = new Schema<ILessonPlan>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      index: true,
+    },
+    sessionId: {
+      type: String,
       index: true,
     },
     templateId: {
@@ -192,6 +196,12 @@ LessonPlanSchema.index({ tags: 1, isPublic: 1 }); // Tag-based search
 LessonPlanSchema.index(
   { subject: 1, gradeLevel: 1 },
   { partialFilterExpression: { status: "published", isPublic: true } },
+);
+
+// Partial index for browsing public plans
+LessonPlanSchema.index(
+  { isPublic: 1, createdAt: -1 },
+  { partialFilterExpression: { isPublic: true } },
 );
 
 export const LessonPlan = mongoose.model<ILessonPlan>(

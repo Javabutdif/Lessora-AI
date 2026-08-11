@@ -41,6 +41,28 @@
   gap: var(--spacing-12);
 }
 
+/* Ambient paper-warm radial gradient behind hero — signature move. */
+.userLandingHero::after {
+  content: "";
+  position: absolute;
+  top: -10%;
+  left: -5%;
+  width: 60%;
+  height: 80%;
+  background: radial-gradient(
+    ellipse at 30% 20%,
+    rgba(30, 58, 138, 0.04) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.userLandingHero > * {
+  position: relative;
+  z-index: 1;
+}
+
 /* The 3px page-top rule: spec's signature element. */
 .userLandingHero::before {
   content: "";

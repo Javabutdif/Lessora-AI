@@ -2,54 +2,86 @@ const DEFAULT_API_BASE = "http://localhost:4000";
 
 export const API_BASE = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE;
 
-// Token management for admin
+// ============================================
+// ADMIN AUTH (unchanged)
+// ============================================
+
 function getAdminToken() {
   return localStorage.getItem("lessora-admin-token");
 }
 
-// Token management for regular users
-function getUserToken() {
-  return localStorage.getItem("lessora-user-token");
-}
-
-export function setUserToken(token: string | null) {
+export function setAdminToken(token: string | null) {
   if (token) {
-    localStorage.setItem("lessora-user-token", token);
+    localStorage.setItem("lessora-admin-token", token);
   } else {
-    localStorage.removeItem("lessora-user-token");
+    localStorage.removeItem("lessora-admin-token");
   }
 }
+
+// ============================================
+// ANONYMOUS SESSION MANAGEMENT
+// ============================================
+
+export function getSessionId(): string | null {
+  return localStorage.getItem("lessora-session-id");
+}
+
+export async function ensureSession(): Promise<string> {
+  let id = getSessionId();
+  if (!id) {
+    id = crypto.randomUUID();
+  }
+  const result = await apiRequest<{ sessionId: string; creditsRemaining: number }>(
+    "/api/ai/session/ensure",
+    {
+      method: "POST",
+      body: JSON.stringify({ sessionId: id }),
+    },
+  );
+  localStorage.setItem("lessora-session-id", result.sessionId);
+  return result.sessionId;
+}
+
+export function invalidateSession() {
+  localStorage.removeItem("lessora-session-id");
+}
+
+// ============================================
+// API REQUEST HELPER
+// ============================================
 
 export async function apiRequest<T>(
   path: string,
   options: RequestInit = {},
-  useUserAuth = false,
 ): Promise<T> {
-  const token = useUserAuth ? getUserToken() : getAdminToken();
+  const adminToken = getAdminToken();
+  const sessionId = getSessionId();
   const headers = new Headers(options.headers || {});
 
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
+  if (adminToken && path.startsWith("/api/admin/")) {
+    headers.set("Authorization", `Bearer ${adminToken}`);
+  } else if (sessionId) {
+    headers.set("X-Session-Token", sessionId);
   }
 
   if (!headers.has("Content-Type") && !(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
   headers.set("X-Client-Type", "web");
+
   const response = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers,
   });
 
   if (response.status === 401) {
-    if (useUserAuth) {
-      localStorage.removeItem("lessora-user-token");
-      window.location.assign("/login");
-    } else {
+    if (adminToken && path.startsWith("/api/admin/")) {
       localStorage.removeItem("lessora-admin-token");
       window.location.assign("/admin/login");
+    } else {
+      invalidateSession();
     }
-    throw new Error("Session expired. Please sign in again.");
+    throw new Error("Session expired. Please refresh the page.");
   }
 
   const payload = (await response.json()) as {
@@ -63,6 +95,10 @@ export async function apiRequest<T>(
 
   return payload.data as T;
 }
+
+// ============================================
+// ADMIN APIs
+// ============================================
 
 export async function loginAdmin(email: string, password: string) {
   const response = await fetch(`${API_BASE}/api/admin/login`, {
@@ -87,7 +123,7 @@ export async function loginAdmin(email: string, password: string) {
     throw new Error("Invalid response from server");
   }
 
-  localStorage.setItem("lessora-admin-token", payload.data.token);
+  setAdminToken(payload.data.token);
   localStorage.setItem("lessora-admin-user", JSON.stringify(payload.data.user));
 
   return payload.data;
@@ -127,7 +163,7 @@ export async function fetchLandingMetrics() {
   const payload = (await response.json()) as {
     data?: Pick<
       DashboardMetrics,
-      "activeUsers" | "totalLessonPlans" | "lastUpdated"
+      "totalLessonPlans" | "lastUpdated"
     >;
     error?: { message?: string } | null;
   };
@@ -204,184 +240,6 @@ export interface User {
   status: "active" | "inactive" | "pending";
   createdAt: string;
   lastLoginAt?: string;
-}
-
-// ============================================
-// USER AUTHENTICATION APIs
-// ============================================
-
-export type AuthUser = {
-  id: string;
-  name: string;
-  email: string;
-  aiResponseCredits?: number;
-};
-
-export type LoginResponse = {
-  token: string;
-  user: AuthUser;
-};
-
-export type RegisterPayload = {
-  name: string;
-  email: string;
-  password: string;
-  school?: string;
-};
-
-export type ForgotPasswordPayload = {
-  email: string;
-};
-
-export type ResetPasswordPayload = {
-  token: string;
-  newPassword: string;
-};
-
-export type VerifyResetTokenResponse = {
-  success: boolean;
-  message: string;
-  expiresAt: string;
-};
-
-export type ResetPasswordResponse = {
-  success: boolean;
-  message: string;
-};
-
-export async function loginUser(email: string, password: string) {
-  const response = await fetch(`${API_BASE}/api/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Client-Type": "web",
-    },
-    body: JSON.stringify({ email, password }),
-  });
-
-  const payload = (await response.json()) as {
-    data?: LoginResponse;
-    error?: { message?: string } | null;
-  };
-
-  if (!response.ok) {
-    throw new Error(payload.error?.message || "Login failed");
-  }
-
-  if (!payload.data?.token) {
-    throw new Error("Invalid response from server");
-  }
-
-  setUserToken(payload.data.token);
-  localStorage.setItem("lessora-user", JSON.stringify(payload.data.user));
-
-  return payload.data;
-}
-
-export async function registerUser(data: RegisterPayload) {
-  const response = await fetch(`${API_BASE}/api/auth/register`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Client-Type": "web",
-    },
-    body: JSON.stringify(data),
-  });
-
-  const payload = (await response.json()) as {
-    message?: string;
-    error?: { message?: string } | null;
-  };
-
-  if (!response.ok) {
-    throw new Error(payload.error?.message || "Registration failed");
-  }
-
-  return payload.message || "Registration successful";
-}
-
-export function logoutUser() {
-  setUserToken(null);
-  localStorage.removeItem("lessora-user");
-}
-
-export function getCurrentUser(): AuthUser | null {
-  const userStr = localStorage.getItem("lessora-user");
-  if (!userStr) return null;
-  try {
-    return JSON.parse(userStr) as AuthUser;
-  } catch {
-    return null;
-  }
-}
-
-// ============================================
-// PASSWORD RESET APIs
-// ============================================
-
-export async function forgotPassword(email: string) {
-  const response = await fetch(`${API_BASE}/api/auth/forgot-password`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Client-Type": "web",
-    },
-    body: JSON.stringify({ email }),
-  });
-
-  const payload = (await response.json()) as {
-    success?: boolean;
-    message?: string;
-    error?: { message?: string } | null;
-  };
-
-  if (!response.ok) {
-    throw new Error(
-      payload.error?.message || payload.message || "Request failed",
-    );
-  }
-
-  return payload.message || "Reset email sent";
-}
-
-export async function verifyResetToken(token: string) {
-  const response = await fetch(
-    `${API_BASE}/api/auth/verify-reset-token/${token}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Client-Type": "web",
-      },
-    },
-  );
-
-  const payload = (await response.json()) as VerifyResetTokenResponse;
-
-  if (!response.ok) {
-    throw new Error(payload.message || "Invalid token");
-  }
-
-  return payload;
-}
-
-export async function resetPassword(token: string, newPassword: string) {
-  const response = await fetch(`${API_BASE}/api/auth/reset-password`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Client-Type": "web",
-    },
-    body: JSON.stringify({ token, newPassword }),
-  });
-
-  const payload = (await response.json()) as ResetPasswordResponse;
-
-  if (!response.ok) {
-    throw new Error(payload.message || "Password reset failed");
-  }
-
-  return payload;
 }
 
 // ============================================
@@ -485,7 +343,10 @@ export type LessonPlanHistoryDetail = LessonPlanHistoryItem & {
   document: LessonPlanDocument;
   draftText: string;
   model?: string;
+  templateId?: LessonPlanTemplate;
 };
+
+export type PublicLessonPlan = LessonPlanHistoryItem;
 
 export type AdminLessonPlanHistoryItem = {
   id: string;
@@ -502,6 +363,11 @@ export type AdminLessonPlanHistoryItem = {
   };
 };
 
+export type SessionInfo = {
+  creditsRemaining: number;
+  isAnonymous: boolean;
+};
+
 export async function generateLessonPlan(payload: GenerateLessonPlanPayload) {
   return apiRequest<GenerateLessonPlanResponse>(
     "/api/ai/lesson-plan/generate",
@@ -509,7 +375,6 @@ export async function generateLessonPlan(payload: GenerateLessonPlanPayload) {
       method: "POST",
       body: JSON.stringify(payload),
     },
-    true, // use user auth
   );
 }
 
@@ -519,7 +384,6 @@ export async function listRecentLessonPlans() {
     {
       method: "GET",
     },
-    true, // use user auth
   );
 }
 
@@ -529,8 +393,31 @@ export async function getLessonPlanById(lessonPlanId: string) {
     {
       method: "GET",
     },
-    true, // use user auth
   );
+}
+
+export async function listPublicLessonPlans() {
+  return apiRequest<PublicLessonPlan[]>(
+    "/api/ai/lesson-plan/public",
+    {
+      method: "GET",
+    },
+  );
+}
+
+export async function getPublicLessonPlanById(lessonPlanId: string) {
+  return apiRequest<LessonPlanHistoryDetail>(
+    `/api/ai/lesson-plan/public/${lessonPlanId}`,
+    {
+      method: "GET",
+    },
+  );
+}
+
+export async function getSessionInfo(): Promise<SessionInfo> {
+  return apiRequest<SessionInfo>("/api/ai/session/me", {
+    method: "GET",
+  });
 }
 
 export async function fetchAdminLessonPlans() {
@@ -559,4 +446,26 @@ export async function softDeleteUser(userId: string) {
   return apiRequest<{ success: boolean }>(`/api/admin/users/${userId}`, {
     method: "DELETE",
   });
+}
+
+// ============================================
+// LESSON PLAN REFINEMENT
+// ============================================
+
+export type RefineLessonPlanPayload = {
+  lessonPlanId: string;
+  selectedSections: string[];
+  refinementRequest: string;
+};
+
+export type RefineLessonPlanResponse = GenerateLessonPlanResponse;
+
+export async function refineLessonPlan(payload: RefineLessonPlanPayload) {
+  return apiRequest<RefineLessonPlanResponse>(
+    "/api/ai/lesson-plan/refine",
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    },
+  );
 }

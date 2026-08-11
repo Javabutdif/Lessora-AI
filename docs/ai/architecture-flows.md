@@ -1,19 +1,18 @@
 # Architecture — Data Flows and Key Interfaces
 
-Read this file only when implementing or debugging a specific workflow CLI command. For module boundaries and conventions, see [`docs/ai/architecture.md`](./architecture.md).
+Read this file only when implementing or debugging a specific workflow. For module boundaries and conventions, see [`docs/ai/architecture.md`](./architecture.md).
 
-## Data flows
+## Archiona Workflow
 
-- **Scaffold flow**: `npm run workflow -- scaffold --slug <topic> --artifacts bundle` → writes dated task brief + spec + plan to `docs/ai/tasks/`, `docs/specs/`, `docs/plans/`
-- **Check flow**: `npm run workflow -- check` → reads active task brief, checks required fields and linked file existence, exits 0 or 1
-- **Pack flow**: `npm run workflow -- pack` → reads task brief + git status + optional git diff → writes a markdown handoff pack to `docs/ai/handoffs/`
-- **Finalize flow**: `npm run workflow -- finalize` → validates task brief → moves task + spec + plan to their respective `archive/` subdirectories, rewrites internal links
+- **Create plan**: `archiona plan --slug <topic> --title "<title>"` → writes plan to `.archiona/plans/<slug>.md`
+- **Validate plan**: `archiona validate` → checks plan is complete and approved
+- **Read skill**: Before writing code in any area, read the matching skill under `.archiona/skills/`
 
 ## Key interfaces
 
-- Task brief markdown schema: fields parsed from `- key: value` bullet lines under `##` heading sections
-- `CORE_PATHS` array — defines exactly what the installer copies; must stay in sync with what the workflow CLI expects to find
+- Plan markdown schema: sections defined in `.archiona/workflow.md` — Evidence, Problem, Files, Dependencies, Test plan, Rollback
+- Skills under `.archiona/skills/` are the source of truth for code conventions in each area
 
 ## Application-specific flows
 
-(Add your application's key data flows and interfaces here)
+See [`docs/ai/lessora-structure-workflow.md`](./lessora-structure-workflow.md) for API development workflows.

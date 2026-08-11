@@ -3,16 +3,13 @@ import { useNavigate } from "react-router-dom";
 import {
   FaBookOpen,
   FaGraduationCap,
-  FaHistory,
   FaLanguage,
   FaRobot,
-  FaSignOutAlt,
 } from "react-icons/fa";
 import {
   generateLessonPlan,
-  getCurrentUser,
-  logoutUser,
   LessonPlanTemplate,
+  ensureSession,
 } from "../services/api";
 import styles from "../styles/PortalTheme.module.css";
 
@@ -64,7 +61,6 @@ export default function GeneratePlanPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const user = getCurrentUser();
 
   async function handleGenerate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -85,14 +81,32 @@ export default function GeneratePlanPage() {
     }
 
     try {
+      await ensureSession();
+      const gradeLabels: Record<string, string> = {
+        preschool: "Preschool",
+        kindergarten: "Kindergarten",
+        grade1: "Grade 1",
+        grade2: "Grade 2",
+        grade3: "Grade 3",
+        grade4: "Grade 4",
+        grade5: "Grade 5",
+        grade6: "Grade 6",
+        grade7: "Grade 7",
+        grade8: "Grade 8",
+        grade9: "Grade 9",
+        grade10: "Grade 10",
+        grade11: "Grade 11",
+        grade12: "Grade 12",
+        seniorhigh: "Senior High School",
+      };
       const response = await generateLessonPlan({
         title: topicSubject.trim(),
         subject: topicSubject.trim(),
-        gradeLevel: selectedGrade,
+        gradeLevel: gradeLabels[selectedGrade] || selectedGrade,
         duration: parsedDuration,
         numberOfSessions: 1,
         userDraftText: goalsStandards.trim() || undefined,
-        templateNotes: goalsStandards.trim() || undefined,
+        templateNotes: undefined,
         activityPreferences: selectedActivityPreferences,
         activityPreferenceNotes: activityPreferenceNotes.trim() || undefined,
         templateId: selectedTemplate,
@@ -107,32 +121,17 @@ export default function GeneratePlanPage() {
     }
   }
 
-  function handleLogout() {
-    logoutUser();
-    navigate("/login");
-  }
-
   return (
     <div className={styles.userAppPage}>
       <header className={styles.userAppHeader}>
         <h1 className={styles.userAppBrand}>Lessora AI</h1>
         <div className={styles.userAppHeaderActions}>
-          <span className={styles.userAppUser}>{user?.name || "User"}</span>
           <button
             type="button"
-            onClick={() => navigate("/history")}
+            onClick={() => navigate("/discover")}
             className={styles.softSecondary}
           >
-            <FaHistory />
-            History
-          </button>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className={styles.softDanger}
-          >
-            <FaSignOutAlt />
-            Logout
+            Discover
           </button>
         </div>
       </header>
@@ -141,7 +140,7 @@ export default function GeneratePlanPage() {
         <div className={styles.userAppHero}>
           <h2 className={styles.userAppHeroTitle}>Generate Lesson Plan</h2>
           <p className={styles.userAppHeroDescription}>
-            Create a professional lesson plan in minutes with AI
+            Create a professional lesson plan in minutes with AI. No account needed.
           </p>
         </div>
 

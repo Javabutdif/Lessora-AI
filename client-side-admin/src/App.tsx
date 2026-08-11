@@ -1,25 +1,23 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
-import LoginPage from "./pages/LoginPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminLessonPlansPage from "./pages/AdminLessonPlansPage";
 import UserManagement from "./pages/UserManagement";
-import ForgotPasswordPage from "./pages/ForgotPasswordPage";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
-import ResetPasswordSuccessPage from "./pages/ResetPasswordSuccessPage";
 import ProtectedRoute from "./components/ProtectedRoute";
-import UserProtectedRoute from "./components/UserProtectedRoute";
-import UserLoginPage from "./pages/UserLoginPage";
-import UserRegisterPage from "./pages/UserRegisterPage";
+import GuestRoute from "./components/GuestRoute";
 import GeneratePlanPage from "./pages/GeneratePlanPage";
-import HistoryPage from "./pages/HistoryPage";
 import PreviewPage from "./pages/PreviewPage";
 import InfoPage from "./pages/InfoPage";
 import SupportDonationPage from "./pages/SupportDonationPage";
+import DashboardPage from "./pages/DashboardPage";
+import RefineLessonPage from "./pages/RefineLessonPage";
+import DiscoverPage from "./pages/DiscoverPage";
+import PageProgressBar from "./components/PageProgressBar";
 
 function App() {
   return (
     <BrowserRouter>
+      <PageProgressBar />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
@@ -31,54 +29,49 @@ function App() {
         />
         <Route path="/about" element={<InfoPage page="about" />} />
 
-        {/* User Routes */}
-        <Route path="/login" element={<UserLoginPage />} />
-        <Route path="/register" element={<UserRegisterPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        {/* Teacher Routes — no auth required */}
         <Route
-          path="/reset-password-success"
-          element={<ResetPasswordSuccessPage />}
+          path="/"
+          element={
+            <GuestRoute>
+              <DashboardPage />
+            </GuestRoute>
+          }
         />
         <Route
           path="/generate"
           element={
-            <UserProtectedRoute>
+            <GuestRoute>
               <GeneratePlanPage />
-            </UserProtectedRoute>
+            </GuestRoute>
           }
         />
         <Route
-          path="/history"
+          path="/discover"
           element={
-            <UserProtectedRoute>
-              <HistoryPage />
-            </UserProtectedRoute>
+            <GuestRoute>
+              <DiscoverPage />
+            </GuestRoute>
           }
         />
         <Route
           path="/preview/:id"
           element={
-            <UserProtectedRoute>
+            <GuestRoute>
               <PreviewPage />
-            </UserProtectedRoute>
+            </GuestRoute>
+          }
+        />
+        <Route
+          path="/refine/:id"
+          element={
+            <GuestRoute>
+              <RefineLessonPage />
+            </GuestRoute>
           }
         />
 
         {/* Admin Routes */}
-        <Route path="/admin/login" element={<LoginPage />} />
-        <Route
-          path="/admin/forgot-password"
-          element={<Navigate to="/forgot-password" replace />}
-        />
-        <Route
-          path="/admin/reset-password"
-          element={<Navigate to="/reset-password" replace />}
-        />
-        <Route
-          path="/admin/reset-password-success"
-          element={<Navigate to="/reset-password-success" replace />}
-        />
         <Route
           path="/admin/dashboard"
           element={

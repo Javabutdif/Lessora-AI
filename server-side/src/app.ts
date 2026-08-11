@@ -11,6 +11,7 @@ import { config } from "dotenv";
 import path from "path";
 import { CreditRefreshScheduler } from "./services/credit-refresh.scheduler";
 import { ActivityReportScheduler } from "./services/activity-report.scheduler";
+import { SessionCreditRefreshScheduler } from "./services/session-credit-refresh.scheduler";
 import { checkAppVersion } from "./middleware/auth.middleware";
 import { createRateLimitMiddleware } from "./middleware/rate-limit.middleware";
 
@@ -32,6 +33,7 @@ if (!mongoUri) {
 
       CreditRefreshScheduler.initialize();
       ActivityReportScheduler.initialize();
+      SessionCreditRefreshScheduler.initialize();
     })
     .catch((error) => {
       console.error("MongoDB connection failed:", error);
@@ -67,6 +69,18 @@ const aiRateLimit = createRateLimitMiddleware({
   windowMs: 60_000,
   maxRequests: 30,
   keyPrefix: "ai",
+});
+
+const anonAiGenerateLimit = createRateLimitMiddleware({
+  windowMs: 3_600_000,
+  maxRequests: 10,
+  keyPrefix: "anon-ai-generate",
+});
+
+const anonAiRefineLimit = createRateLimitMiddleware({
+  windowMs: 3_600_000,
+  maxRequests: 20,
+  keyPrefix: "anon-ai-refine",
 });
 
 app.use("/api/auth", apiRateLimit);

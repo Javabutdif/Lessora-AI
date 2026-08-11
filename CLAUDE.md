@@ -4,11 +4,9 @@
 
 Always read `AGENTS.md` first — it is the canonical workflow playbook.
 
-Before starting work, check for active tasks with `npm run workflow -- status` or by inspecting `docs/ai/tasks/` to avoid duplicating effort.
+Before starting work, read `.archiona/workflow.md` and check for an approved plan at `.archiona/plans/<slug>.md` to avoid duplicating effort.
 
-- Create or update a task brief in `docs/ai/tasks/` for every non-trivial change.
-- Create or update matching specs and plans before implementation when work changes behavior, architecture, workflow, or spans multiple steps.
+- Read matching skill under `.archiona/skills/` before writing code in that area. The skill overrides your defaults.
 - Append an ADR to `docs/ai/decisions.md` when introducing a new framework, dependency, or design pattern.
-- Use `docs/ai/subagents/` when splitting work across planner, implementer, reviewer, and tester roles.
 - Run validation from `docs/ai/commands.md` before marking work done.
 - Prefer adding path-specific guidance in `.claude/rules/` instead of growing this file.

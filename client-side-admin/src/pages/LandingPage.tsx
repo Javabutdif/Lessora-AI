@@ -1,6 +1,6 @@
 import { useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router-dom";
 import {
   FaMobileAlt,
   FaRobot,
@@ -10,12 +10,11 @@ import {
 import LessoraLogo from "../assets/Transparent Logo.png";
 import { fetchLandingMetrics } from "../services/api";
 import { setSeoMetadata } from "../utils/seo";
+import ScrollReveal from "../components/ScrollReveal";
 import styles from "./LandingPage.module.css";
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const downloadAppUrl =
-    "https://drive.google.com/file/d/1TUuA2d4tPZgIRkVijq2JUuDn7CO_W3Z_/view?usp=drive_link";
   const { data: landingMetrics } = useQuery({
     queryKey: ["landingMetrics"],
     queryFn: fetchLandingMetrics,
@@ -34,11 +33,6 @@ export default function LandingPage() {
   }, []);
 
   const metrics = [
-    {
-      label: "Active educators",
-      value: landingMetrics?.activeUsers,
-      helper: "Educators using Lessora",
-    },
     {
       label: "Lesson plans created",
       value: landingMetrics?.totalLessonPlans,
@@ -70,32 +64,31 @@ export default function LandingPage() {
           <p className={styles.userLandingDescription}>
             Create structured, professional lesson plans in minutes. Transform
             simple teacher inputs into organized activities, objectives, and
-            assessments.
+            assessments. No account required.
           </p>
         </div>
         <div className={styles.userLandingCallout}>
           <p className={styles.userLandingCalloutLabel}>Start here</p>
-          <a
-            href={downloadAppUrl}
-            target="_blank"
-            rel="noreferrer"
+          <button
+            type="button"
+            onClick={() => navigate("/generate")}
             className={styles.userLandingDownloadLink}
           >
-            Download App
-          </a>
+            Generate Free Lesson Plan
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate("/discover")}
+            className={styles.userLandingSecondaryButton}
+          >
+            Browse Plans
+          </button>
           <button
             type="button"
             onClick={() => navigate("/support")}
             className={styles.userLandingSecondaryButton}
           >
             Support the project
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate("/login")}
-            className={styles.userLandingSecondaryButton}
-          >
-            Login
           </button>
         </div>
         <div className={styles.userLandingFeatureGrid}>
@@ -117,39 +110,32 @@ export default function LandingPage() {
             },
             {
               icon: <FaMobileAlt />,
-              title: "Mobile Friendly",
-              desc: "Works on any screen",
+              title: "Browser Access",
+              desc: "No download needed",
             },
-          ].map((feature) => (
-            <div key={feature.title} className={styles.userLandingFeatureCard}>
-              <div className={styles.userLandingFeatureIcon}>{feature.icon}</div>
-              <h3 className={styles.userLandingFeatureTitle}>{feature.title}</h3>
-              <p className={styles.userLandingFeatureText}>{feature.desc}</p>
-            </div>
+          ].map((feature, index) => (
+            <ScrollReveal key={feature.title} delay={index * 80}>
+              <div className={styles.userLandingFeatureCard}>
+                <div className={styles.userLandingFeatureIcon}>{feature.icon}</div>
+                <h3 className={styles.userLandingFeatureTitle}>{feature.title}</h3>
+                <p className={styles.userLandingFeatureText}>{feature.desc}</p>
+              </div>
+            </ScrollReveal>
           ))}
         </div>
-        <section className={styles.userLandingAndroid}>
-          <p className={styles.userLandingAndroidLabel}>Android App</p>
-          <h2 className={styles.userLandingAndroidTitle}>
-            Built for teachers on the go
-          </h2>
-          <p className={styles.userLandingAndroidBody}>
-            The Android app helps you export lesson plan documents and refine
-            lesson plan generation when you need quick updates from your mobile
-            device.
-          </p>
-        </section>
-        <div className={styles.userLandingMetricGrid}>
-          {metrics.map((metric) => (
-            <div key={metric.label} className={styles.userLandingMetricCard}>
-              <p className={styles.userLandingMetricLabel}>{metric.label}</p>
-              <p className={styles.userLandingMetricValue}>
-                {numberFormatter.format(metric.value ?? 0)}
-              </p>
-              <p className={styles.userLandingMetricHelper}>{metric.helper}</p>
-            </div>
-          ))}
-        </div>
+        <ScrollReveal delay={400}>
+          <div className={styles.userLandingMetricGrid}>
+            {metrics.map((metric) => (
+              <div key={metric.label} className={styles.userLandingMetricCard}>
+                <p className={styles.userLandingMetricLabel}>{metric.label}</p>
+                <p className={styles.userLandingMetricValue}>
+                  {numberFormatter.format(metric.value ?? 0)}
+                </p>
+                <p className={styles.userLandingMetricHelper}>{metric.helper}</p>
+              </div>
+            ))}
+          </div>
+        </ScrollReveal>
       </div>
     </div>
   );

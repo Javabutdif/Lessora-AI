@@ -1,8 +1,8 @@
 ---
-applyTo: "docs/ai/subagents/**/*,docs/ai/tasks/**/*"
+applyTo: ".archiona/plans/**/*"
 ---
 
-Treat these files as the repo's coordination layer for multi-agent work.
+When editing Archiona plans:
 
 - Keep role definitions crisp and non-overlapping.
 - Prefer explicit write scopes and handoff contracts over vague collaboration advice.

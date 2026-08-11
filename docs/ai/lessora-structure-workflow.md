@@ -14,29 +14,29 @@ The goal is to keep Lessora AI predictable for humans and coding agents. Do not 
 
 ## Current Stack Boundaries
 
-- `client-side/` is the Expo React Native mobile app.
+- `client-side-admin/` is the React web portal (teacher + admin + landing pages).
 - `server-side/` is the Node.js, Express, TypeScript API.
 - MongoDB access belongs on the server through Mongoose schemas/models.
 - Authentication uses the existing JWT and bcrypt flow.
 - Request validation belongs on the server through Zod schemas.
-- Client code should call API service functions, not raw backend URLs from screens.
+- Client code should call API service functions, not raw backend URLs from pages.
 
 ## Client-Side Service Workflow
 
-Client API code lives in `client-side/src/services/`.
+Client API code lives in `client-side-admin/src/services/`.
 
-Use the current `client-side/src/services/api.ts` pattern unless there is a clear reason to split by domain.
+Use the current `client-side-admin/src/services/api.ts` pattern unless there is a clear reason to split by domain.
 
 ### Client Service Rules
 
 - Export TypeScript payload and response types near the service functions that use them.
 - Keep fetch details inside service files.
-- Screens and components should call named service functions such as `login()` or `register()`.
-- Screens should not build backend URLs directly.
+- Pages and components should call named service functions such as `login()` or `register()`.
+- Pages should not build backend URLs directly.
 - Keep the backend base URL in one place.
 - Keep request and response parsing consistent with the server response envelope.
-- Throw normal `Error` objects from service helpers so screens can show readable messages.
-- Do not duplicate API helper logic across screens.
+- Throw normal `Error` objects from service helpers so pages can show readable messages.
+- Do not duplicate API helper logic across pages.
 
 ### Expected Client Response Shape
 
@@ -69,11 +69,11 @@ Server responses should be consumed as one of these shapes:
 
 ### Adding a New Client API Function
 
-1. Add payload and response types in `client-side/src/services/api.ts` or a domain service file under `client-side/src/services/`.
+1. Add payload and response types in `client-side-admin/src/services/api.ts` or a domain service file under `client-side-admin/src/services/`.
 2. Reuse a shared request helper for JSON, headers, errors, and parsing.
-3. Export a named function for the screen to call.
-4. Update the screen to call the service function.
-5. Keep loading, success, and error UI states in the screen or a screen-level hook.
+3. Export a named function for the page to call.
+4. Update the page to call the service function.
+5. Keep loading, success, and error UI states in the page or a page-level hook.
 
 ## Server-Side API Workflow
 
@@ -193,8 +193,8 @@ Use this order for a new API feature:
 7. Add or update the controller.
 8. Add or update the route.
 9. Mount the route in `app.ts` if it is a new route group.
-10. Add or update client service functions if the mobile app calls it.
-11. Add or update UI screens only through service functions.
+10. Add or update client service functions if the web portal calls it.
+11. Add or update UI pages only through service functions.
 12. Run the best available validation command from `docs/ai/commands.md`.
 
 ## Naming Conventions
@@ -232,8 +232,8 @@ If any answer is unknown, inspect the relevant file or document the assumption i
 - User model: `server-side/src/schemas/user.schema.ts`
 - Lesson plan model: `server-side/src/schemas/lesson.schema.ts`
 - OpenAI lesson generation service scaffold: `server-side/src/services/openai.service.ts`
-- Client API service: `client-side/src/services/api.ts`
-- Client auth session context: `client-side/src/context/AuthContext.tsx`
+- Client API service: `client-side-admin/src/services/api.ts`
+- Client auth: `localStorage` tokens managed by `setUserToken()` / `getUserToken()` in `client-side-admin/src/services/api.ts`
 
 ## Lesson Plan AI Generation Workflow
 
@@ -241,9 +241,9 @@ Use this workflow for the Generate Plan screen. Do not invent a new AI route, cl
 
 ### Ownership
 
-- client screen: `client-side/src/screens/Dashboard/GeneratePlanScreen.tsx`
-- client service: `client-side/src/services/api.ts`
-- client API base env: `client-side/.env` -> `EXPO_PUBLIC_API_BASE`
+- client page: `client-side-admin/src/pages/GeneratePlanPage.tsx`
+- client service: `client-side-admin/src/services/api.ts`
+- client API base env: `import.meta.env.VITE_API_BASE_URL` → defaults to `http://localhost:4000`
 - server route: `server-side/src/routes/ai.routes.ts`
 - server controller: `server-side/src/controllers/ai.controller.ts`
 - server validation schema: `server-side/src/schemas/ai.schema.ts`
@@ -256,11 +256,11 @@ Use this workflow for the Generate Plan screen. Do not invent a new AI route, cl
 - endpoint: `POST /api/ai/lesson-plan/generate`
 - history list endpoint: `GET /api/ai/lesson-plan/history`
 - history detail endpoint: `GET /api/ai/lesson-plan/history/:lessonPlanId`
-- client-side export helper: `client-side/src/utils/documentExport.ts`
+- document export: handled client-side via `client-side-admin/src/utils/documentExport.ts` (when needed)
 
 ### Client Field Mapping
 
-The visible mobile form fields map to the backend request as follows:
+The visible web form fields map to the backend request as follows:
 
 ```ts
 {
@@ -337,15 +337,14 @@ The backend returns the standard data envelope:
 ### Anti-Hallucination Answers For This Flow
 
 - Existing file that owns client fetch logic: `client-side/src/services/api.ts`
-- Existing client API base setting: `process.env.EXPO_PUBLIC_API_BASE`, falling back to the deployed API URL
-- Existing screen that owns the form: `client-side/src/screens/Dashboard/GeneratePlanScreen.tsx`
+- Existing client API base setting: `import.meta.env.VITE_API_BASE_URL` in `client-side-admin/src/services/api.ts`
 - Existing backend route path: `/api/ai/lesson-plan/generate`
 - Existing response envelope: `{ data: T, error: null }`
 - Existing Zod request schema: `generateLessonPlanSchema`
 - Existing service method: `openAIService.generateLessonPlan`
 - Mongoose persistence model: `User.aiResponseCredits` tracks remaining AI responses
 - Mongoose history model: `LessonPlan.aiDocument` stores generated JSON documents
-- Validation command: `npx tsc --noEmit` in `client-side`, then `./scripts/check.ps1`
+- Validation command: `cd server-side && npx tsc --noEmit` and `cd ../client-side-admin && npx tsc --noEmit`
 
 ### Strict AI Role Rule
 
@@ -356,8 +355,8 @@ The client must never send a system prompt, role prompt, or role override. The l
 - The canonical generated output is `data.document`, a text-only JSON document.
 - The Generate Plan screen should render `document.blocks` as a read-only preview by default.
 - Editing should be opt-in from the preview panel through the pencil icon, which toggles editable fields for the same `document.blocks`.
-- Export features build a local Word-compatible `.doc` file in the client and share it from the mobile app.
-- The client-side export helper converts `document.blocks` into HTML/plain-text content locally, then writes a temporary `.doc` file for sharing.
+- Export features build a local Word-compatible `.doc` file in the browser and trigger a download.
+- The client-side export helper converts `document.blocks` into HTML/plain-text content locally, then triggers a browser download.
 - The AI service itself should not generate media or binary files; document export is now handled in the client.
 - AI media generation is disabled. Do not request or return images, audio, video, slides, charts, or other media from the lesson plan specialist.
 - `draftText` is a compatibility preview string, not the source of truth for editing or exporting.
@@ -403,8 +402,8 @@ The backend must reject incomplete generated documents that miss required headin
 - A successful AI generation must create a `LessonPlan` owned by the authenticated user.
 - The saved `LessonPlan.aiDocument` is the same JSON document used by preview, edit, and export.
 - Dashboard recent plans must call `GET /api/ai/lesson-plan/history`; do not use static recent-plan cards.
-- Tapping a recent plan should navigate to the `Generate` tab with `{ lessonPlanId }`.
-- The Generate Plan screen loads saved plan details from `GET /api/ai/lesson-plan/history/:lessonPlanId`.
+- Clicking a recent plan should navigate to `/preview/{id}`.
+- The Generate Plan page loads saved plan details from `GET /api/ai/lesson-plan/history/:lessonPlanId`.
 - Saved plans open in preview mode by default and can be edited locally with the pencil toggle.
 - Exporting a history plan uses the same client-side export helper with the currently loaded document.
 - Saved-plan edits are local only until a save/update endpoint is explicitly added.
@@ -425,6 +424,5 @@ The backend must reject incomplete generated documents that miss required headin
 
 ### Home Redirect Rules
 
-- The dashboard floating assistant icon should navigate to the `Generate` tab.
-- The dashboard hero "Try it now" action should also navigate to the `Generate` tab.
-- Navigation belongs in the dashboard screen/component; screens must not call backend AI endpoints directly.
+- The dashboard hero "Try it now" action should navigate to `/generate`.
+- Navigation belongs in the dashboard page/component; pages must not call backend AI endpoints directly.

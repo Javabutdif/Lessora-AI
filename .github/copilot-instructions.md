@@ -6,7 +6,7 @@ Always read:
 
 - `AGENTS.md`
 
-Before starting work, check for active tasks with `npm run workflow -- status` or by inspecting `docs/ai/tasks/` to avoid duplicating effort.
+Before starting work, read `.archiona/workflow.md` and check for an approved plan at `.archiona/plans/<slug>.md` to avoid duplicating effort.
 
 Read additional files only when relevant:
 
@@ -14,25 +14,20 @@ Read additional files only when relevant:
 - `docs/ai/architecture.md`
 - `docs/specs/`
 - `docs/plans/`
-- `docs/ai/tasks/`
-- `docs/ai/subagents/README.md`
 - `docs/ai/decisions.md`
-- `skills/` for agentskills.io-compatible skill definitions
+- `.archiona/skills/` for project-specific coding conventions
 
 When generating code:
 
 - prefer clear and maintainable solutions
 - avoid changing unrelated files
-- create or update a task brief for every non-trivial change
-- create or update matching specs and plans before implementation for behavior, architecture, workflow, or multi-step work
 - append an ADR to `docs/ai/decisions.md` when introducing a new framework, dependency, or design pattern
 - suggest tests when behavior changes
 - keep documentation aligned with code changes
 
-Before finalizing implementation, prefer running the repository validation commands:
+Before finalizing implementation, run the repository validation commands:
 
-- `npm run workflow -- doctor` to verify the workflow layer is installed
-- `./scripts/check.ps1`
-- `./scripts/check.sh`
+- `cd server-side && npx tsc --noEmit`
+- `cd ../client-side-admin && npx tsc --noEmit`
 
-Use `.github/instructions/` for path-specific guidance and `.github/prompts/` for reusable task prompts. For the full CLI reference including `pack --compress`, `pack --to <tool>`, and `skill add`, consult `docs/ai/commands.md`.
+Use `.github/instructions/` for path-specific guidance. For the full command reference, consult `docs/ai/commands.md`.

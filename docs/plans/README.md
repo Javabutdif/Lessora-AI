@@ -12,13 +12,13 @@ Create or update a plan when work changes behavior, architecture, workflow, or s
 
 ## Relationship to other artifacts
 
-- A plan is linked from the task brief in `docs/ai/tasks/`.
+- A plan is linked from the Archiona plan at `.archiona/plans/<slug>.md`.
 - A matching spec in `docs/specs/` describes **what** the plan implements.
-- Keep spec, plan, and task brief filenames aligned around the same date and topic when practical.
+- Keep spec, plan, and archiona plan filenames aligned around the same date and topic when practical.
 
 ## Lifecycle
 
 - Active plans live in this directory.
-- Completed plans are moved to `archive/` by `npm run workflow -- finalize` or `npm run workflow -- archive`.
+- Completed plans are moved to `archive/` manually when the work is done.
 
 See `TEMPLATE.md` for the starter template.

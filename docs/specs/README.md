@@ -12,13 +12,13 @@ Create or update a spec when work changes behavior, architecture, workflow, or s
 
 ## Relationship to other artifacts
 
-- A spec is linked from the task brief in `docs/ai/tasks/`.
+- A spec is linked from the Archiona plan at `.archiona/plans/<slug>.md`.
 - A matching plan in `docs/plans/` describes **how** the spec will be implemented.
-- Keep spec, plan, and task brief filenames aligned around the same date and topic when practical.
+- Keep spec, plan, and archiona plan filenames aligned around the same date and topic when practical.
 
 ## Lifecycle
 
 - Active specs live in this directory.
-- Completed specs are moved to `archive/` by `npm run workflow -- finalize` or `npm run workflow -- archive`.
+- Completed specs are moved to `archive/` manually when the work is done.
 
 See `TEMPLATE.md` for the workflow scaffold template.

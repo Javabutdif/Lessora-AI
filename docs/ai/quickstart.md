@@ -1,54 +1,34 @@
 # Quickstart
 
-Use this page as the shortest path from an idea to a finished workflow bundle.
+Use this page as the shortest path from an idea to implemented code.
 
-Start with `npm run workflow -- scaffold` when you need a new task brief, spec, or plan. The templates in `docs/specs/TEMPLATE.md`, `docs/plans/TEMPLATE.md`, and `docs/ai/tasks/` define the structure the scaffold mirrors.
+Start with the Archiona pre-coding gate: create a plan, get it approved, then implement.
 
-## 1. Create the artifacts
+## 1. Create the plan
 
-1. Run `npm run workflow -- scaffold --slug <topic> --artifacts bundle` when the work changes behavior, architecture, workflow, or spans multiple steps.
-2. Run `npm run workflow -- scaffold --slug <topic> --artifacts task` when the work only needs a task brief.
-3. Fill in the generated files so the current work has a real summary, scope, next action, and validation notes.
+Run `archiona plan --slug <topic> --title "<Title>"` when the work changes behavior, architecture, or spans multiple steps.
 
-## 2. Keep them aligned
+Fill every section in `.archiona/plans/<slug>.md`:
+- **Evidence**: what files you read and what you learned
+- **Problem**: what change is needed
+- **Files**: exact files to touch
+- **Dependencies**: any new or changed dependencies
+- **Test plan**: how to verify the change
+- **Rollback**: how to undo the change
 
-- The spec says what should change and why.
-- The plan says how the work will be carried out.
-- The task brief says what is happening now and what another agent needs to know to continue.
-- Use explicit `none` values for intentionally omitted spec or plan links so later tools do not have to infer intent.
+Then tick `- [x] **Approved**`.
 
-If the scope changes, update all three artifacts together so the bundle stays easy to resume.
+## 2. Read the matching skill
 
-## 3. Validate the work
+Before writing code, read the relevant skill under `.archiona/skills/`. The skill overrides your defaults for that area.
 
-Run `npm run workflow -- check` before handoff so missing fields or broken linked paths fail early. Then use the commands listed in `docs/ai/commands.md` for code validation. Start with the smallest useful check, then run the stronger repo checks before handoff.
+## 3. Implement
 
-Typical flow:
+Write code only against the approved plan. Only touch the files listed in the plan.
 
-- run `npm run workflow -- check`
-- run focused tests or checks for the files you changed
-- run the repository validation command set
-- fix any failures before marking the task ready
+## 4. Validate
 
-## 4. Export for another tool when needed
-
-When another LLM or IDE needs to continue the work, generate a portable markdown handoff pack:
-
-- run `npm run workflow -- pack`
-- add `--to gemini` or `--to claude` for a tool-specific prompt block
-- add `--stdout` when you want to paste the pack directly without writing a file
-- add `--include-diff` only when the receiving tool really needs patch-level context
-
-The default pack path is `docs/ai/handoffs/`.
-
-## 5. Finalize the bundle
-
-When the work is complete:
-
-1. Make sure the task brief is marked complete and the final status is accurate.
-2. Confirm the linked spec and plan reflect the final outcome.
-3. Run `npm run workflow -- finalize --task <path-to-completed-task-brief>` or the matching fallback command from `docs/ai/commands.md` when more than one task brief exists.
-
+Run `archiona validate` before considering the change done. Then use the commands in `docs/ai/commands.md` for code validation.
 
 ## Environment Configuration
 
@@ -71,18 +51,6 @@ OPENAI_MODEL=gpt-4o-mini
 - `OPENAI_API_KEY`: Your OpenAI API key from https://platform.openai.com/api-keys
 - `OPENAI_MODEL`: The OpenAI model to use (recommended: gpt-4o-mini for cost efficiency)
 
-### Mobile App Environment Variables
-
-Create a `.env` file in the `client-side/` directory:
-
-```env
-EXPO_PUBLIC_API_BASE=http://localhost:4000
-```
-
-**Configuration Details:**
-- `EXPO_PUBLIC_API_BASE`: The base URL for the backend API server
-- For production, replace with your deployed server URL (e.g., `https://api.yourdomain.com`)
-
 ### Web Portal Environment Variables
 
 Create a `.env` file in the `client-side-admin/` directory:
@@ -97,7 +65,7 @@ VITE_API_BASE=http://localhost:4000
 
 ### Security Notes
 
-- **Never commit `.env` files to version control** - they are already in `.gitignore`
+- **Never commit `.env` files to version control** — they are already in `.gitignore`
 - Use strong, unique values for `JWT_SECRET` in production
 - Keep your `OPENAI_API_KEY` secure and rotate it if compromised
 - Use environment-specific values for development, staging, and production

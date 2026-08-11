@@ -1,27 +1,23 @@
 # Commands
 
 Use this file as the single place to document the best-known commands for this repository.
-Subagent roles will execute these commands instead of guessing.
 
 ## Validation checks
 
-- PowerShell: `./scripts/check.ps1`
-- Bash: `./scripts/check.sh`
+- TypeScript (server): `cd server-side && npx tsc --noEmit`
+- TypeScript (web): `cd client-side-admin && npx tsc --noEmit`
+- TypeScript (mobile): `cd client-side && npx tsc --noEmit`
+- Build (web): `cd client-side-admin && npm run build`
 
 ## Application Commands
 
-- **Run / Dev**: `npm run dev`
-- **Test / Lint**: `npm test`
+- **Server dev**: `cd server-side && npm run dev`
+- **Web dev**: `cd client-side-admin && npm run dev`
+- **Mobile dev**: `cd client-side && npm start`
 
-## Agentic Workflow Commands
+## Archiona Workflow
 
-These commands manage your active AI task state.
+All code changes must go through the Archiona pre-coding gate defined in `.archiona/workflow.md`.
 
-- `npm run workflow -- scaffold --slug <topic> --artifacts bundle` (Create aligned task, spec, and plan files)
-- `npm run workflow -- scaffold --slug <topic> --artifacts task` (Create a task brief only)
-- `npm run workflow -- check` (Validate task brief fields and linked workflow files)
-- `npm run workflow -- pack` (Create a portable markdown handoff pack)
-- `npm run workflow -- status` (Check active task)
-- `npm run workflow -- resume` (Resume active task)
-- `npm run workflow -- handoff --to claude` (Handoff task)
-- `npm run workflow -- finalize` (Complete and archive task)
+- Create a plan: run `archiona plan --slug <slug> --title "<title>"`
+- Validate a plan: run `archiona validate`
