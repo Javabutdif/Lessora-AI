@@ -1,13 +1,12 @@
 # Lessora AI
 
-<img src="./client-side/src/assets/LessoraLogo.png" alt="Lessora AI logo" width="300" />
+<img src="./client-side-admin/src/assets/LessoraLogo.png" alt="Lessora AI logo" width="300" />
 
 Lessora AI is an AI-powered educational platform designed to help teachers create organized, professional, and curriculum-ready lesson plans in minutes. By transforming simple teacher inputs into structured lesson plans, activities, objectives, and assessments, Lessora AI reduces preparation time and allows educators to focus more on teaching and student engagement.
 
 ## 🎯 Overview
 
-Lessora AI provides teachers with multiple ways to access AI-powered lesson planning:
-- **Mobile App**: React Native mobile application for iOS and Android
+Lessora AI provides teachers with two ways to access AI-powered lesson planning:
 - **Web Portal**: React-based web application for browser access
 - **Admin Dashboard**: Administrative interface for user management
 
@@ -31,19 +30,7 @@ The platform uses OpenAI's GPT models to generate comprehensive, curriculum-alig
 
 ## 🏗️ Architecture
 
-Lessora AI follows a client-server architecture with three main components:
-
-### Client Applications
-
-#### Mobile App (`client-side/`)
-- **Technology**: React Native with Expo SDK 54
-- **UI Framework**: NativeWind (Tailwind CSS for React Native)
-- **Navigation**: React Navigation with bottom tabs
-- **Key Screens**:
-  - Onboarding, landing, authentication (login/register/password reset)
-  - Dashboard with home, generate, history, preview, refine, analytics, profile
-  - Export functionality (DOC, PDF, DOCX)
-- **Production Builds**: Configured for Expo Application Services (EAS) — cloud builds for Android APK/AAB and iOS
+Lessora AI follows a client-server architecture with two main components:
 
 #### Web Portal (`client-side-admin/`)
 

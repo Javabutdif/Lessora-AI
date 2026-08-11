@@ -1,6 +1,6 @@
 # Lessora Admin (Web)
 
-The web half of the Lessora AI platform: a teacher portal for generating lesson plans and an admin portal for managing teachers. This README covers everything inside `client-side-admin/`. The mobile app (`client-side/`) and the server (`server-side/`) live in their own directories and have their own docs.
+The web half of the Lessora AI platform: a teacher portal for generating lesson plans and an admin portal for managing teachers. This README covers everything inside `client-side-admin/`. The server (`server-side/`) lives in its own directory. The mobile app (`client-side/`) is deprecated.
 
 ## Table of Contents
 
@@ -546,7 +546,6 @@ The whole app was redesigned on **2026-06-29** from a dark-glass + indigo-gradie
 - **Task brief**: `docs/ai/tasks/2026-06-29-client-side-admin-minimal-redesign.md`
 - **Main README**: `../README.md`
 - **Server README**: `../server-side/README.md`
-- **Mobile README**: `../client-side/README.md`
 
 ---
 

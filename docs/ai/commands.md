@@ -6,14 +6,12 @@ Use this file as the single place to document the best-known commands for this r
 
 - TypeScript (server): `cd server-side && npx tsc --noEmit`
 - TypeScript (web): `cd client-side-admin && npx tsc --noEmit`
-- TypeScript (mobile): `cd client-side && npx tsc --noEmit`
 - Build (web): `cd client-side-admin && npm run build`
 
 ## Application Commands
 
 - **Server dev**: `cd server-side && npm run dev`
 - **Web dev**: `cd client-side-admin && npm run dev`
-- **Mobile dev**: `cd client-side && npm start`
 
 ## Archiona Workflow
 

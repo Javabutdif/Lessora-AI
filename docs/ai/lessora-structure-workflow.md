@@ -336,7 +336,7 @@ The backend returns the standard data envelope:
 
 ### Anti-Hallucination Answers For This Flow
 
-- Existing file that owns client fetch logic: `client-side/src/services/api.ts`
+- Existing file that owns client fetch logic: `client-side-admin/src/services/api.ts`
 - Existing client API base setting: `import.meta.env.VITE_API_BASE_URL` in `client-side-admin/src/services/api.ts`
 - Existing backend route path: `/api/ai/lesson-plan/generate`
 - Existing response envelope: `{ data: T, error: null }`
