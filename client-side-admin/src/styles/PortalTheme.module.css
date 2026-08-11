@@ -1679,17 +1679,6 @@
   min-width: 200px;
 }
 
-.filterSelect {
-  padding: var(--spacing-3) var(--spacing-4);
-  font-family: var(--font-family-base);
-  font-size: 14px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-rule);
-  border-radius: 0;
-  color: var(--color-ink-primary);
-  cursor: pointer;
-}
-
 /* ========================================
    CENTER STATE HELPERS
    ======================================== */

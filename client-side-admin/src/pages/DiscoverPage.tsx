@@ -8,6 +8,7 @@ import {
 } from "@phosphor-icons/react";
 import { listPublicLessonPlans, PublicLessonPlan } from "../services/api";
 import ScrollReveal from "../components/ScrollReveal";
+import Dropdown from "../components/ui/Dropdown";
 import styles from "../styles/PortalTheme.module.css";
 
 const ALL_GRADES = [
@@ -126,24 +127,18 @@ export default function DiscoverPage() {
             placeholder="Search by topic, subject, or grade..."
             className={styles.searchInputLg}
           />
-          <select
-            value={selectedSubject}
-            onChange={(e) => setSelectedSubject(e.target.value)}
-            className={styles.filterSelect}
-          >
-            {ALL_SUBJECTS.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-          <select
-            value={selectedGrade}
-            onChange={(e) => setSelectedGrade(e.target.value)}
-            className={styles.filterSelect}
-          >
-            {ALL_GRADES.map((g) => (
-              <option key={g} value={g}>{g}</option>
-            ))}
-          </select>
+          <Dropdown
+            options={ALL_SUBJECTS.filter((s) => s !== "All Subjects").map((s) => ({ value: s, label: s }))}
+            value={selectedSubject === "All Subjects" ? "" : selectedSubject}
+            onChange={(v) => setSelectedSubject(v || "All Subjects")}
+            placeholder="All Subjects"
+          />
+          <Dropdown
+            options={ALL_GRADES.filter((g) => g !== "All Grades").map((g) => ({ value: g, label: g }))}
+            value={selectedGrade === "All Grades" ? "" : selectedGrade}
+            onChange={(v) => setSelectedGrade(v || "All Grades")}
+            placeholder="All Grades"
+          />
         </div>
 
         {isLoading && (

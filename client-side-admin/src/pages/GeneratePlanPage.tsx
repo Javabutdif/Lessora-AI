@@ -11,6 +11,7 @@ import {
   LessonPlanTemplate,
   ensureSession,
 } from "../services/api";
+import Dropdown from "../components/ui/Dropdown";
 import styles from "../styles/PortalTheme.module.css";
 
 const gradeOptions = [
@@ -206,20 +207,15 @@ export default function GeneratePlanPage() {
                 <GraduationCap weight="fill" size={14} className={styles.labelIcon} />
                 Grade Level <span className={styles.errorAsterisk}>*</span>
               </span>
-              <select
+              <Dropdown
+                options={gradeOptions.map((g) => ({ value: g.value, label: g.label }))}
                 value={selectedGrade}
-                onChange={(e) => setSelectedGrade(e.target.value)}
+                onChange={(v) => setSelectedGrade(v)}
+                placeholder="Select grade level"
                 disabled={isGenerating}
-                required
-                className={styles.userAuthInput}
-              >
-                <option value="">Select grade level</option>
-                {gradeOptions.map((grade) => (
-                  <option key={grade.value} value={grade.value}>
-                    {grade.label}
-                  </option>
-                ))}
-              </select>
+                fullWidth
+              />
+              <span className={styles.fieldHelper}>What grade are your students in?</span>
             </label>
 
             <label className={styles.userAuthField}>
@@ -257,34 +253,24 @@ export default function GeneratePlanPage() {
                     <Translate weight="fill" size={14} className={styles.labelIcon} />
                     Language
                   </span>
-                  <select
+                  <Dropdown
+                    options={languageOptions}
                     value={selectedLanguage}
-                    onChange={(e) => setSelectedLanguage(e.target.value)}
+                    onChange={(v) => setSelectedLanguage(v)}
                     disabled={isGenerating}
-                    className={styles.userAuthInput}
-                  >
-                    {languageOptions.map((language) => (
-                      <option key={language.value} value={language.value}>
-                        {language.label}
-                      </option>
-                    ))}
-                  </select>
+                    fullWidth
+                  />
                 </label>
 
                 <label className={styles.prefField}>
                   <span className={styles.prefFieldLabel}>Template</span>
-                  <select
+                  <Dropdown
+                    options={templateOptions.map((t) => ({ value: t.value, label: t.label }))}
                     value={selectedTemplate}
-                    onChange={(e) => setSelectedTemplate(e.target.value as LessonPlanTemplate)}
+                    onChange={(v) => setSelectedTemplate(v as LessonPlanTemplate)}
                     disabled={isGenerating}
-                    className={styles.userAuthInput}
-                  >
-                    {templateOptions.map((template) => (
-                      <option key={template.value} value={template.value}>
-                        {template.label} — {template.description}
-                      </option>
-                    ))}
-                  </select>
+                    fullWidth
+                  />
                 </label>
 
                 <div className={styles.prefField}>

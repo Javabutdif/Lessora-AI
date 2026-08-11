@@ -8,6 +8,7 @@ export { Button } from './Button';
 export { Badge } from './Badge';
 export { Card } from './Card';
 export { Input, Select, Textarea } from './Input';
+export { default as Dropdown } from './Dropdown';
 export { Skeleton } from './Skeleton';
 export { Modal } from './Modal';
 export { Toast } from './Toast';
