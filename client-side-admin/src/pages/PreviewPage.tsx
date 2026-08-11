@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import {
   BookOpen,
   Clock,
@@ -7,6 +7,7 @@ import {
   Plus,
   Spinner,
   DownloadSimple,
+  House,
 } from "@phosphor-icons/react";
 import {
   getLessonPlanById,
@@ -157,8 +158,13 @@ export default function PreviewPage() {
   return (
     <div className={styles.userAppPage}>
       <header className={styles.userAppHeader}>
-        <h1 className={styles.userAppBrand}>Lessora AI</h1>
+        <Link to="/" className={styles.userAppBrandLink}>
+          <h1 className={styles.userAppBrand}>Lessora AI</h1>
+        </Link>
         <div className={styles.userAppHeaderActions}>
+          <Link to="/" className={styles.softSecondary} style={{ padding: "var(--spacing-2) var(--spacing-3)" }}>
+            <House weight="bold" size={16} /> Home
+          </Link>
           <button
             type="button"
             onClick={() => navigate("/generate")}

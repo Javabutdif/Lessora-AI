@@ -887,6 +887,17 @@
   color: var(--color-ink-primary);
 }
 
+.userAppBrandLink {
+  color: var(--color-ink-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.userAppBrandLink:hover {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
 .userAppHeaderActions {
   display: flex;
   gap: var(--spacing-4);

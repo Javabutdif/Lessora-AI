@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   Warning,
   Spinner,
   MagnifyingGlass,
+  House,
 } from "@phosphor-icons/react";
 import { listPublicLessonPlans, PublicLessonPlan } from "../services/api";
 import ScrollReveal from "../components/ScrollReveal";
@@ -84,8 +85,13 @@ export default function DiscoverPage() {
   return (
     <div className={styles.userAppPage}>
       <header className={styles.userAppHeader}>
-        <h1 className={styles.userAppBrand}>Lessora AI</h1>
+        <Link to="/" className={styles.userAppBrandLink}>
+          <h1 className={styles.userAppBrand}>Lessora AI</h1>
+        </Link>
         <nav className={styles.userAppHeaderActions}>
+          <Link to="/" className={styles.softSecondary} style={{ padding: "var(--spacing-2) var(--spacing-3)" }}>
+            <House weight="bold" size={16} /> Home
+          </Link>
           <button
             type="button"
             onClick={() => navigate("/generate")}

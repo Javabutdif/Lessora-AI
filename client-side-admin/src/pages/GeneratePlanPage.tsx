@@ -1,9 +1,10 @@
 import { useState, FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   BookOpen,
   GraduationCap,
   Translate,
+  House,
 } from "@phosphor-icons/react";
 import {
   generateLessonPlan,
@@ -147,8 +148,13 @@ export default function GeneratePlanPage() {
   return (
     <div className={styles.userAppPage}>
       <header className={styles.userAppHeader}>
-        <h1 className={styles.userAppBrand}>Lessora AI</h1>
+        <Link to="/" className={styles.userAppBrandLink}>
+          <h1 className={styles.userAppBrand}>Lessora AI</h1>
+        </Link>
         <div className={styles.userAppHeaderActions}>
+          <Link to="/" className={styles.softSecondary} style={{ padding: "var(--spacing-2) var(--spacing-3)" }}>
+            <House weight="bold" size={16} /> Home
+          </Link>
           <button
             type="button"
             onClick={() => navigate("/discover")}
