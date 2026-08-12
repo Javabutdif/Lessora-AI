@@ -1,0 +1,67 @@
+.card {
+  padding: var(--spacing-4);
+  border: 1px solid var(--color-rule);
+  border-radius: 4px;
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.icon {
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-ink-tertiary);
+  letter-spacing: 0.05em;
+}
+
+.title {
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-secondary);
+}
+
+.value {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-ink-primary);
+}
+
+.helper {
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-tertiary);
+  line-height: 1.4;
+}
+
+.updated {
+  font-size: var(--font-size-xs);
+  color: var(--color-ink-disabled);
+}
+
+.error {
+  font-size: var(--font-size-sm);
+  color: var(--color-error-text);
+  background: var(--color-error-bg);
+  padding: var(--spacing-2);
+  border-radius: 4px;
+}
+
+.skeletonLine {
+  height: 16px;
+  background: var(--color-surface-sunken);
+  border-radius: 4px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}

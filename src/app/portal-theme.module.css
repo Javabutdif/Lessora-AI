@@ -1,0 +1,2094 @@
+/* PortalTheme — minimalist "academic notebook" shared utilities.
+   The single shared stylesheet for auth + user-app shells.
+   All decorative gradients / shadows / pills are gone. */
+
+/* ========================================
+   PAGE SURFACES
+   ======================================== */
+
+.authPage,
+.workspacePage,
+.infoPage {
+  min-height: 100vh;
+  position: relative;
+  background: var(--color-page);
+  color: var(--color-ink-primary);
+}
+
+/* ========================================
+   CONTAINERS
+   ======================================== */
+
+.authContainer,
+.workspaceContainer,
+.infoContainer {
+  padding: var(--spacing-8) var(--spacing-6);
+}
+
+@media (min-width: 768px) {
+  .authContainer,
+  .workspaceContainer,
+  .infoContainer {
+    padding: var(--spacing-12) var(--spacing-8);
+  }
+}
+
+.workspaceFrame,
+.infoFrame {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.readingColumn {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* ========================================
+   TYPOGRAPHY HELPERS
+   ======================================== */
+
+.mutedText {
+  color: var(--color-ink-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.eyebrow,
+.sectionEyebrow,
+.badgeText {
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-ink-tertiary);
+}
+
+.eyebrow {
+  margin: 0 0 var(--spacing-3);
+}
+
+.sectionEyebrow {
+  margin: 0 0 var(--spacing-4);
+}
+
+/* Auth page title — serif, left-aligned, no centering. */
+.authTitle {
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-tight);
+  color: var(--color-ink-primary);
+}
+
+.workspaceTitle {
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-tight);
+  color: var(--color-ink-primary);
+}
+
+.panelTitle {
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-tight);
+  color: var(--color-ink-primary);
+}
+
+.infoTitle {
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-tight);
+  color: var(--color-ink-primary);
+}
+
+/* Body copy helpers */
+.authDescription,
+.workspaceDescription,
+.panelDescription,
+.infoDescription {
+  margin: var(--spacing-3) 0 0;
+  color: var(--color-ink-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.workspaceDescription {
+  max-width: 48rem;
+  font-size: var(--font-size-lg);
+}
+
+/* ========================================
+   FORM CONTROLS
+   ======================================== */
+
+.authForm {
+  display: grid;
+  gap: var(--spacing-6);
+  margin-top: var(--spacing-8);
+}
+
+.field {
+  display: grid;
+  gap: var(--spacing-2);
+}
+
+.fieldLabel {
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-ink-tertiary);
+}
+
+/* Underline-only input (default). */
+.textInput,
+.selectInput,
+.textAreaInput,
+.searchInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-ink-primary);
+  border-radius: 0;
+  color: var(--color-ink-primary);
+  padding: var(--spacing-3) 0;
+  font-size: var(--font-size-lg);
+  font-family: var(--font-family-base);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.textInput::placeholder,
+.textAreaInput::placeholder,
+.searchInput::placeholder {
+  color: var(--color-ink-disabled);
+}
+
+.textInput:focus,
+.selectInput:focus,
+.textAreaInput:focus,
+.searchInput:focus {
+  border-bottom-color: var(--color-accent);
+}
+
+.selectInput {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%23111111' stroke-width='1.5' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0 center;
+  padding-right: var(--spacing-6);
+}
+
+.selectInput option {
+  background: var(--color-surface);
+  color: var(--color-ink-primary);
+}
+
+.textAreaInput {
+  min-height: 96px;
+  resize: vertical;
+  line-height: var(--line-height-relaxed);
+}
+
+.inputBoxed {
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-ink-primary);
+  border-radius: var(--radius-sm);
+  color: var(--color-ink-primary);
+  padding: var(--spacing-3) var(--spacing-4);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.inputBoxed::placeholder {
+  color: var(--color-ink-disabled);
+}
+
+.inputBoxed:focus {
+  border-color: var(--color-accent);
+}
+
+/* ========================================
+   BANNERS (errors, success, info)
+   ======================================== */
+
+.errorBanner,
+.successBanner,
+.noteBanner {
+  padding: var(--spacing-3) 0;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  border-top: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+}
+
+.errorBanner {
+  color: var(--color-error-text);
+}
+
+.successBanner {
+  color: var(--color-success-text);
+}
+
+.noteBanner {
+  color: var(--color-info-text);
+}
+
+/* ========================================
+   BUTTONS — flat, two-state, rectangular
+   ======================================== */
+
+.primaryButton,
+.secondaryButton,
+.ghostButton,
+.dangerButton,
+.inlineLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.primaryButton,
+.secondaryButton,
+.ghostButton,
+.dangerButton {
+  padding: var(--spacing-3) var(--spacing-6);
+  min-height: 44px;
+  border: 1px solid transparent;
+}
+
+.primaryButton {
+  background: var(--color-ink-primary);
+  color: var(--color-ink-on-accent);
+  border-color: var(--color-ink-primary);
+}
+
+.primaryButton:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.secondaryButton {
+  background: transparent;
+  color: var(--color-ink-primary);
+  border-color: var(--color-ink-primary);
+}
+
+.secondaryButton:hover {
+  background: var(--color-ink-primary);
+  color: var(--color-ink-on-accent);
+}
+
+.ghostButton {
+  background: transparent;
+  color: var(--color-ink-primary);
+  border-color: transparent;
+}
+
+.ghostButton:hover {
+  color: var(--color-accent);
+}
+
+.dangerButton {
+  background: transparent;
+  color: var(--color-error-text);
+  border-color: var(--color-error-text);
+}
+
+.dangerButton:hover {
+  background: var(--color-error-text);
+  color: var(--color-ink-on-accent);
+}
+
+.inlineLink {
+  color: var(--color-accent);
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+.inlineLink:hover {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+
+.footerStack {
+  display: grid;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-6);
+  font-size: var(--font-size-sm);
+}
+
+.subtleText {
+  color: var(--color-ink-tertiary);
+}
+
+.workspaceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--spacing-4);
+  flex-wrap: wrap;
+  padding: var(--spacing-4) 0;
+  border-bottom: 1px solid var(--color-rule);
+  margin-bottom: var(--spacing-8);
+}
+
+.workspaceBrand {
+  display: grid;
+  gap: var(--spacing-1);
+}
+
+.workspaceBrandTitle {
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-ink-primary);
+}
+
+.workspaceMeta {
+  color: var(--color-ink-tertiary);
+}
+
+.workspaceActions {
+  display: flex;
+  gap: var(--spacing-4);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.workspaceActionPill {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-ink-primary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  transition: color var(--transition-fast);
+}
+
+.workspaceActionPill:hover {
+  color: var(--color-accent);
+}
+
+.workspaceActionDanger {
+  color: var(--color-error-text);
+}
+
+.workspaceActionDanger:hover {
+  color: var(--color-error-text);
+  text-decoration: underline;
+}
+
+.workspaceMain {
+  display: grid;
+  gap: var(--spacing-12);
+}
+
+.workspaceHeroCard,
+.workspacePanel,
+.infoHero,
+.infoSectionCard {
+  padding: var(--spacing-8) 0;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.workspaceHeroCard {
+  padding-top: 0;
+}
+
+.workspacePanel {
+  display: grid;
+  gap: var(--spacing-6);
+}
+
+.workspaceGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--spacing-8);
+}
+
+.supportDonationTierGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-8);
+}
+
+.supportDonationTier {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-6) 0;
+  border-top: 1px solid var(--color-rule);
+}
+
+.supportDonationTierMeta {
+  min-height: var(--line-height-normal);
+  margin: var(--spacing-2) 0 var(--spacing-3);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-ink-tertiary);
+}
+
+.supportDonationTier .flatButton {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+.workspaceCard {
+  padding: var(--spacing-6) 0;
+  border-top: 1px solid var(--color-rule);
+}
+
+.workspaceCardInteractive {
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.workspaceCardInteractive:hover {
+  border-top-color: var(--color-ink-primary);
+}
+
+.workspaceCardTitle {
+  margin: 0 0 var(--spacing-3);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-ink-primary);
+}
+
+.workspaceCardText {
+  margin: 0;
+  color: var(--color-ink-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+/* ========================================
+   TAGS (rectangular, hairline, small-caps)
+   ======================================== */
+
+.pillRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-1) var(--spacing-3);
+  border: 1px solid var(--color-ink-primary);
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-ink-primary);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+}
+
+.tagAccent {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.tagSuccess {
+  border-color: var(--color-success-text);
+  color: var(--color-success-text);
+}
+
+.tagError {
+  border-color: var(--color-error-text);
+  color: var(--color-error-text);
+}
+
+.tagMuted {
+  border-color: var(--color-rule);
+  color: var(--color-ink-tertiary);
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--spacing-12) 0;
+}
+
+.emptyIcon {
+  font-size: var(--font-size-3xl);
+  color: var(--color-ink-tertiary);
+  margin-bottom: var(--spacing-4);
+}
+
+.searchWrap {
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-ink-tertiary);
+}
+
+.document {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.documentHeading {
+  margin: 0 0 var(--spacing-4);
+  font-family: var(--font-family-display);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-ink-primary);
+}
+
+.documentParagraph,
+.documentList {
+  margin: 0 0 var(--spacing-6);
+  color: var(--color-ink-primary);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-reading);
+}
+
+.documentList {
+  padding-left: var(--spacing-6);
+}
+
+.documentList li {
+  margin-bottom: var(--spacing-2);
+}
+
+.infoNav {
+  display: flex;
+  gap: var(--spacing-6);
+  flex-wrap: wrap;
+}
+
+.infoNav :global(a) {
+  color: var(--color-ink-secondary);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.infoNav :global(a:hover) {
+  color: var(--color-ink-primary);
+}
+
+/* The current-page indicator inside the nav. */
+.infoNav :global(a[aria-current="page"]) {
+  color: var(--color-ink-primary);
+}
+
+.infoHero {
+  display: grid;
+  gap: var(--spacing-4);
+}
+
+.infoDescription {
+  font-size: var(--font-size-xl);
+}
+
+.infoBody {
+  display: grid;
+  gap: var(--spacing-12);
+}
+
+.infoArticle {
+  display: grid;
+  gap: var(--spacing-4);
+  padding-bottom: var(--spacing-8);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.infoArticle:last-child {
+  border-bottom: none;
+}
+
+.infoSectionHeading {
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-ink-primary);
+}
+
+.infoSectionBody {
+  margin: 0;
+  color: var(--color-ink-primary);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-reading);
+}
+
+.infoIntro {
+  margin: 0;
+  color: var(--color-ink-secondary);
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-relaxed);
+}
+
+.infoHeroTitle {
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-tight);
+  color: var(--color-ink-primary);
+}
+
+.requirements {
+  display: grid;
+  gap: var(--spacing-2);
+}
+
+.requirement {
+  display: flex;
+  gap: var(--spacing-3);
+  align-items: center;
+  font-size: var(--font-size-sm);
+}
+
+.requirementMet {
+  color: var(--color-success-text);
+}
+
+.requirementPending {
+  color: var(--color-ink-tertiary);
+}
+
+.resetStatusMark {
+  width: 56px;
+  height: 56px;
+  margin: 0 0 var(--spacing-6);
+  border: 1px solid var(--color-ink-primary);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-2xl);
+  color: var(--color-ink-primary);
+}
+
+.toggleButton {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--color-ink-tertiary);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: var(--spacing-1) 0;
+}
+
+.toggleButton:hover {
+  color: var(--color-ink-primary);
+}
+
+@media (max-width: 767px) {
+  .authContainer,
+  .workspaceContainer,
+  .infoContainer {
+    padding: var(--spacing-6) var(--spacing-4);
+  }
+
+  .workspaceActions {
+    width: 100%;
+  }
+
+  .infoNav {
+    width: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .supportDonationHeader {
+    justify-content: center;
+    padding: var(--spacing-4);
+  }
+
+  .supportDonationNav {
+    justify-content: center;
+    gap: var(--spacing-3);
+  }
+
+  /* Match Landing's mobile nav: single row, centered. */
+  .infoPageHeader {
+    justify-content: center;
+    padding: var(--spacing-4) 0 var(--spacing-8);
+  }
+
+  .infoNav {
+    justify-content: center;
+    gap: var(--spacing-3);
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 900px) {
+  .supportDonationTierGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .supportDonationTierGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primaryButton:hover,
+  .secondaryButton:hover,
+  .workspaceCardInteractive:hover {
+    transform: none;
+  }
+}
+
+/* ========================================
+   AUTH SHELL — used by all auth pages
+   ======================================== */
+
+.authShell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-8) var(--spacing-6);
+  background: var(--color-page);
+  color: var(--color-ink-primary);
+}
+
+.authShellInner {
+  width: 100%;
+  max-width: 440px;
+  display: grid;
+  gap: var(--spacing-8);
+}
+
+.authShellBrand {
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-ink-tertiary);
+}
+
+/* ========================================
+   USER-APP PAGE PATTERNS
+   ======================================== */
+
+.userAppPage {
+  min-height: 100vh;
+  background: var(--color-page);
+  color: var(--color-ink-primary);
+}
+
+.userAppPage::before {
+  content: "";
+  display: block;
+  height: 3px;
+  background: var(--color-ink-primary);
+}
+
+.userAppHeader {
+  background: var(--color-page);
+  padding: var(--spacing-4) 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--spacing-4);
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.supportDonationHeader {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--spacing-6) var(--spacing-8);
+}
+
+.supportDonationNav {
+  display: flex;
+  gap: var(--spacing-6);
+  flex-wrap: wrap;
+}
+
+.supportDonationNav :global(a) {
+  color: var(--color-ink-secondary);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.supportDonationNav :global(a:hover),
+.supportDonationNav :global(a[aria-current="page"]) {
+  color: var(--color-ink-primary);
+}
+
+.userAppBrand {
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-ink-primary);
+}
+
+.userAppBrandLink {
+  color: var(--color-ink-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.userAppBrandLink:hover {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.userAppHeaderActions {
+  display: flex;
+  gap: var(--spacing-4);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.userAppUser {
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.userAppContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-12) var(--spacing-6);
+}
+
+.userAppContainerNarrow {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-12) var(--spacing-6);
+}
+
+.userAppContainerDoc {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: var(--spacing-12) var(--spacing-6);
+}
+
+.userAppHero {
+  margin-bottom: var(--spacing-12);
+}
+
+.userAppHeroTitle {
+  margin: 0 0 var(--spacing-3);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink-primary);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.userAppHeroDescription {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-ink-secondary);
+  line-height: var(--line-height-relaxed);
+  max-width: 48rem;
+}
+
+.planCard {
+  padding: var(--spacing-8) var(--spacing-6);
+}
+
+.planCardSpacious {
+  padding: var(--spacing-12) var(--spacing-6);
+}
+
+.planCardBody {
+  padding: var(--spacing-12) var(--spacing-6);
+}
+
+.planCardTitle {
+  margin: 0 0 var(--spacing-3);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-ink-tertiary);
+}
+
+.planCardHeading {
+  margin: 0 0 var(--spacing-4);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink-primary);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.planCardMeta {
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-ink-tertiary);
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-6);
+}
+
+.planGrid {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid var(--color-rule);
+}
+
+.planTile {
+  padding: var(--spacing-6) 0;
+  border-bottom: 1px solid var(--color-rule);
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.planTile:hover {
+  border-bottom-color: var(--color-ink-primary);
+}
+
+.planTileTitle {
+  margin: 0 0 var(--spacing-3);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-ink-primary);
+}
+
+.planTileChipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
+}
+
+.planTileMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-ink-tertiary);
+}
+
+.userAppCenter {
+  text-align: center;
+  padding: var(--spacing-12) 0;
+  color: var(--color-ink-tertiary);
+}
+
+.userAppCenterLarge {
+  text-align: center;
+  padding: var(--spacing-16) 0;
+  color: var(--color-ink-tertiary);
+}
+
+.userAppIconLarge {
+  font-size: var(--font-size-3xl);
+  margin-bottom: var(--spacing-4);
+  color: var(--color-ink-tertiary);
+}
+
+.userAppIconXL {
+  font-size: var(--font-size-5xl);
+  margin-bottom: var(--spacing-4);
+  color: var(--color-ink-tertiary);
+}
+
+.userAppIconMedium {
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--spacing-3);
+  color: var(--color-ink-tertiary);
+}
+
+.userAppCenterTitle {
+  margin: 0 0 var(--spacing-3);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink-primary);
+}
+
+.userAppCenterText {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-tertiary);
+}
+
+.userAppActionRow {
+  margin-top: var(--spacing-8);
+  display: flex;
+  gap: var(--spacing-3);
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.errorPanel {
+  padding: var(--spacing-8) 0;
+  border-top: 1px solid var(--color-error-text);
+  border-bottom: 1px solid var(--color-error-text);
+  text-align: center;
+  color: var(--color-error-text);
+}
+
+/* ========================================
+   USER AUTH
+   ======================================== */
+
+.userAuthCard {
+  display: grid;
+  gap: var(--spacing-8);
+}
+
+.userAuthCardCompact {
+  display: grid;
+  gap: var(--spacing-6);
+  text-align: center;
+}
+
+.userAuthPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-8) var(--spacing-6);
+  background: var(--color-page);
+  color: var(--color-ink-primary);
+}
+
+.userAuthLogoWrap {
+  display: none;
+}
+
+.userAuthLogo {
+  display: none;
+}
+
+.userAuthTitle {
+  margin: 0 0 var(--spacing-3);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  text-align: left;
+  color: var(--color-ink-primary);
+}
+
+.userAuthSubtitle {
+  margin: 0;
+  color: var(--color-ink-secondary);
+  text-align: left;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+}
+
+.userAuthForm {
+  display: grid;
+  gap: var(--spacing-6);
+}
+
+.userAuthFooter {
+  text-align: left;
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-secondary);
+}
+
+.userAuthFooterBack {
+  text-align: left;
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-tertiary);
+}
+
+.userAuthError {
+  padding: var(--spacing-3) 0;
+  color: var(--color-error-text);
+  border-top: 1px solid var(--color-error-text);
+  border-bottom: 1px solid var(--color-error-text);
+  font-size: var(--font-size-sm);
+}
+
+.userAuthSuccess {
+  padding: var(--spacing-3) 0;
+  color: var(--color-success-text);
+  border-top: 1px solid var(--color-success-text);
+  border-bottom: 1px solid var(--color-success-text);
+  font-size: var(--font-size-sm);
+}
+
+.userAuthInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-ink-primary);
+  border-radius: 0;
+  color: var(--color-ink-primary);
+  padding: var(--spacing-3) 0;
+  font-size: var(--font-size-lg);
+  font-family: var(--font-family-base);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.userAuthInput::placeholder {
+  color: var(--color-ink-disabled);
+}
+
+.userAuthInput:focus {
+  border-bottom-color: var(--color-accent);
+}
+
+.userAuthInput:disabled {
+  background: transparent;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.userAuthTextarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-ink-primary);
+  border-radius: 0;
+  color: var(--color-ink-primary);
+  padding: var(--spacing-3) 0;
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  outline: none;
+  resize: vertical;
+  transition: border-color var(--transition-fast);
+}
+
+.userAuthTextarea:focus {
+  border-bottom-color: var(--color-accent);
+}
+
+.userAuthField {
+  display: grid;
+  gap: var(--spacing-2);
+}
+
+.userAuthLabel {
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-ink-tertiary);
+}
+
+.userAuthInputBoxed {
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-ink-primary);
+  border-radius: var(--radius-sm);
+  color: var(--color-ink-primary);
+  padding: var(--spacing-3) var(--spacing-4);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.userAuthInputBoxed::placeholder {
+  color: var(--color-ink-disabled);
+}
+
+.userAuthInputBoxed:focus {
+  border-color: var(--color-accent);
+}
+
+/* ========================================
+   ADMIN LOGIN VARIANT
+   ======================================== */
+
+.adminAuthPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-8) var(--spacing-6);
+  background: var(--color-page);
+  color: var(--color-ink-primary);
+}
+
+.adminAuthCard {
+  width: 100%;
+  max-width: 440px;
+  display: grid;
+  gap: var(--spacing-8);
+}
+
+.adminAuthEyebrow {
+  margin: 0 0 var(--spacing-3);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-ink-tertiary);
+}
+
+.adminAuthTitle {
+  margin: 0 0 var(--spacing-3);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-ink-primary);
+}
+
+.adminAuthSubtitle {
+  margin: 0;
+  color: var(--color-ink-secondary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+}
+
+.adminAuthForm {
+  display: grid;
+  gap: var(--spacing-6);
+}
+
+.adminAuthInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-ink-primary);
+  border-radius: 0;
+  color: var(--color-ink-primary);
+  padding: var(--spacing-3) 0;
+  font-size: var(--font-size-lg);
+  font-family: var(--font-family-base);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.adminAuthInput:focus {
+  border-bottom-color: var(--color-accent);
+}
+
+.adminAuthError {
+  padding: var(--spacing-3) 0;
+  color: var(--color-error-text);
+  border-top: 1px solid var(--color-error-text);
+  border-bottom: 1px solid var(--color-error-text);
+  font-size: var(--font-size-sm);
+}
+
+.adminAuthSubmit {
+  background: var(--color-ink-primary);
+  color: var(--color-ink-on-accent);
+  border: 1px solid var(--color-ink-primary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-3) var(--spacing-6);
+  min-height: 44px;
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.adminAuthSubmit:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.adminAuthSubmit:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ========================================
+   INFO DOCUMENT HEADER
+   Shared by Privacy / Terms / About pages.
+   ======================================== */
+
+/* Top-level wrapper for info pages — own background & rhythm
+   so they don't piggyback on the auth shell. */
+.userAuthPage:where(.infoPage) {
+  align-items: flex-start;
+}
+
+/* The 3px top rule that mirrors every other page. */
+.userAuthPage:where(.infoPage)::before {
+  content: "";
+  display: block;
+  height: 3px;
+  background: var(--color-ink-primary);
+  flex: 0 0 auto;
+}
+
+.infoPageHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: var(--spacing-6);
+  padding: var(--spacing-8) 0 var(--spacing-12);
+  flex-wrap: nowrap;
+  border-bottom: 1px solid var(--color-rule);
+  margin-bottom: var(--spacing-12);
+}
+
+/* The brand wordmark from the .tsx is hidden so the header
+   line stays nav-only, matching the Landing page nav shape.
+   The "back to landing" affordance is the "Home" link
+   inside the nav (next to About / Privacy Policy / Terms). */
+.infoLogo {
+  display: none;
+}
+
+.infoHeroSection {
+  display: grid;
+  gap: var(--spacing-6);
+  margin-bottom: var(--spacing-16);
+  padding-bottom: var(--spacing-12);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.infoEyebrow {
+  margin: 0;
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-ink-tertiary);
+}
+
+.infoMaxWidth {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* ========================================
+   RESET / SUCCESS
+   ======================================== */
+
+.resetShellCard {
+  width: 100%;
+  max-width: 440px;
+  display: grid;
+  gap: var(--spacing-8);
+}
+
+.resetShellCardCompact {
+  width: 100%;
+  max-width: 440px;
+  display: grid;
+  gap: var(--spacing-6);
+  text-align: left;
+}
+
+.resetShellTitle {
+  margin: 0 0 var(--spacing-3);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-ink-primary);
+}
+
+.resetShellSubtitle {
+  margin: 0;
+  color: var(--color-ink-secondary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+}
+
+.resetShellForm {
+  display: grid;
+  gap: var(--spacing-6);
+}
+
+.passwordFieldWrap {
+  position: relative;
+}
+
+.passwordFieldInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-ink-primary);
+  border-radius: 0;
+  color: var(--color-ink-primary);
+  padding: var(--spacing-3) 0;
+  padding-right: 80px;
+  font-size: var(--font-size-lg);
+  font-family: var(--font-family-base);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast);
+}
+
+.passwordFieldInput:focus {
+  border-bottom-color: var(--color-accent);
+}
+
+.passwordFieldToggle {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--color-ink-tertiary);
+  cursor: pointer;
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+}
+
+.passwordFieldToggle:hover {
+  color: var(--color-ink-primary);
+}
+
+.passwordRequirements {
+  display: grid;
+  gap: var(--spacing-2);
+}
+
+.passwordRequirement {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-ink-tertiary);
+}
+
+.passwordRequirementMet {
+  color: var(--color-success-text);
+}
+
+/* ========================================
+   SECTION DIVIDER — hairline between form sections
+   ======================================== */
+
+.sectionDivider {
+  border: none;
+  border-top: 1px solid var(--color-rule);
+  margin: var(--spacing-8) 0;
+}
+
+/* ========================================
+   COMPACT TOGGLE — expand/collapse optional fields
+   ======================================== */
+
+.compactToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) 0;
+  border: none;
+  background: transparent;
+  color: var(--color-warm-green);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.compactToggle:hover {
+  color: var(--color-warm-green-hover);
+  text-decoration: underline;
+}
+
+/* ========================================
+   GENTLE SUCCESS — warm green positive state
+   ======================================== */
+
+.gentleSuccess {
+  padding: var(--spacing-3) var(--spacing-4);
+  background: var(--color-warm-green-soft);
+  border-left: 3px solid var(--color-warm-green);
+  color: var(--color-warm-green-text);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+/* ========================================
+   PLAN TILE HOVER — accent underline on hover
+   ======================================== */
+
+.planTileHover {
+  transition: border-bottom-color var(--transition-fast);
+}
+
+.planTileHover:hover {
+  border-bottom-color: var(--color-accent);
+}
+
+/* ========================================
+   PREF FIELD — wrapper for optional preference fields
+   ======================================== */
+
+.prefField {
+  display: grid;
+  gap: var(--spacing-2);
+}
+
+.prefFieldLabel {
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-ink-tertiary);
+}
+
+/* ========================================
+   FIELD HELPER — contextual help under inputs
+   ======================================== */
+
+.fieldHelper {
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-tertiary);
+  line-height: var(--line-height-relaxed);
+  font-style: italic;
+}
+
+/* ========================================
+   FORM SECTION TITLE
+   ======================================== */
+
+.formSectionTitle {
+  margin: 0 0 var(--spacing-4);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-ink-primary);
+}
+
+/* ========================================
+   FORM HELPER BANNER
+   ======================================== */
+
+.formHelperBanner {
+  padding: var(--spacing-4) var(--spacing-6);
+  background: var(--color-warm-green-soft);
+  border-left: 3px solid var(--color-warm-green);
+  margin-bottom: var(--spacing-8);
+}
+
+.formHelperBannerText {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-warm-green-text);
+  line-height: var(--line-height-relaxed);
+}
+
+/* ========================================
+   FILTER BAR — search + selects row
+   ======================================== */
+
+.filterBar {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.filterBarSearch {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* ========================================
+   CENTER STATE HELPERS
+   ======================================== */
+
+.centerTextSmall {
+  margin: 0;
+  font-size: 16px;
+}
+
+.centerLoading {
+  color: var(--color-ink-tertiary);
+}
+
+.centerTitle {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.centerText {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+.centerTextWithBottom {
+  margin: 0 0 16px;
+  font-size: 14px;
+}
+
+.centerTextWithMoreBottom {
+  margin: 0 0 24px;
+  font-size: 14px;
+}
+
+/* ========================================
+   ICON SPACING HELPERS
+   ======================================== */
+
+.iconWithBottom {
+  margin-bottom: 10px;
+}
+
+.iconWithBottomLarge {
+  margin-bottom: 16px;
+}
+
+/* ========================================
+   FORM COLUMN
+   ======================================== */
+
+.formColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.formColumnNoTopPad {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-top: 0;
+}
+
+/* ========================================
+   ACTIVITY CHECKBOX GROUP
+   ======================================== */
+
+.activityGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.activityChip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--color-rule);
+  background: transparent;
+  border-radius: 0;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.activityChipSelected {
+  border-color: var(--color-warm-green);
+  background: var(--color-warm-green-soft);
+}
+
+.activityChipDisabled {
+  cursor: not-allowed;
+}
+
+.activityChipText {
+  font-size: 14px;
+  color: var(--color-ink-primary);
+}
+
+.activityChipTextSelected {
+  color: var(--color-warm-green-text);
+}
+
+/* ========================================
+   LABEL ICON — inline icon in label text
+   ======================================== */
+
+.labelIcon {
+  display: inline;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* ========================================
+   ERROR ASTERISK
+   ======================================== */
+
+.errorAsterisk {
+  color: var(--color-error-text);
+}
+
+/* ========================================
+   SELECT POPOVER
+   ======================================== */
+
+.selectPointer {
+  cursor: pointer;
+}
+
+/* ========================================
+   CHIP ROW MARGIN
+   ======================================== */
+
+.chipRowTopMargin {
+  margin-top: var(--spacing-3);
+}
+
+/* ========================================
+   FIELD HELPER WITH MARGINS
+   ======================================== */
+
+.fieldHelperWithMargins {
+  margin-top: 4px;
+  margin-bottom: var(--spacing-4);
+}
+
+/* ========================================
+   REFINE SECTION GRID
+   ======================================== */
+
+.refineGrid {
+  display: grid;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-4);
+}
+
+/* ========================================
+   REFINE SECTION BUTTON
+   ======================================== */
+
+.refineSectionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 1px solid var(--color-rule);
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-family-base);
+  font-size: 14px;
+  color: var(--color-ink-primary);
+  text-align: left;
+  width: 100%;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.refineSectionBtnSelected {
+  border-left: 3px solid var(--color-warm-green);
+  background: var(--color-warm-green-soft);
+  color: var(--color-warm-green-text);
+}
+
+/* ========================================
+   ACTION ROW
+   ======================================== */
+
+.actionRow {
+  display: flex;
+  gap: var(--spacing-3);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-6);
+}
+
+/* ========================================
+   INLINE WARNING ICON
+   ======================================== */
+
+.inlineWarning {
+  margin-right: 8px;
+  display: inline;
+}
+
+/* ========================================
+   ERROR BANNER MARGIN
+   ======================================== */
+
+.errorBannerMargin {
+  margin: var(--spacing-4) 0;
+}
+
+/* ========================================
+   LINK MARGIN
+   ======================================== */
+
+.linkMarginLeft {
+  margin-left: 12px;
+}
+
+/* ========================================
+   PLAN DOC CONTAINER
+   ======================================== */
+
+.planDocContainer {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* ========================================
+   BLOCK RENDER HELPERS
+   ======================================== */
+
+.headingBlock {
+  margin: 0 0 14px;
+  font-weight: 800;
+  color: var(--color-ink-primary);
+  letter-spacing: -0.02em;
+}
+
+.headingBlockNotFirst {
+  margin: 28px 0 12px;
+}
+
+.paragraphBlock {
+  margin: 0 0 16px;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #334155;
+}
+
+.listBlock {
+  margin: 0 0 18px;
+  padding-left: 22px;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #334155;
+}
+
+.listItem {
+  margin-bottom: 8px;
+}
+
+.flatButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3) var(--spacing-6);
+  min-height: 44px;
+  background: var(--color-ink-primary);
+  color: var(--color-ink-on-accent);
+  border: 1px solid var(--color-ink-primary);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.flatButton:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-ink-on-accent);
+  text-decoration: none;
+}
+
+.flatButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.flatButtonLarge {
+  padding: var(--spacing-4) var(--spacing-6);
+}
+
+.flatButtonXLarge {
+  padding: var(--spacing-4) var(--spacing-6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+}
+
+.softSecondary {
+  background: transparent;
+  border: 1px solid var(--color-ink-primary);
+  border-radius: var(--radius-md);
+  color: var(--color-ink-primary);
+  padding: var(--spacing-2) var(--spacing-4);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.softSecondary:hover {
+  background: var(--color-ink-primary);
+  color: var(--color-ink-on-accent);
+}
+
+.softDanger {
+  background: transparent;
+  border: 1px solid var(--color-error-text);
+  border-radius: var(--radius-md);
+  color: var(--color-error-text);
+  padding: var(--spacing-2) var(--spacing-4);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.softDanger:hover {
+  background: var(--color-error-text);
+  color: var(--color-ink-on-accent);
+}
+
+.searchInputLg {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-ink-primary);
+  border-radius: 0;
+  color: var(--color-ink-primary);
+  padding: var(--spacing-3) 0;
+  font-size: var(--font-size-lg);
+  font-family: var(--font-family-base);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.searchInputLg::placeholder {
+  color: var(--color-ink-disabled);
+}
+
+.searchInputLg:focus {
+  border-bottom-color: var(--color-accent);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-1) var(--spacing-3);
+  border: 1px solid var(--color-ink-primary);
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-ink-primary);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+}
+
+.chipAccent {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.chipPurple {
+  border-color: var(--color-accent-purple);
+  color: var(--color-accent-purple);
+}
+
+.chipSuccess {
+  border-color: var(--color-success-text);
+  color: var(--color-success-text);
+}
+
+.chipError {
+  border-color: var(--color-error-text);
+  color: var(--color-error-text);
+}
+
+.chipMuted {
+  border-color: var(--color-rule);
+  color: var(--color-ink-tertiary);
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}

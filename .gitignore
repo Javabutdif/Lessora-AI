@@ -26,12 +26,14 @@ server-side/.env
 client-side/.env
 
 # Build and editor files
+.next/
 build/
 dist/
 coverage/
 .DS_Store
 .vscode/
 .idea/
+tsconfig.tsbuildinfo
 
 # Testing
 test-openai.ts

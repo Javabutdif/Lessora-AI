@@ -1,6 +1,6 @@
 # Lessora AI
 
-<img src="./client-side-admin/src/assets/LessoraLogo.png" alt="Lessora AI logo" width="300" />
+<img src="./src/app/assets/LessoraLogo.png" alt="Lessora AI logo" width="300" />
 
 Lessora AI is an AI-powered educational platform designed to help teachers create organized, professional, and curriculum-ready lesson plans in minutes. By transforming simple teacher inputs into structured lesson plans, activities, objectives, and assessments, Lessora AI reduces preparation time and allows educators to focus more on teaching and student engagement.
 
@@ -30,36 +30,91 @@ The platform uses OpenAI's GPT models to generate comprehensive, curriculum-alig
 
 ## 🏗️ Architecture
 
-Lessora AI follows a client-server architecture with two main components:
+Lessora AI is now a single **Next.js 15 App Router monolith**. The Express server and Vite dev server have been merged into one process.
 
-#### Web Portal (`client-side-admin/`)
-
-- **Technology**: React 18 + TypeScript + Vite
-- **Styling**: CSS Modules + CSS custom properties (tokens in `src/styles/tokens.css`)
-- **Visual language**: "Academic notebook" — paper background, navy ink, Source Serif 4 display, hairline rules. No cards, no pill chips, no gradients. See [`client-side-admin/README.md`](client-side-admin/README.md) for the full design system.
-- **Teacher features**: AI lesson-plan generation, history, preview, refine plans, export, public discover page — no account required
-- **Admin features**: login, platform dashboard with metrics, user management, lesson plan oversight
-- **Public pages**: landing page (hero + features), support donation, privacy / terms / about docs
-- **Responsive design** for desktop and mobile browsers
-
-### Server (`server-side/`)
-- **Technology**: Node.js + Express + TypeScript
+#### Technology
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Styling**: CSS Modules + CSS custom properties (tokens in `src/app/globals.css`)
+- **Visual language**: "Academic notebook" — paper background, navy ink, Source Serif 4 display, hairline rules. No cards, no pill chips, no gradients.
 - **Database**: MongoDB with Mongoose ODM
-- **Authentication**: JWT tokens for admin, anonymous session tokens for teachers (localStorage)
+- **Authentication**: JWT stored in HTTP-only cookies (admin), anonymous session tokens via localStorage (teachers)
 - **AI Integration**: OpenAI API (GPT-4o-mini)
 - **Email**: Resend for password reset and notifications
 - **Payments**: PayMongo integration for support donations
-- **Scheduling**: Cron jobs for credit refresh and activity reports
-- **Rate Limiting**: Per-route middleware with configurable windows
-- **Architecture Pattern**: Routes → Controllers → Services → Schemas/Models
+- **Scheduling**: node-cron for credit refresh and activity reports
+- **Data Fetching**: TanStack React Query
 
 #### API Structure
 ```
-/api/auth          - Admin authentication (login only, no user auth needed)
-/api/user          - User-specific operations (legacy, kept for registered accounts)
-/api/admin         - Admin operations (user management, metrics, lesson plans)
-/api/ai            - AI lesson plan generation, history, refinement, and public browse
-/api/support       - Public support donation checkout and webhook flow
+/api/auth/login          - Admin + teacher login (sets HttpOnly cookie)
+/api/auth/register       - Teacher registration
+/api/auth/forgot-password - Password reset request
+/api/auth/reset-password  - Password reset submit
+/api/auth/verify-reset-token/[token] - Verify reset token
+/api/auth/me             - Get current auth state
+/api/ai/lesson-plan/config       - AI template configuration
+/api/ai/lesson-plan/generate     - Generate lesson plan
+/api/ai/lesson-plan/refine       - Refine existing plan
+/api/ai/lesson-plan/history      - List user's plans
+/api/ai/lesson-plan/history/:id  - Get plan detail
+/api/ai/lesson-plan/public       - List public plans
+/api/ai/lesson-plan/public/:id   - Get public plan detail
+/api/ai/session/ensure           - Ensure/create anonymous session
+/api/ai/session/me               - Get session info
+/api/admin/stats                 - Admin stats (protected)
+/api/admin/metrics/dashboard     - Dashboard metrics (protected)
+/api/admin/metrics/landing       - Landing page metrics (public)
+/api/admin/lesson-plans          - All lesson plans (protected)
+/api/admin/users                 - List users (protected)
+/api/admin/users/:id             - Update/delete user (protected)
+/api/user/analytics              - User usage stats
+/api/user/profile                - Update profile
+/api/user/settings               - Update settings
+/api/support/donations/config    - Donation config
+/api/support/donations/checkout  - Create donation checkout
+/api/support/donations/:ref      - Check donation status
+/api/support/donations/webhook   - PayMongo webhook
+/api/health                      - Health check
+```
+
+#### App Structure
+```
+src/
+  app/
+    (public)/
+      home/page.tsx          — Landing page
+      discover/page.tsx      — Public lesson plan browse
+      support/page.tsx       — Donation page
+      privacy-policy/page.tsx — Privacy policy
+      terms-and-conditions/page.tsx — Terms
+      about/page.tsx          — About page
+    (teacher)/
+      generate/page.tsx       — Lesson plan generation
+      preview/[id]/page.tsx   — Lesson plan preview
+      refine/[id]/page.tsx    — Lesson plan refinement
+      dashboard/page.tsx      — Redirect to /generate
+    (admin)/
+      login/page.tsx          — Admin login
+      admin/
+        dashboard/page.tsx    — Admin dashboard
+        users/page.tsx        — User management
+        lesson-plans/page.tsx — Admin lesson plan oversight
+    api/
+      ...                     — All API route handlers
+    components/               — Shared UI components
+    hooks/                    — Custom React hooks
+    lib/                      — API client, utils
+  lib/
+    schemas/                  — Mongoose schemas
+    services/                 — Business logic services
+    middleware/               — Auth, rate limiting, error handling
+    schedulers.ts             — Cron job initialization
+    db.ts                     — MongoDB connection
+  emails/                     — Email templates
+  middleware.ts               — Next.js middleware
+  globals.css                 — Global styles + design tokens
+  portal-theme.module.css     — Shared portal CSS utilities
 ```
 
 ## 🚀 Getting Started
@@ -68,89 +123,94 @@ Lessora AI follows a client-server architecture with two main components:
 - Node.js 18+ and npm
 - MongoDB instance (local or cloud)
 - OpenAI API key
+- Resend API key (for password reset emails)
+- PayMongo API key (for donations)
 
 ### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd lessora-ai
-   ```
+```bash
+# Install dependencies
+npm install
 
-2. **Install dependencies**
-   ```bash
-   # Install server dependencies
-   cd server-side
-   npm install
+# Configure environment variables
+cp .env.example .env
+# Edit .env with your values
+```
 
-   # Install web portal dependencies
-   cd ../client-side-admin
-   npm install
-   ```
+### Environment Variables
 
-3. **Configure environment variables**
+Create a `.env` file in the root:
 
-     Create `.env` files in the `server-side/` and `client-side-admin/` directories.
-     
-     See **[Environment Configuration](docs/ai/quickstart.md#environment-configuration)** for detailed setup instructions.
+```env
+MONGODB_URI=mongodb://localhost:27017/lessora
+MONGODB_DBNAME=lessora
+JWT_SECRET=change-me-in-production
+ADMIN_EMAIL=admin@lessora.com
+ADMIN_PASSWORD=LessoraAdmin123
+ADMIN_FIRST_NAME=Lessora
+ADMIN_LAST_NAME=Admin
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4o-mini
+RESEND_API_KEY=re_...
+RESEND_FROM_EMAIL=noreply@lessora.com
+PAYMONGO_SECRET_KEY=pk_test_...
+PAYMONGO_API_BASE_URL=https://api.paymongo.com
+CREDIT_REFRESH_START_DATE=2026-06-09T00:00:00+08:00
+CREDIT_MAX_PER_USER=5
+BASE_URL=http://localhost:3000
+PUBLIC_APP_URL=http://localhost:3000
+```
 
-4. **Start the development servers**
+### Start the development server
 
-     ```bash
-     # Terminal 1: Start the backend server
-     cd server-side
-     npm run dev
+```bash
+npm run dev
+```
 
-     # Terminal 2: Start the web portal
-     cd ../client-side-admin
-     npm run dev
-     ```
+The app runs on `http://localhost:3000`. No separate server or Vite process needed.
+
+### Build for production
+
+```bash
+npm run build
+npm start
+```
 
 ## 🛠️ Development Workflow
 
 ### Project Structure
 ```
 lessora-ai/
-├── client-side-admin/    # React web portal (admin + teacher + landing)
-│   ├── src/
-│   │   ├── components/   # Reusable UI components (Button, Card, Input, Modal, ...)
-│   │   ├── pages/        # Route components (Landing, Login, Register, Generate, History, Preview, Support, ...)
-│   │   ├── services/     # API service layer
-│   │   ├── styles/       # Design tokens + shared CSS modules
-│   │   ├── types/        # Component prop types
-│   │   └── utils/        # Helpers (e.g. SEO metadata)
-│   ├── index.html        # Web entry point (loads Source Serif 4 + Inter + JetBrains Mono)
-│   └── src/App.tsx       # Route definitions (public, teacher, admin)
-├── server-side/          # Node.js backend
-│   ├── src/
-│   │   ├── app.ts        # Express app setup (middleware, routes, rate limiting)
-│   │   ├── server.ts     # Server entry point
-│   │   ├── controllers/  # Request handlers
-│   │   ├── middleware/   # Auth, error handling, rate limiting
-│   │   ├── routes/       # API routes (auth, ai, admin, user, support)
-│   │   ├── schemas/      # Mongoose & Zod schemas
-│   │   ├── services/     # Business logic (OpenAI, email, payments, schedulers)
-│   │   ├── config/       # Configuration files
-│   │   ├── bootstrap/    # Database seeding
-│   │   ├── emails/       # Email templates
-│   │   ├── types/        # Shared TypeScript types
-│   │   └── utils/        # Utility functions
-├── docs/                 # Documentation
-│   ├── ai/              # AI agent documentation
-│   ├── specs/           # Feature specifications
-│   └── plans/           # Implementation plans
-└── .archiona/            # Archiona pre-coding gate (plans, skills, config)
+├── src/
+│   ├── app/           — Next.js App Router (pages + API routes)
+│   │   ├── (public)/  — Public pages (landing, discover, support, info)
+│   │   ├── (teacher)/ — Teacher pages (generate, preview, refine)
+│   │   ├── (admin)/   — Admin pages (dashboard, users, lesson plans)
+│   │   ├── api/       — API route handlers
+│   │   ├── components/ — Shared React components
+│   │   ├── hooks/     — Custom hooks
+│   │   └── lib/       — API client, utilities
+│   ├── lib/
+│   │   ├── schemas/   — Mongoose schemas
+│   │   ├── services/  — Business logic
+│   │   ├── middleware/ — Auth, rate limiting, error handling
+│   │   └── db.ts      — MongoDB connection
+│   ├── emails/        — Email templates
+│   ├── middleware.ts  — Next.js middleware
+│   └── globals.css    — Design tokens + global styles
+├── docs/              — Documentation
+├── .archiona/         — Archiona pre-coding gate
+└── package.json
 ```
 
 ### Making Changes
 
-For any feature work involving client-server communication:
+For any feature work:
 
 1. **Read the documentation**
    - `.archiona/workflow.md` — pre-coding gate rules
    - `docs/ai/commands.md` — available commands
    - `docs/ai/standards.md` — coding standards
-   - `docs/ai/lessora-structure-workflow.md` — API development workflow
 
 2. **Create an Archiona plan**
    ```bash
@@ -159,25 +219,22 @@ For any feature work involving client-server communication:
    Fill every section, then tick `- [x] **Approved**`.
 
 3. **Follow the layer order**
-   - Server: Routes → Controllers → Services → Schemas/Models
-   - Client: Pages → Services → API
+   - Server (lib/): Schemas → Services → Route Handlers
+   - Client (app/): Pages → Components → Hooks
 
 4. **Validate your changes**
    ```bash
-   # TypeScript checks
-   cd server-side && npx tsc --noEmit
-   cd ../client-side-admin && npx tsc --noEmit
+   npm run build
    ```
 
 ### Testing
 
 ```bash
-# Run TypeScript checks for both packages
-cd server-side && npx tsc --noEmit
-cd ../client-side-admin && npx tsc --noEmit
+# Build and verify
+npm run build
 
-# Run tests (when available)
-npm test
+# Run dev server
+npm run dev
 ```
 
 ## 📚 Documentation
@@ -190,50 +247,30 @@ npm test
 - **[Architecture Flows](docs/ai/architecture-flows.md)** - Data flows and interfaces
 - **[Standards](docs/ai/standards.md)** - Coding standards and conventions
 
-### Task Management
-
-The project uses Archiona for pre-coding planning. Before writing code, create and approve a plan:
-
-```bash
-archiona plan --slug <topic> --title "<Title>"
-archiona validate
-```
-
-Plans live under `.archiona/plans/<slug>.md`. Skills under `.archiona/skills/` define project conventions.
-
-Specs and plans that drove previous work are kept in `docs/specs/` and `docs/plans/` for historical reference.
-
 ## 🔑 Key Technologies
 
-- **Frontend (Web)**: React 18, TypeScript, Vite, CSS Modules + design tokens, React Router DOM, React Query
-- **Backend**: Node.js, Express, TypeScript, MongoDB, Mongoose, Zod validation
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Styling**: CSS Modules + design tokens
+- **State Management**: TanStack React Query
+- **Database**: MongoDB + Mongoose
 - **AI**: OpenAI API (GPT-4o-mini)
-- **Authentication**: JWT (admin), anonymous session tokens via localStorage (teachers)
+- **Authentication**: JWT (HTTP-only cookies), anonymous session tokens
 - **Email**: Resend
 - **Payments**: PayMongo
-- **Development**: Vite, ESLint, Prettier
+- **Scheduling**: node-cron
 
 ### Web design system (academic notebook)
 
-The admin + web portal are intentionally built with a single, restrained design language rather than the typical SaaS gradient + card aesthetic:
+The platform follows a single, restrained design language:
 
-- **Paper + ink palette** — warm paper `#FAFAF7`, near-black ink `#111111`, single deep navy accent `#1E3A8A`. No secondary indigo / teal / pink rounds.
-- **Source Serif 4** for display (page titles, metric numbers, hero). Inter for body, JetBrains Mono for IDs and small-caps eyebrows.
-- **Hairline rules instead of cards.** Sections are separated by 1 px lines, not boxed containers. A 3 px solid black top rule sits at the start of every page.
-- **Flat buttons, rectangular tags.** No gradients, no pill chips, no `backdrop-filter`, no box-shadows.
-- **Underline-only inputs** by default; a boxed variant exists for 3+ field forms (e.g. teacher registration).
+- **Paper + ink palette** — warm paper `#FAFAF7`, near-black ink `#111111`, single deep navy accent `#1E3A8A`.
+- **Source Serif 4** for display. Inter for body, JetBrains Mono for IDs and small-caps eyebrows.
+- **Hairline rules instead of cards.** Sections separated by 1px lines, not boxed containers.
+- **Flat buttons, rectangular tags.** No gradients, no pill chips, no box-shadows.
+- **Underline-only inputs** by default.
 
-Tokens live in [`client-side-admin/src/styles/tokens.css`](client-side-admin/src/styles/tokens.css). The full design system is documented in [`client-side-admin/README.md`](client-side-admin/README.md#design-system--academic-notebook).
-
-Specs and plans that drove the current look are in `docs/specs/2026-06-29-client-side-admin-minimal-redesign.md`.
-
-## 🤝 Contributing
-
-1. Read the documentation in `docs/ai/`
-2. Follow the structure workflow in `docs/ai/lessora-structure-workflow.md`
-3. Create task briefs for non-trivial changes
-4. Run validation checks before committing
-5. Keep changes focused and well-documented
+Tokens live in [`src/app/globals.css`](src/app/globals.css).
 
 ## 📄 License
 

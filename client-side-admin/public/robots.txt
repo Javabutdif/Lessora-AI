@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://lessora-ai.ajgenabio.me/sitemap.xml
