@@ -42,7 +42,8 @@ function SupportContent() {
   const successDonation = donationStatusQuery.data;
 
   return (
-    <main className={styles.userAppPage}>
+    <main className={styles.infoPageShell}>
+      <div className={styles.infoPageInner}>
       <header className={styles.supportDonationHeader}>
         <nav className={styles.supportDonationNav} aria-label="Public navigation">
           <a href="/home" className={styles.supportDonationNavLink}>Home</a>
@@ -84,6 +85,7 @@ function SupportContent() {
             ))}
           </div>
         </div>
+      </div>
       </div>
     </main>
   );

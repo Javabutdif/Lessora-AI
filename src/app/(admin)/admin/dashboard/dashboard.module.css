@@ -19,9 +19,8 @@
   align-items: flex-start;
   flex-wrap: wrap;
   gap: var(--spacing-4);
-  padding: var(--spacing-6);
-  background: var(--color-surface);
-  border: 1px solid var(--color-rule);
+  padding-bottom: var(--spacing-6);
+  border-bottom: 1px solid var(--color-rule);
 }
 
 .headerContent {
@@ -63,28 +62,26 @@
 
 .badge {
   font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 4px;
+  padding: 4px 0;
   font-weight: 600;
+  border-left: 3px solid transparent;
 }
 
 .badgeSuccess {
-  background: var(--color-success-bg);
   color: var(--color-success-text);
-  border: 1px solid var(--color-success-border);
+  border-left-color: var(--color-success-text);
 }
 
 .badgeWarning {
-  background: var(--color-warning-bg);
   color: var(--color-warning-text);
-  border: 1px solid var(--color-warning-border);
+  border-left-color: var(--color-warning-text);
 }
 
 .btnSecondary {
   padding: 8px 16px;
   border: 1px solid var(--color-rule);
-  border-radius: 4px;
-  background: var(--color-surface);
+  border-radius: 0;
+  background: transparent;
   color: var(--color-ink-primary);
   font-size: 14px;
   cursor: pointer;
@@ -114,10 +111,8 @@
 }
 
 .infoCard {
-  padding: var(--spacing-4);
-  border: 1px solid var(--color-rule);
-  border-radius: 4px;
-  background: var(--color-surface);
+  padding-bottom: var(--spacing-4);
+  border-bottom: 1px solid var(--color-rule);
 }
 
 .infoCardLabel {
@@ -146,10 +141,8 @@
 }
 
 .statsSection {
-  padding: var(--spacing-4);
-  border: 1px solid var(--color-rule);
-  border-radius: 4px;
-  background: var(--color-surface);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--color-rule);
 }
 
 .statsHeader {
@@ -194,12 +187,12 @@
 }
 
 .errorBanner {
-  background: var(--color-error-bg);
-  border: 1px solid var(--color-error-border);
   color: var(--color-error-text);
-  padding: var(--spacing-4);
-  border-radius: 4px;
+  padding: var(--spacing-3) 0;
+  border-top: 1px solid var(--color-error-text);
+  border-bottom: 1px solid var(--color-error-text);
   margin-bottom: var(--spacing-4);
+  font-size: var(--font-size-sm);
 }
 
 .skeletonGrid {
@@ -211,7 +204,7 @@
 .skeletonCard {
   height: 100px;
   background: var(--color-surface-sunken);
-  border-radius: 4px;
+  border-radius: 0;
   animation: pulse 1.5s ease-in-out infinite;
 }
 
@@ -228,9 +221,9 @@
 
 .metricCard {
   padding: var(--spacing-4);
-  border: 1px solid;
-  border-radius: 4px;
-  background: var(--color-surface);
+  border: none;
+  border-top: 2px solid;
+  background: transparent;
 }
 
 .metricHeader {
@@ -248,7 +241,7 @@
 .metricDot {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: 0;
 }
 
 .metricValue {

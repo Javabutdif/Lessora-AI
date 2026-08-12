@@ -97,63 +97,63 @@ export default function GeneratePlanPage() {
 
         <form onSubmit={handleSubmit} className={styles.userAppForm}>
           <div className={styles.userAppFormGrid}>
-            <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <span style={{ fontSize: 14, fontWeight: 600 }}>Topic / Title *</span>
+            <label className={styles.formFieldGap}>
+              <span className={styles.formLabel}>Topic / Title *</span>
               <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required placeholder="e.g., The Water Cycle" className={styles.userAppInput} />
             </label>
 
-            <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <span style={{ fontSize: 14, fontWeight: 600 }}>Subject *</span>
+            <label className={styles.formFieldGap}>
+              <span className={styles.formLabel}>Subject *</span>
               <input type="text" value={subject} onChange={(e) => setSubject(e.target.value)} required placeholder="e.g., Science" className={styles.userAppInput} />
             </label>
 
-            <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <span style={{ fontSize: 14, fontWeight: 600 }}>Grade Level *</span>
+            <label className={styles.formFieldGap}>
+              <span className={styles.formLabel}>Grade Level *</span>
               <select value={gradeLevel} onChange={(e) => setGradeLevel(e.target.value)} className={styles.userAppSelect}>
                 {gradeOptions.map((g) => <option key={g} value={g}>{g}</option>)}
               </select>
             </label>
 
-            <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <span style={{ fontSize: 14, fontWeight: 600 }}>Duration (minutes) *</span>
+            <label className={styles.formFieldGap}>
+              <span className={styles.formLabel}>Duration (minutes) *</span>
               <input type="number" value={duration} onChange={(e) => setDuration(Number(e.target.value))} min={5} max={600} required className={styles.userAppInput} />
             </label>
 
-            <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <span style={{ fontSize: 14, fontWeight: 600 }}>Number of Sessions *</span>
+            <label className={styles.formFieldGap}>
+              <span className={styles.formLabel}>Number of Sessions *</span>
               <input type="number" value={numberOfSessions} onChange={(e) => setNumberOfSessions(Number(e.target.value))} min={1} max={20} required className={styles.userAppInput} />
             </label>
 
-            <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <span style={{ fontSize: 14, fontWeight: 600 }}>Language *</span>
+            <label className={styles.formFieldGap}>
+              <span className={styles.formLabel}>Language *</span>
               <select value={language} onChange={(e) => setLanguage(e.target.value)} className={styles.userAppSelect}>
                 {languageOptions.map((l) => <option key={l} value={l.toLowerCase()}>{l}</option>)}
               </select>
             </label>
           </div>
 
-          <label style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16 }}>
-            <span style={{ fontSize: 14, fontWeight: 600 }}>Lesson Plan Template</span>
+          <label className={styles.formFieldGap} style={{ marginTop: 16 }}>
+            <span className={styles.formLabel}>Lesson Plan Template</span>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {templateOptions.map((t) => (
-                <div key={t.value} onClick={() => setTemplateId(t.value)} style={{ padding: "12px 16px", border: `2px solid ${templateId === t.value ? "var(--color-accent)" : "var(--color-rule)"}`, borderRadius: 6, cursor: "pointer" }}>
-                  <div style={{ fontWeight: 600, fontSize: 14 }}>{t.label}</div>
-                  <div style={{ fontSize: 12, color: "var(--color-ink-tertiary)", marginTop: 4 }}>{t.description}</div>
+                <div key={t.value} onClick={() => setTemplateId(t.value)} className={`${styles.templateOption} ${templateId === t.value ? styles.templateOptionSelected : ""}`}>
+                  <div className={styles.templateOptionLabel}>{t.label}</div>
+                  <div className={styles.templateOptionDesc}>{t.description}</div>
                 </div>
               ))}
             </div>
           </label>
 
-          <label style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16 }}>
-            <span style={{ fontSize: 14, fontWeight: 600 }}>Teacher Draft / Specific Goals (optional)</span>
+          <label className={styles.formFieldGap} style={{ marginTop: 16 }}>
+            <span className={styles.formLabel}>Teacher Draft / Specific Goals (optional)</span>
             <textarea value={userDraftText} onChange={(e) => setUserDraftText(e.target.value)} rows={4} placeholder="Share any specific standards, objectives, or notes..." className={styles.userAppTextarea} />
           </label>
 
-          <label style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16 }}>
-            <span style={{ fontSize: 14, fontWeight: 600 }}>Activity Preferences (optional)</span>
+          <label className={styles.formFieldGap} style={{ marginTop: 16 }}>
+            <span className={styles.formLabel}>Activity Preferences (optional)</span>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {activityOptions.map((opt) => (
-                <button key={opt} type="button" onClick={() => toggleActivity(opt)} style={{ padding: "6px 12px", border: `1px solid ${activityPreferences.includes(opt) ? "var(--color-accent)" : "var(--color-rule)"}`, borderRadius: 4, background: activityPreferences.includes(opt) ? "var(--color-accent-tint)" : "transparent", color: activityPreferences.includes(opt) ? "var(--color-accent)" : "var(--color-ink-secondary)", cursor: "pointer", fontSize: 13 }}>
+                <button key={opt} type="button" onClick={() => toggleActivity(opt)} className={`${styles.activityBtn} ${activityPreferences.includes(opt) ? styles.activityBtnSelected : ""}`}>
                   {opt}
                 </button>
               ))}
@@ -161,8 +161,8 @@ export default function GeneratePlanPage() {
             <textarea value={activityPreferenceNotes} onChange={(e) => setActivityPreferenceNotes(e.target.value)} rows={2} placeholder="Any additional notes about activities..." className={styles.userAppTextarea} style={{ marginTop: 8 }} />
           </label>
 
-          <label style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16 }}>
-            <span style={{ fontSize: 14, fontWeight: 600 }}>Template Notes (optional)</span>
+          <label className={styles.formFieldGap} style={{ marginTop: 16 }}>
+            <span className={styles.formLabel}>Template Notes (optional)</span>
             <textarea value={templateNotes} onChange={(e) => setTemplateNotes(e.target.value)} rows={3} placeholder="Any specific requirements for the template..." className={styles.userAppTextarea} />
           </label>
 

@@ -151,7 +151,7 @@ export default function RefineLessonPage() {
               <h3 style={{ fontFamily: "var(--font-family-display)", fontSize: "var(--font-size-lg)", fontWeight: 600, marginBottom: 16 }}>Select sections to refine</h3>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {(templateSections[plan.templateId || "lessora-ai"] || templateSections["lessora-ai"]).map((opt) => (
-                  <button key={opt.key} type="button" onClick={() => toggleSection(opt.key)} style={{ padding: "8px 16px", border: `2px solid ${selectedSections.includes(opt.key) ? "var(--color-accent)" : "var(--color-rule)"}`, borderRadius: 4, background: selectedSections.includes(opt.key) ? "var(--color-accent-tint)" : "transparent", color: selectedSections.includes(opt.key) ? "var(--color-accent)" : "var(--color-ink-secondary)", cursor: "pointer", fontSize: 13, fontWeight: selectedSections.includes(opt.key) ? 600 : 400 }}>
+                  <button key={opt.key} type="button" onClick={() => toggleSection(opt.key)} className={`${styles.refineSectionBtnFlat} ${selectedSections.includes(opt.key) ? styles.refineSectionBtnFlatSelected : ""}`}>
                     {selectedSections.includes(opt.key) && <Check weight="fill" size={12} style={{ marginRight: 4 }} />}
                     {opt.label}
                   </button>
@@ -160,8 +160,8 @@ export default function RefineLessonPage() {
             </section>
 
             <section style={{ marginTop: 24 }}>
-              <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <span style={{ fontSize: 14, fontWeight: 600 }}>What would you like to change?</span>
+              <label className={styles.formFieldGap}>
+                <span className={styles.formLabel}>What would you like to change?</span>
                 <textarea value={refinementRequest} onChange={(e) => setRefinementRequest(e.target.value)} rows={4} placeholder="e.g., Make the activities more interactive for Grade 4 students, add more real-world examples..." className={styles.userAppTextarea} />
               </label>
             </section>

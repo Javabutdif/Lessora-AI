@@ -2092,3 +2092,496 @@
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
+
+/* ========================================
+   INFO PAGE SHELL — about / privacy / terms
+   ======================================== */
+
+.infoPageShell {
+  min-height: 100vh;
+  background: var(--color-page);
+  color: var(--color-ink-primary);
+  position: relative;
+}
+
+.infoPageShell::before {
+  content: "";
+  display: block;
+  height: 3px;
+  background: var(--color-ink-primary);
+}
+
+.infoPageInner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--spacing-8);
+}
+
+.infoPageHeader {
+  border-bottom: 1px solid var(--color-rule);
+  padding-bottom: var(--spacing-6);
+  margin-bottom: var(--spacing-8);
+}
+
+.infoPageBrand {
+  display: block;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink-primary);
+  text-decoration: none;
+  margin-bottom: var(--spacing-4);
+}
+
+.infoPageBrand:hover {
+  color: var(--color-accent);
+}
+
+.infoPageNav {
+  display: flex;
+  gap: var(--spacing-4);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-4);
+}
+
+.infoPageLink {
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-secondary);
+  text-decoration: none;
+}
+
+.infoPageLink:hover {
+  color: var(--color-ink-primary);
+  text-decoration: underline;
+}
+
+.infoPageSection {
+  margin-bottom: var(--spacing-8);
+}
+
+.infoPageUpdated {
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-ink-tertiary);
+  margin: 0 0 var(--spacing-3);
+}
+
+.infoPageTitle {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--spacing-4);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-ink-primary);
+}
+
+.infoPageIntro {
+  color: var(--color-ink-secondary);
+  line-height: var(--line-height-relaxed);
+  margin: 0 0 var(--spacing-8);
+}
+
+.infoPageArticle {
+  margin-bottom: var(--spacing-8);
+}
+
+.infoPageSectionTitle {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--spacing-3);
+  line-height: var(--line-height-snug);
+  color: var(--color-ink-primary);
+}
+
+.infoPageSectionBody {
+  color: var(--color-ink-secondary);
+  line-height: var(--line-height-relaxed);
+  margin: 0;
+}
+
+/* ========================================
+   FORM CLASSES — generate page
+   ======================================== */
+
+.formLabel {
+  font-size: 14px;
+  font-weight: 600;
+  display: block;
+}
+
+.formFieldGap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formGrid {
+  display: grid;
+  gap: var(--spacing-6);
+}
+
+@media (min-width: 768px) {
+  .formGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.formInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-ink-primary);
+  border-radius: 0;
+  color: var(--color-ink-primary);
+  padding: var(--spacing-3) 0;
+  font-size: var(--font-size-lg);
+  font-family: var(--font-family-base);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.formInput::placeholder {
+  color: var(--color-ink-disabled);
+}
+
+.formInput:focus {
+  border-bottom-color: var(--color-accent);
+}
+
+.formSelect {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-ink-primary);
+  border-radius: 0;
+  color: var(--color-ink-primary);
+  padding: var(--spacing-3) 0;
+  font-size: var(--font-size-lg);
+  font-family: var(--font-family-base);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  transition: border-color var(--transition-fast);
+}
+
+.formSelect:focus {
+  border-bottom-color: var(--color-accent);
+}
+
+.formTextarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-ink-primary);
+  border-radius: 0;
+  color: var(--color-ink-primary);
+  padding: var(--spacing-3) 0;
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  outline: none;
+  resize: vertical;
+  transition: border-color var(--transition-fast);
+  line-height: var(--line-height-relaxed);
+}
+
+.formTextarea::placeholder {
+  color: var(--color-ink-disabled);
+}
+
+.formTextarea:focus {
+  border-bottom-color: var(--color-accent);
+}
+
+/* Template selector options */
+.templateOption {
+  padding: 12px 16px;
+  border: 2px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.templateOptionSelected {
+  border-color: var(--color-accent);
+  background: var(--color-accent-tint);
+}
+
+.templateOptionLabel {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.templateOptionDesc {
+  font-size: 12px;
+  color: var(--color-ink-tertiary);
+  margin-top: 4px;
+}
+
+/* Activity preference buttons */
+.activityBtn {
+  padding: 6px 12px;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-ink-secondary);
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font-family-base);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.activityBtnSelected {
+  border-color: var(--color-accent);
+  background: var(--color-accent-tint);
+  color: var(--color-accent);
+}
+
+/* Refine section buttons */
+.refineSectionBtnFlat {
+  padding: 8px 16px;
+  border: 2px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-ink-secondary);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 400;
+  font-family: var(--font-family-base);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.refineSectionBtnFlatSelected {
+  border-color: var(--color-accent);
+  background: var(--color-accent-tint);
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* ========================================
+   SUPPORT / DONATION PAGE
+   ======================================== */
+
+.supportDonationNavLink {
+  color: var(--color-ink-secondary);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.supportDonationNavLink:hover {
+  color: var(--color-ink-primary);
+}
+
+.supportDonationContent {
+  padding: var(--spacing-8) 0;
+}
+
+.supportDonationCard {
+  display: grid;
+  gap: var(--spacing-6);
+}
+
+.supportDonationTitle {
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-ink-primary);
+  line-height: var(--line-height-tight);
+}
+
+.supportDonationDescription {
+  margin: 0;
+  color: var(--color-ink-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.tierGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-6);
+}
+
+.tierCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  padding: var(--spacing-6) 0;
+  border-top: 1px solid var(--color-rule);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color var(--transition-fast);
+}
+
+.tierCard:hover {
+  border-top-color: var(--color-ink-primary);
+}
+
+.tierCardRecommended {
+  border-top-color: var(--color-accent);
+}
+
+.recommendedBadge {
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--color-accent);
+  align-self: flex-start;
+}
+
+.tierLabel {
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink-primary);
+}
+
+.tierAmount {
+  margin: 0;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink-primary);
+}
+
+.tierDescription {
+  margin: 0;
+  color: var(--color-ink-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+.successPanel {
+  padding: var(--spacing-4) 0;
+  border-top: 1px solid var(--color-success-text);
+  border-bottom: 1px solid var(--color-success-text);
+  color: var(--color-success-text);
+}
+
+.successTitle {
+  margin: 0 0 var(--spacing-2);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.successText {
+  margin: 0 0 var(--spacing-2);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+}
+
+.successMessage {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+/* ========================================
+   ERROR TEXT HELPER
+   ======================================== */
+
+.errorText {
+  color: var(--color-error-text);
+  font-size: var(--font-size-sm);
+}
+
+/* ========================================
+   FORM INPUT VARIANTS (underline-only)
+   ======================================== */
+
+.userAppForm {
+  display: grid;
+  gap: var(--spacing-6);
+}
+
+.userAppFormGrid {
+  display: grid;
+  gap: var(--spacing-6);
+}
+
+@media (min-width: 768px) {
+  .userAppFormGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.userAppInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-ink-primary);
+  border-radius: 0;
+  color: var(--color-ink-primary);
+  padding: var(--spacing-3) 0;
+  font-size: var(--font-size-lg);
+  font-family: var(--font-family-base);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.userAppInput::placeholder {
+  color: var(--color-ink-disabled);
+}
+
+.userAppInput:focus {
+  border-bottom-color: var(--color-accent);
+}
+
+.userAppSelect {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-ink-primary);
+  border-radius: 0;
+  color: var(--color-ink-primary);
+  padding: var(--spacing-3) 0;
+  font-size: var(--font-size-lg);
+  font-family: var(--font-family-base);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  transition: border-color var(--transition-fast);
+}
+
+.userAppSelect:focus {
+  border-bottom-color: var(--color-accent);
+}
+
+.userAppTextarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-ink-primary);
+  border-radius: 0;
+  color: var(--color-ink-primary);
+  padding: var(--spacing-3) 0;
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  outline: none;
+  resize: vertical;
+  transition: border-color var(--transition-fast);
+  line-height: var(--line-height-relaxed);
+}
+
+.userAppTextarea::placeholder {
+  color: var(--color-ink-disabled);
+}
+
+.userAppTextarea:focus {
+  border-bottom-color: var(--color-accent);
+}

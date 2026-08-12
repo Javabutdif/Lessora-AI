@@ -28,13 +28,13 @@ export default function TermsPage() {
   }, []);
 
   return (
-    <main style={{ minHeight: "100vh", background: "var(--color-page)", color: "var(--color-ink-primary)" }}>
-      <div style={{ maxWidth: 720, margin: "0 auto", padding: "var(--spacing-8)" }}>
-        <header style={{ borderBottom: "1px solid var(--color-rule)", paddingBottom: "var(--spacing-6)", marginBottom: "var(--spacing-8)" }}>
-          <a href="/home" style={{ fontFamily: "var(--font-family-display)", fontSize: "var(--font-size-xl)", fontWeight: 700, color: "var(--color-ink-primary)", textDecoration: "none" }}>
+    <main className={styles.infoPageShell}>
+      <div className={styles.infoPageInner}>
+        <header className={styles.infoPageHeader}>
+          <a href="/home" className={styles.infoPageBrand}>
             Lessora AI
           </a>
-          <nav style={{ display: "flex", gap: "var(--spacing-4)", marginTop: "var(--spacing-4)", flexWrap: "wrap" }}>
+          <nav className={styles.infoPageNav} aria-label="Information navigation">
             {[
               { label: "Home", href: "/home" },
               { label: "About", href: "/about" },
@@ -42,22 +42,22 @@ export default function TermsPage() {
               { label: "Privacy Policy", href: "/privacy-policy" },
               { label: "Terms & Conditions", href: "/terms-and-conditions" },
             ].map((link) => (
-              <a key={link.href} href={link.href} style={{ fontSize: "var(--font-size-sm)", color: "var(--color-ink-secondary)", textDecoration: "none" }}>
+              <a key={link.href} href={link.href} className={styles.infoPageLink}>
                 {link.label}
               </a>
             ))}
           </nav>
         </header>
-        <section style={{ marginBottom: "var(--spacing-8)" }}>
-          <p style={{ fontFamily: "var(--font-family-mono)", fontSize: "11px", fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--color-ink-tertiary)", margin: "0 0 var(--spacing-3)" }}>{pageContent.updated}</p>
-          <h1 style={{ fontFamily: "var(--font-family-display)", fontSize: "var(--font-size-3xl)", fontWeight: 700, margin: "0 0 var(--spacing-4)", lineHeight: "1.2" }}>{pageContent.title}</h1>
-          <p style={{ color: "var(--color-ink-secondary)", lineHeight: "1.7" }}>{pageContent.intro}</p>
+        <section className={styles.infoPageSection}>
+          <p className={styles.infoPageUpdated}>{pageContent.updated}</p>
+          <h1 className={styles.infoPageTitle}>{pageContent.title}</h1>
+          <p className={styles.infoPageIntro}>{pageContent.intro}</p>
         </section>
         <section>
           {pageContent.sections.map((section) => (
-            <article key={section.heading} style={{ marginBottom: "var(--spacing-8)" }}>
-              <h2 style={{ fontFamily: "var(--font-family-display)", fontSize: "var(--font-size-lg)", fontWeight: 600, margin: "0 0 var(--spacing-3)", lineHeight: "1.35" }}>{section.heading}</h2>
-              <p style={{ color: "var(--color-ink-secondary)", lineHeight: "1.7" }}>{section.body}</p>
+            <article key={section.heading} className={styles.infoPageArticle}>
+              <h2 className={styles.infoPageSectionTitle}>{section.heading}</h2>
+              <p className={styles.infoPageSectionBody}>{section.body}</p>
             </article>
           ))}
         </section>
