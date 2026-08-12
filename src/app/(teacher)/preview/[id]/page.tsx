@@ -109,8 +109,8 @@ export default function PreviewPage() {
       <header className={styles.userAppHeader}>
         <a href="/home" className={styles.userAppBrandLink}><h1 className={styles.userAppBrand}>Lessora AI</h1></a>
         <div className={styles.userAppHeaderActions}>
-          <a href="/home" className={styles.softSecondary}><House weight="bold" size={16} /> Home</a>
-          <button type="button" onClick={() => router.push("/generate")} className={styles.softSecondary}><Plus weight="bold" size={16} /> New Plan</button>
+           <a href="/home" className={styles.softSecondary}><House size={16} /> Home</a>
+           <button type="button" onClick={() => router.push("/generate")} className={styles.softSecondary}><Plus size={16} /> New Plan</button>
           <button type="button" onClick={() => router.push("/discover")} className={styles.softSecondary}>Browse</button>
         </div>
       </header>

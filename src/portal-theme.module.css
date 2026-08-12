@@ -2407,29 +2407,35 @@
 
 .tierGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-6);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--spacing-4);
 }
 
 .tierCard {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-3);
-  padding: var(--spacing-6) 0;
-  border-top: 1px solid var(--color-rule);
-  background: transparent;
-  border: none;
+  gap: var(--spacing-2);
+  padding: var(--spacing-5) var(--spacing-5);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
   cursor: pointer;
   text-align: left;
-  transition: border-color var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .tierCard:hover {
-  border-top-color: var(--color-ink-primary);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-tint);
 }
 
 .tierCardRecommended {
-  border-top-color: var(--color-accent);
+  border-color: var(--color-accent);
+  background: var(--color-accent-tint);
+}
+
+.tierCardRecommended:hover {
+  box-shadow: 0 0 0 3px var(--color-accent-tint);
 }
 
 .recommendedBadge {
@@ -2445,7 +2451,7 @@
 .tierLabel {
   margin: 0;
   font-family: var(--font-family-display);
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   color: var(--color-ink-primary);
 }
@@ -2453,8 +2459,8 @@
 .tierAmount {
   margin: 0;
   font-family: var(--font-family-mono);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
   color: var(--color-ink-primary);
 }
 
@@ -2584,4 +2590,95 @@
 
 .userAppTextarea:focus {
   border-bottom-color: var(--color-accent);
+}
+
+/* ========================================
+    GENERATE PAGE — form layout helpers
+    ======================================== */
+
+.templateOptionsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.activityBtnGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+}
+
+.activityNotesTextarea {
+  margin-top: var(--spacing-2);
+}
+
+.generateActionRow {
+  margin-top: var(--spacing-6);
+  display: flex;
+  gap: var(--spacing-3);
+  align-items: center;
+}
+
+/* ========================================
+    REFINE PAGE — section layout helpers
+    ======================================== */
+
+.refineSectionsSection {
+  margin-top: var(--spacing-6);
+}
+
+.refineSectionsHeading {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--spacing-4);
+  color: var(--color-ink-primary);
+}
+
+.refineSectionBtnGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+}
+
+.checkIcon {
+  margin-right: var(--spacing-1);
+}
+
+.refineRequestSection {
+  margin-top: var(--spacing-6);
+}
+
+.refineErrorText {
+  margin-top: var(--spacing-4);
+}
+
+.refineActionRow {
+  margin-top: var(--spacing-6);
+  display: flex;
+  gap: var(--spacing-3);
+}
+
+/* ========================================
+    SUPPORT PAGE — top-rule wrapper
+    ======================================== */
+
+.supportPage {
+  position: relative;
+}
+
+/* ========================================
+    DISCOVER PAGE — responsive filter bar
+    ======================================== */
+
+.filterBar {
+  display: flex;
+  gap: var(--spacing-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-8);
+}
+
+.filterBarSearch {
+  flex: 1;
+  min-width: 200px;
 }

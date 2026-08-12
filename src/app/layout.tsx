@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google";
 import { ReactQueryProvider } from "./providers";
+import ErrorBoundary from "./components/error-boundary";
 import "./globals.css";
 
 const inter = Inter({
@@ -39,7 +40,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body>
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+        <ErrorBoundary>
+          <ReactQueryProvider>{children}</ReactQueryProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

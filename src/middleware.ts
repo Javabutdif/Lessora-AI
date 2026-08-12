@@ -102,8 +102,45 @@ export function requireAdmin(request: NextRequest) {
   }
 }
 
+const ADMIN_ROUTE_PREFIX = "/admin";
+
+function isProtectedRoute(pathname: string): boolean {
+  return pathname.startsWith(ADMIN_ROUTE_PREFIX);
+}
+
 export async function middleware(request: NextRequest) {
-  return NextResponse.next();
+  const { pathname } = request.nextUrl;
+
+  if (!isProtectedRoute(pathname)) {
+    return NextResponse.next();
+  }
+
+  const authHeader = request.headers.get("authorization");
+  const cookieToken = request.cookies.get("lessora-admin-token")?.value;
+  const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : cookieToken;
+
+  if (!token) {
+    const url = new URL("/login", request.url);
+    return NextResponse.redirect(url);
+  }
+
+  try {
+    const payload = jwt.verify(token, getJwtSecret()) as AuthTokenPayload;
+    if (!payload.user?.id) {
+      const url = new URL("/login", request.url);
+      return NextResponse.redirect(url);
+    }
+    if (payload.user.role !== "admin") {
+      return NextResponse.json(
+        { data: null, error: { code: "FORBIDDEN", message: "Admin access is required" } },
+        { status: 403 },
+      );
+    }
+    return NextResponse.next();
+  } catch {
+    const url = new URL("/login", request.url);
+    return NextResponse.redirect(url);
+  }
 }
 
 export const config = {

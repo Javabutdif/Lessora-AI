@@ -33,11 +33,13 @@ export default function AdminDashboardPage() {
     let mounted = true;
     async function load() {
       try {
-        const statsPayload = await fetchAdminStats();
+        const [statsPayload, healthResponse] = await Promise.all([
+          fetchAdminStats(),
+          fetch("/api/health", { headers: { "X-Client-Type": "web" } }),
+        ]);
+        const healthPayload = await healthResponse.json();
         if (!mounted) return;
         setStats(statsPayload);
-        const healthResponse = await fetch("/api/health", { headers: { "X-Client-Type": "web" } });
-        const healthPayload = await healthResponse.json();
         setStatus(healthPayload.status === "ok" ? "online" : "degraded");
         setServerMessage(`Backend ${healthPayload.status} • ${new Date(healthPayload.timestamp).toLocaleTimeString()}`);
       } catch (err) {

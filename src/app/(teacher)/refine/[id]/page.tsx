@@ -109,7 +109,7 @@ export default function RefineLessonPage() {
       <header className={styles.userAppHeader}>
         <a href="/home" className={styles.userAppBrandLink}><h1 className={styles.userAppBrand}>Lessora AI</h1></a>
         <div className={styles.userAppHeaderActions}>
-          <a href="/home" className={styles.softSecondary}><House weight="bold" size={16} /> Home</a>
+           <a href="/home" className={styles.softSecondary}><House size={16} /> Home</a>
           <button type="button" onClick={() => router.back()} className={styles.softSecondary}>Back</button>
         </div>
       </header>
@@ -147,28 +147,28 @@ export default function RefineLessonPage() {
               </div>
             </section>
 
-            <section style={{ marginTop: 24 }}>
-              <h3 style={{ fontFamily: "var(--font-family-display)", fontSize: "var(--font-size-lg)", fontWeight: 600, marginBottom: 16 }}>Select sections to refine</h3>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            <section className={styles.refineSectionsSection}>
+              <h3 className={styles.refineSectionsHeading}>Select sections to refine</h3>
+              <div className={styles.refineSectionBtnGroup}>
                 {(templateSections[plan.templateId || "lessora-ai"] || templateSections["lessora-ai"]).map((opt) => (
                   <button key={opt.key} type="button" onClick={() => toggleSection(opt.key)} className={`${styles.refineSectionBtnFlat} ${selectedSections.includes(opt.key) ? styles.refineSectionBtnFlatSelected : ""}`}>
-                    {selectedSections.includes(opt.key) && <Check weight="fill" size={12} style={{ marginRight: 4 }} />}
+                    {selectedSections.includes(opt.key) && <Check weight="fill" size={12} className={styles.checkIcon} />}
                     {opt.label}
                   </button>
                 ))}
               </div>
             </section>
 
-            <section style={{ marginTop: 24 }}>
+            <section className={styles.refineRequestSection}>
               <label className={styles.formFieldGap}>
                 <span className={styles.formLabel}>What would you like to change?</span>
                 <textarea value={refinementRequest} onChange={(e) => setRefinementRequest(e.target.value)} rows={4} placeholder="e.g., Make the activities more interactive for Grade 4 students, add more real-world examples..." className={styles.userAppTextarea} />
               </label>
             </section>
 
-            {error && <p className={styles.errorText} style={{ marginTop: 16 }}>{error}</p>}
+            {error && <p className={`${styles.errorText} ${styles.refineErrorText}`}>{error}</p>}
 
-            <div style={{ marginTop: 24, display: "flex", gap: 12 }}>
+            <div className={styles.refineActionRow}>
               <button type="button" onClick={handleRefine} disabled={isRefining || selectedSections.length === 0 || !refinementRequest.trim()} className={styles.flatButton}>
                 {isRefining ? "Refining..." : "Refine Plan"}
               </button>

@@ -25,7 +25,8 @@ export default function ScrollReveal({ children, delay = 0, threshold = 0.1, cla
     }, { threshold });
     observer.observe(el);
     return () => observer.disconnect();
-  }, [threshold]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [threshold, delay]);
 
   return (
     <div ref={ref} className={`${styles.reveal} ${visible ? styles.revealed : ""} ${className}`} style={{ animationDelay: `${delay}ms` }}>

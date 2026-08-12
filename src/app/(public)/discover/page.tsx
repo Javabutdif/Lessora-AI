@@ -54,9 +54,9 @@ export default function DiscoverPage() {
           <h1 className={styles.userAppBrand}>Lessora AI</h1>
         </a>
         <nav className={styles.userAppHeaderActions}>
-          <a href="/home" className={styles.softSecondary}><House weight="bold" size={16} /> Home</a>
-          <button type="button" onClick={() => router.push("/generate")} className={styles.softSecondary}>New Plan</button>
-          <a href="/support" className={styles.softSecondary}>Support</a>
+           <a href="/home" className={styles.softSecondary}><House size={16} /> Home</a>
+           <button type="button" onClick={() => router.push("/generate")} className={styles.softSecondary}>New Plan</button>
+           <a href="/support" className={styles.softSecondary}>Support</a>
         </nav>
       </header>
 

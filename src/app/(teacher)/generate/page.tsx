@@ -75,7 +75,7 @@ export default function GeneratePlanPage() {
           <h1 className={styles.userAppBrand}>Lessora AI</h1>
         </a>
         <nav className={styles.userAppHeaderActions}>
-          <a href="/home" className={styles.softSecondary}><House weight="bold" size={16} /> Home</a>
+           <a href="/home" className={styles.softSecondary}><House size={16} /> Home</a>
           <a href="/discover" className={styles.softSecondary}>Browse Plans</a>
           <a href="/support" className={styles.softSecondary}>Support</a>
         </nav>
@@ -132,9 +132,9 @@ export default function GeneratePlanPage() {
             </label>
           </div>
 
-          <label className={styles.formFieldGap} style={{ marginTop: 16 }}>
+          <label className={styles.formFieldGap}>
             <span className={styles.formLabel}>Lesson Plan Template</span>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div className={styles.templateOptionsList}>
               {templateOptions.map((t) => (
                 <div key={t.value} onClick={() => setTemplateId(t.value)} className={`${styles.templateOption} ${templateId === t.value ? styles.templateOptionSelected : ""}`}>
                   <div className={styles.templateOptionLabel}>{t.label}</div>
@@ -144,30 +144,30 @@ export default function GeneratePlanPage() {
             </div>
           </label>
 
-          <label className={styles.formFieldGap} style={{ marginTop: 16 }}>
+          <label className={styles.formFieldGap}>
             <span className={styles.formLabel}>Teacher Draft / Specific Goals (optional)</span>
             <textarea value={userDraftText} onChange={(e) => setUserDraftText(e.target.value)} rows={4} placeholder="Share any specific standards, objectives, or notes..." className={styles.userAppTextarea} />
           </label>
 
-          <label className={styles.formFieldGap} style={{ marginTop: 16 }}>
+          <label className={styles.formFieldGap}>
             <span className={styles.formLabel}>Activity Preferences (optional)</span>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            <div className={styles.activityBtnGroup}>
               {activityOptions.map((opt) => (
                 <button key={opt} type="button" onClick={() => toggleActivity(opt)} className={`${styles.activityBtn} ${activityPreferences.includes(opt) ? styles.activityBtnSelected : ""}`}>
                   {opt}
                 </button>
               ))}
             </div>
-            <textarea value={activityPreferenceNotes} onChange={(e) => setActivityPreferenceNotes(e.target.value)} rows={2} placeholder="Any additional notes about activities..." className={styles.userAppTextarea} style={{ marginTop: 8 }} />
+            <textarea value={activityPreferenceNotes} onChange={(e) => setActivityPreferenceNotes(e.target.value)} rows={2} placeholder="Any additional notes about activities..." className={`${styles.userAppTextarea} ${styles.activityNotesTextarea}`} />
           </label>
 
-          <label className={styles.formFieldGap} style={{ marginTop: 16 }}>
+          <label className={styles.formFieldGap}>
             <span className={styles.formLabel}>Template Notes (optional)</span>
             <textarea value={templateNotes} onChange={(e) => setTemplateNotes(e.target.value)} rows={3} placeholder="Any specific requirements for the template..." className={styles.userAppTextarea} />
           </label>
 
-          <div style={{ marginTop: 24, display: "flex", gap: 12, alignItems: "center" }}>
-            <button type="submit" disabled={isLoading} className={styles.flatButton} style={{ minWidth: 160 }}>
+          <div className={styles.generateActionRow}>
+            <button type="submit" disabled={isLoading} className={styles.flatButton}>
               {isLoading ? "Generating..." : "Generate Plan"}
             </button>
             <a href="/discover" className={styles.softSecondary}>Browse existing plans</a>

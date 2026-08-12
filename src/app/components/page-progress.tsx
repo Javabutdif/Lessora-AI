@@ -6,9 +6,15 @@ import styles from "./page-progress.module.css";
 export default function PageProgressBar() {
   const [progress, setProgress] = useState(0);
   const rafRef = useRef<number | null>(null);
+  const lastUpdate = useRef(0);
 
   useEffect(() => {
-    function update() {
+    function update(timestamp: number) {
+      if (timestamp - lastUpdate.current < 16) {
+        rafRef.current = requestAnimationFrame(update);
+        return;
+      }
+      lastUpdate.current = timestamp;
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       setProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
