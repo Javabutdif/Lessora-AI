@@ -582,7 +582,7 @@ class OpenAIService {
       language: 'english',
       templateId: params.templateId,
     });
-    this.assertCompleteLessonPlan(normalizedBlocks, params.templateId);
+    this.assertCompleteLessonPlan(normalizedBlocks, params.templateId, true);
 
     return {
       ...parsed,
@@ -1272,11 +1272,20 @@ ${this.buildGradeLevelAdaptationRequirement()}`,
   private assertCompleteLessonPlan(
     blocks: LessonPlanDocumentBlock[],
     templateId?:
-      'lessora-ai' | 'deped-semi-detailed' | 'detailed-lesson-plan' | 'daily-lesson-log' | 'matatag'
+      'lessora-ai' | 'deped-semi-detailed' | 'detailed-lesson-plan' | 'daily-lesson-log' | 'matatag',
+    isRefinement = false
   ) {
     // Skip validation for DepEd template as it has different structure
     if (templateId !== 'lessora-ai') {
       // Just check that we have some blocks
+      if (!blocks.length) {
+        throw new Error('OpenAI returned an empty lesson plan.');
+      }
+      return;
+    }
+
+    // Skip full heading check for refinements (partial response expected)
+    if (isRefinement) {
       if (!blocks.length) {
         throw new Error('OpenAI returned an empty lesson plan.');
       }

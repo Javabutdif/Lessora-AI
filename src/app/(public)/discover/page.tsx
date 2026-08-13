@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import {
@@ -7,7 +7,6 @@ import {
   listPublicLessonPlans,
   PublicLessonPlan,
 } from "@/app/lib/api-client";
-import { setSeoMetadata } from "@/app/utils/seo";
 import ScrollReveal from "@/app/components/scroll-reveal";
 import Dropdown from "@/app/components/ui/dropdown";
 import { Warning, Spinner, MagnifyingGlass, House } from "@phosphor-icons/react";
@@ -27,10 +26,6 @@ export default function DiscoverPage() {
     queryKey: ["publicPlans"],
     queryFn: listPublicLessonPlans,
   });
-
-  useEffect(() => {
-    setSeoMetadata({ title: "Discover Lesson Plans | Lessora AI", description: "Browse lesson plans shared by teachers." });
-  }, []);
 
   const filteredPlans = useMemo(() => {
     if (!plans) return [];

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, Suspense } from 'react';
+import { useMemo, Suspense } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
 import {
@@ -7,7 +7,6 @@ import {
   fetchSupportDonationConfig,
   fetchSupportDonationStatus,
 } from '@/app/lib/api-client';
-import { setSeoMetadata } from '@/app/utils/seo';
 import styles from '@/portal-theme.module.css';
 
 function SupportContent() {
@@ -121,13 +120,6 @@ function SupportContent() {
 }
 
 export default function SupportDonationPage() {
-  useEffect(() => {
-    setSeoMetadata({
-      title: 'Support Lessora AI | Paymongo Donation',
-      description: 'Support Lessora AI with a one-time donation through Paymongo-hosted checkout.',
-    });
-  }, []);
-
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <SupportContent />

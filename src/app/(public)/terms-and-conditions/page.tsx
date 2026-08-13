@@ -1,6 +1,4 @@
 "use client";
-import { useEffect } from "react";
-import { setSeoMetadata } from "@/app/utils/seo";
 import styles from "@/portal-theme.module.css";
 
 const content: Record<string, { title: string; updated: string; intro: string; sections: Array<{ heading: string; body: string }> }> = {
@@ -19,13 +17,6 @@ const content: Record<string, { title: string; updated: string; intro: string; s
 
 export default function TermsPage() {
   const pageContent = content.terms;
-
-  useEffect(() => {
-    setSeoMetadata({
-      title: `${pageContent.title} | Lessora AI`,
-      description: pageContent.intro,
-    });
-  }, []);
 
   return (
     <main className={styles.infoPageShell}>

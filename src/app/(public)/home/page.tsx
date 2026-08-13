@@ -1,10 +1,8 @@
 'use client';
-import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { CheckCircle, Target, Clock, Browser } from '@phosphor-icons/react';
 import LessoraLogo from '@/app/assets/Transparent Logo.png';
 import { fetchLandingMetrics } from '@/app/lib/api-client';
-import { setSeoMetadata } from '@/app/utils/seo';
 import ScrollReveal from '@/app/components/scroll-reveal';
 import styles from '../landing.module.css';
 
@@ -17,14 +15,6 @@ export default function LandingPage() {
     retry: 1,
   });
   const numberFormatter = new Intl.NumberFormat();
-
-  useEffect(() => {
-    setSeoMetadata({
-      title: 'Lessora AI | Lesson Plans Made Simply',
-      description:
-        'Lessora AI helps educators create structured lesson plans, objectives, activities, and assessments — no account required.',
-    });
-  }, []);
 
   const metrics = [
     {

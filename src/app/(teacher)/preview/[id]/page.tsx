@@ -15,6 +15,7 @@ export default function PreviewPage() {
   const [error, setError] = useState("");
   const [isExporting, setIsExporting] = useState(false);
   const [exportingFormat, setExportingFormat] = useState("");
+  const [isNavigatingRefine, setIsNavigatingRefine] = useState(false);
 
   useEffect(() => {
     void ensureSession();
@@ -91,6 +92,12 @@ export default function PreviewPage() {
     }
   }
 
+  function handleNavigateToRefine() {
+    if (!id || isNavigatingRefine) return;
+    setIsNavigatingRefine(true);
+    router.push(`/refine/${id}`);
+  }
+
   function renderBlock(block: any, index: number) {
     if (block.type === "heading") {
       const HeadingTag = `h${block.level}` as keyof JSX.IntrinsicElements;
@@ -153,7 +160,7 @@ export default function PreviewPage() {
 
             <div className={styles.actionRow}>
               <button type="button" onClick={() => router.push("/generate")} className={styles.flatButton}><Plus weight="bold" size={16} /> Create New Plan</button>
-              {id && <button type="button" onClick={() => router.push(`/refine/${id}`)} className={styles.softSecondary} disabled={isPublic}>Refine This Plan</button>}
+              {id && <button type="button" onClick={handleNavigateToRefine} className={styles.softSecondary} disabled={isNavigatingRefine}>{isNavigatingRefine ? <><Spinner weight="fill" size={14} className={styles.spin} /> Opening...</> : "Refine This Plan"}</button>}
               <button type="button" onClick={() => handleExport("pdf")} className={styles.softSecondary} disabled={isExporting}><DownloadSimple weight="bold" size={16} /> {isExporting && exportingFormat === "PDF" ? "Preparing..." : "Download PDF"}</button>
               <button type="button" onClick={() => handleExport("docx")} className={styles.softSecondary} disabled={isExporting}><DownloadSimple weight="bold" size={16} /> {isExporting && exportingFormat === "DOCX" ? "Preparing..." : "Download Word"}</button>
             </div>

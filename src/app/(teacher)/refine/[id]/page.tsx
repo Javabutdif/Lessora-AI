@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Spinner, Warning, Check, House } from "@phosphor-icons/react";
-import { getLessonPlanById, refineLessonPlan, LessonPlanTemplate, LessonPlanHistoryDetail } from "@/app/lib/api-client";
+import { getLessonPlanById, refineLessonPlan, LessonPlanTemplate, LessonPlanHistoryDetail, ensureSession } from "@/app/lib/api-client";
 import styles from "@/portal-theme.module.css";
 
 type RefineOption = { key: string; label: string };
@@ -66,6 +66,7 @@ export default function RefineLessonPage() {
   const [isRefining, setIsRefining] = useState(false);
 
   useEffect(() => {
+    void ensureSession();
     if (id) loadPlan(id);
   }, [id]);
 
@@ -166,14 +167,23 @@ export default function RefineLessonPage() {
               </label>
             </section>
 
-            {error && <p className={`${styles.errorText} ${styles.refineErrorText}`}>{error}</p>}
+            {error && !isRefining && <p className={`${styles.errorText} ${styles.refineErrorText}`}>{error}</p>}
 
-            <div className={styles.refineActionRow}>
-              <button type="button" onClick={handleRefine} disabled={isRefining || selectedSections.length === 0 || !refinementRequest.trim()} className={styles.flatButton}>
-                {isRefining ? <><Spinner weight="fill" size={14} className={styles.spin} /> Refining...</> : "Refine Plan"}
-              </button>
-              <button type="button" onClick={() => router.push(`/preview/${plan.id}`)} className={styles.softSecondary}>Cancel</button>
-            </div>
+            {isRefining && (
+              <div className={styles.userAppCenter} style={{ padding: "40px 0" }}>
+                <Spinner weight="fill" size={32} className={styles.spin} />
+                <p className={styles.centerTextSmall}>Refining lesson plan...</p>
+              </div>
+            )}
+
+            {!isRefining && (
+              <div className={styles.refineActionRow}>
+                <button type="button" onClick={handleRefine} disabled={isRefining || selectedSections.length === 0 || !refinementRequest.trim()} className={styles.flatButton}>
+                  {isRefining ? <><Spinner weight="fill" size={14} className={styles.spin} /> Refining...</> : "Refine Plan"}
+                </button>
+                <button type="button" onClick={() => router.push(`/preview/${plan.id}`)} className={styles.softSecondary}>Cancel</button>
+              </div>
+            )}
           </>
         )}
       </div>

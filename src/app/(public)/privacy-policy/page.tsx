@@ -1,6 +1,5 @@
 "use client";
-import { useEffect, useMemo } from "react";
-import { setSeoMetadata } from "@/app/utils/seo";
+import { useMemo } from "react";
 import styles from "@/portal-theme.module.css";
 
 type InfoPageType = "privacy" | "terms" | "about";
@@ -55,13 +54,6 @@ export default function InfoPage({ params }: { params: Promise<{ page: InfoPageT
   }, []);
 
   const pageContent = content[page];
-
-  useEffect(() => {
-    setSeoMetadata({
-      title: `${pageContent.title} | Lessora AI`,
-      description: pageContent.intro,
-    });
-  }, [pageContent]);
 
   return (
     <main className={styles.infoPageShell}>
