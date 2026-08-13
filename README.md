@@ -2,7 +2,7 @@
 
 <img src="./src/app/assets/LessoraLogo.png" alt="Lessora AI logo" width="300" />
 
-Lessora AI is an AI-powered educational platform designed to help teachers create organized, professional, and curriculum-ready lesson plans in minutes. By transforming simple teacher inputs into structured lesson plans, activities, objectives, and assessments, Lessora AI reduces preparation time and allows educators to focus more on teaching and student engagement.
+Lessora AI is an AI-powered educational platform that helps teachers create organized, professional, and curriculum-ready lesson plans in minutes. By transforming simple teacher inputs into structured lesson plans, activities, objectives, and assessments, Lessora AI reduces preparation time and allows educators to focus more on teaching and student engagement. No account required to start generating.
 
 ## 🎯 Overview
 
@@ -20,7 +20,7 @@ The platform uses OpenAI's GPT models to generate comprehensive, curriculum-alig
 - **Lesson Plan History**: View, edit, refine, and reuse previously generated lesson plans (session-based)
 - **Document Export**: Export lesson plans in DOC, PDF, and DOCX formats
 - **Public Discover Page**: Browse lesson plans created by other teachers on the platform
-- **AI Response Credits**: Fair usage system with daily credit reset (3 free generations per day, no signup)
+- **AI Response Credits**: Fair usage system with daily credit reset (3 free generations per day without an account, 5 per day for registered teachers)
 - **Web Access**: Browser-based access at any time
 
 ### For Administrators
