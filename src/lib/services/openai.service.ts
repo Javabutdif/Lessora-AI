@@ -11,7 +11,6 @@ import { Session } from '../schemas/session.schema';
 import { createActivityLog } from './activity-log.service';
 import { buildTemplatePrompt, buildActivityTypePrompt } from './template-prompts';
 import { AppError, NotFoundError, QuotaError, ExternalServiceError } from '../types/errors';
-import { isConnected } from '../db';
 
 export interface GenerateLessonPlanRequest {
   title: string;
@@ -436,10 +435,6 @@ class OpenAIService {
     const cached = this.getCachedPublicPlans();
     if (cached) return cached;
 
-    if (!isConnected) {
-      throw new ExternalServiceError('MongoDB', 'Database connection not ready');
-    }
-
     const plans = await LessonPlan.find({ generatedByAI: true, isPublic: true })
       .sort({ createdAt: -1 })
       .limit(20)
@@ -462,10 +457,6 @@ class OpenAIService {
   }
 
   async getPublicLessonPlanById(lessonPlanId: string): Promise<LessonPlanHistoryDetail> {
-    if (!isConnected) {
-      throw new ExternalServiceError('MongoDB', 'Database connection not ready');
-    }
-
     const plan = await LessonPlan.findOne({
       _id: lessonPlanId,
       isPublic: true,
