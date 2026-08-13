@@ -66,11 +66,6 @@ export default function AdminDashboardPage() {
   const metricsLastUpdated = dashboardMetrics?.lastUpdated ? new Date(dashboardMetrics.lastUpdated).toLocaleTimeString() : undefined;
   const metricsErrorMessage = metricsError instanceof Error ? metricsError.message : metricsError ? "Unable to load dashboard metrics" : undefined;
 
-  function handleLogout() {
-    fetch("/api/auth/login", { method: "DELETE" });
-    router.push("/login");
-  }
-
   return (
     <div className={styles.page}>
       <div className={styles.container}>
@@ -86,7 +81,6 @@ export default function AdminDashboardPage() {
             </span>
             <button type="button" onClick={() => router.push("/admin/lesson-plans")} className={styles.btnSecondary}>Lesson plans</button>
             <button type="button" onClick={() => router.push("/admin/users")} className={styles.btnSecondary}>Users</button>
-            <button type="button" onClick={handleLogout} className={styles.btnGhost}>Logout</button>
           </div>
         </div>
 
@@ -94,11 +88,6 @@ export default function AdminDashboardPage() {
           <div className={styles.infoCard}>
             <p className={styles.infoCardLabel}>Shared backend</p>
             <h2 className={styles.infoCardTitle}>{serverMessage || "Checking connection…"}</h2>
-          </div>
-          <div className={styles.infoCard}>
-            <p className={styles.infoCardLabel}>Admin session</p>
-            <h2 className={styles.infoCardTitle}>Protected</h2>
-            <p className={styles.infoCardDescription}>Admin portal uses cookie-based session.</p>
           </div>
         </div>
 

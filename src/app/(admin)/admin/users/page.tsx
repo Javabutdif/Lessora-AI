@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@phosphor-icons/react";
 import { fetchUsers, updateUser, softDeleteUser, User } from "@/app/lib/api-client";
 import LoadingSkeleton from "@/app/components/loading-skeleton";
 import styles from "./users.module.css";
@@ -17,6 +18,8 @@ export default function UserManagementPage() {
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editStatus, setEditStatus] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   function startEdit(user: User) {
     setEditingId(user.id);
@@ -27,12 +30,15 @@ export default function UserManagementPage() {
 
   async function saveEdit(userId: string) {
     if (!editingId) return;
+    setIsSaving(true);
     try {
       await updateUser(userId, { name: editName, email: editEmail, status: editStatus });
       setEditingId(null);
       refetch();
     } catch (err) {
       alert(err instanceof Error ? err.message : "Failed to update user");
+    } finally {
+      setIsSaving(false);
     }
   }
 
@@ -42,11 +48,14 @@ export default function UserManagementPage() {
 
   async function handleDelete(userId: string) {
     if (!confirm("Soft-delete this user? They will be deactivated.")) return;
+    setIsDeleting(userId);
     try {
       await softDeleteUser(userId);
       refetch();
     } catch (err) {
       alert(err instanceof Error ? err.message : "Failed to delete user");
+    } finally {
+      setIsDeleting(null);
     }
   }
 
@@ -89,7 +98,9 @@ export default function UserManagementPage() {
                         </select>
                       </td>
                       <td colSpan={3}>
-                        <button type="button" onClick={() => saveEdit(user.id)} className={styles.btnSave}>Save</button>
+                        <button type="button" onClick={() => saveEdit(user.id)} disabled={isSaving} className={styles.btnSave}>
+                          {isSaving ? <><Spinner weight="fill" size={12} className={styles.spin} /> Saving...</> : "Save"}
+                        </button>
                         <button type="button" onClick={cancelEdit} className={styles.btnCancel}>Cancel</button>
                       </td>
                     </>
@@ -102,7 +113,9 @@ export default function UserManagementPage() {
                       <td>{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleDateString() : "—"}</td>
                       <td>
                         <button type="button" onClick={() => startEdit(user)} className={styles.btnEdit}>Edit</button>
-                        <button type="button" onClick={() => handleDelete(user.id)} className={styles.btnDelete}>Delete</button>
+                        <button type="button" onClick={() => handleDelete(user.id)} disabled={isDeleting === user.id} className={styles.btnDelete}>
+                          {isDeleting === user.id ? <><Spinner weight="fill" size={12} className={styles.spin} /> Deleting...</> : "Delete"}
+                        </button>
                       </td>
                     </>
                   )}

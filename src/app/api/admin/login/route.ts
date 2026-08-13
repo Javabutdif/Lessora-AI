@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { loginSchema } from "@/lib/schemas/auth.schema";
+import { loginSchema } from "@/lib/services/admin-auth.service";
 import { loginAdmin } from "@/lib/services/admin-auth.service";
-import { handleApiError } from "@/lib/middleware/auth-or-session";
+import { handleApiError } from "@/lib/middleware/error-handler";
 
 export async function POST(request: NextRequest) {
   try {

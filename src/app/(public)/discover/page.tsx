@@ -21,6 +21,7 @@ export default function DiscoverPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("All Subjects");
   const [selectedGrade, setSelectedGrade] = useState("All Grades");
+  const [navigatingId, setNavigatingId] = useState<string | null>(null);
 
   const { data: plans, isLoading, error } = useQuery({
     queryKey: ["publicPlans"],
@@ -45,6 +46,11 @@ export default function DiscoverPage() {
     const date = new Date(dateString);
     if (Number.isNaN(date.getTime())) return "Recently";
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
+
+  function handleNavigate(planId: string) {
+    setNavigatingId(planId);
+    router.push(`/preview/${planId}?public=true`);
   }
 
   return (
@@ -110,16 +116,29 @@ export default function DiscoverPage() {
           <div className={styles.planGrid}>
             {filteredPlans.map((plan, index) => (
               <ScrollReveal key={plan.id} delay={index * 40}>
-                <div className={styles.planTile} onClick={() => router.push(`/preview/${plan.id}?public=true`)}>
-                  <h3 className={styles.planTileTitle}>{plan.title}</h3>
-                  <div className={styles.planTileChipRow}>
-                    <span className={`${styles.chip} ${styles.chipAccent}`}>{plan.subject}</span>
-                    <span className={`${styles.chip} ${styles.chipPurple}`}>{plan.gradeLevel}</span>
-                  </div>
-                  <div className={styles.planTileMeta}>
-                    <span>{plan.totalDuration} min</span>
-                    <span>{formatDate(plan.createdAt)}</span>
-                  </div>
+                <div
+                  className={styles.planTile}
+                  onClick={() => navigatingId !== plan.id && handleNavigate(plan.id)}
+                  style={{ opacity: navigatingId === plan.id ? 0.5 : 1, cursor: navigatingId === plan.id ? "default" : "pointer" }}
+                >
+                  {navigatingId === plan.id ? (
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "20px 0" }}>
+                      <Spinner weight="fill" size={20} className={styles.spin} />
+                      <span style={{ fontSize: 13, color: "var(--color-ink-secondary)" }}>Loading...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <h3 className={styles.planTileTitle}>{plan.title}</h3>
+                      <div className={styles.planTileChipRow}>
+                        <span className={`${styles.chip} ${styles.chipAccent}`}>{plan.subject}</span>
+                        <span className={`${styles.chip} ${styles.chipPurple}`}>{plan.gradeLevel}</span>
+                      </div>
+                      <div className={styles.planTileMeta}>
+                        <span>{plan.totalDuration} min</span>
+                        <span>{formatDate(plan.createdAt)}</span>
+                      </div>
+                    </>
+                  )}
                 </div>
               </ScrollReveal>
             ))}

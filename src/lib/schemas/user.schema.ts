@@ -154,47 +154,4 @@ if (!UserModel) {
 }
 export const User = UserModel;
 
-// Zod validation schemas for user routes
-export const updateProfileSchema = z.object({
-  firstName: z.string().min(1, "First name is required").max(100),
-  lastName: z.string().min(1, "Last name is required").max(100),
-  email: z.string().email("Valid email is required"),
-  school: z.string().max(200).optional(),
-  bio: z.string().max(500).optional(),
-});
 
-export const updateSettingsSchema = z.object({
-  notifications: z.object({
-    email: z.boolean(),
-  }),
-  language: z.string().optional(),
-  theme: z.string().optional(),
-});
-
-export const forgotPasswordSchema = z.object({
-  email: z.string().email("Valid email is required"),
-});
-
-export const resetPasswordSchema = z.object({
-  token: z.string().min(1, "Reset token is required"),
-  newPassword: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Password must contain an uppercase letter")
-    .regex(/[a-z]/, "Password must contain a lowercase letter")
-    .regex(/[0-9]/, "Password must contain a number")
-    .regex(
-      /[!@#$%^&*]/,
-      "Password must contain a special character (!@#$%^&*)",
-    ),
-});
-
-export const verifyResetTokenSchema = z.object({
-  token: z.string().min(1, "Reset token is required"),
-});
-
-export type UpdateProfilePayload = z.infer<typeof updateProfileSchema>;
-export type UpdateSettingsPayload = z.infer<typeof updateSettingsSchema>;
-export type ForgotPasswordPayload = z.infer<typeof forgotPasswordSchema>;
-export type ResetPasswordPayload = z.infer<typeof resetPasswordSchema>;
-export type VerifyResetTokenPayload = z.infer<typeof verifyResetTokenSchema>;

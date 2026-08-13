@@ -1,10 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { supportDonationWebhookSchema } from "@/lib/schemas/support-donation.schema";
 import { recordPaymongoWebhook } from "@/lib/services/support-donation.service";
 
+function getWebhookSecret(): string | null {
+  return process.env.PAYMONGO_WEBHOOK_SECRET ?? null;
+}
+
+function verifyWebhookSignature(rawBody: string, signature: string): boolean {
+  const secret = getWebhookSecret();
+  if (!secret) {
+    console.warn("[webhook] PAYMONGO_WEBHOOK_SECRET not set — skipping signature verification");
+    return true;
+  }
+  const expected = crypto
+    .createHmac("sha256", secret)
+    .update(rawBody)
+    .digest("hex");
+  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const payload = supportDonationWebhookSchema.parse(await request.json());
+    const rawBody = await request.text();
+    const signature = request.headers.get("x-paymongo-signature");
+
+    if (!verifyWebhookSignature(rawBody, signature ?? "")) {
+      return NextResponse.json(
+        { data: null, error: { code: "FORBIDDEN", message: "Invalid webhook signature" } },
+        { status: 401 },
+      );
+    }
+
+    const payload = supportDonationWebhookSchema.parse(JSON.parse(rawBody));
 
     if (payload.data.type !== "checkout_session.payment.paid") {
       return NextResponse.json({ data: { received: true, ignored: true }, error: null });

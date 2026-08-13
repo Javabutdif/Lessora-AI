@@ -170,7 +170,7 @@ export default function RefineLessonPage() {
 
             <div className={styles.refineActionRow}>
               <button type="button" onClick={handleRefine} disabled={isRefining || selectedSections.length === 0 || !refinementRequest.trim()} className={styles.flatButton}>
-                {isRefining ? "Refining..." : "Refine Plan"}
+                {isRefining ? <><Spinner weight="fill" size={14} className={styles.spin} /> Refining...</> : "Refine Plan"}
               </button>
               <button type="button" onClick={() => router.push(`/preview/${plan.id}`)} className={styles.softSecondary}>Cancel</button>
             </div>

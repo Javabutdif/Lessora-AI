@@ -1,29 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import openAIService from "@/lib/services/openai.service";
-import { requireAuthOrSession, handleApiError } from "@/lib/middleware/auth-or-session";
+import { checkRateLimit, getSessionId } from "@/lib/middleware/rate-limiter";
+import { handleApiError } from "@/lib/middleware/error-handler";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const auth = await requireAuthOrSession(request);
-    if (!auth) {
+    const rateLimit = checkRateLimit(request);
+    if (rateLimit) return rateLimit;
+
+    const sessionId = getSessionId(request);
+    if (!sessionId) {
       return NextResponse.json(
-        { data: null, error: { code: "UNAUTHORIZED", message: "Authentication is required" } },
+        { data: null, error: { code: "UNAUTHORIZED", message: "Session token is required" } },
         { status: 401 },
       );
     }
 
-    const ownerId = auth.isAnonymous ? auth.session._id : auth.user.id;
-    const isAnonymous = auth.isAnonymous;
     const { id: lessonPlanId } = await params;
-
-    if (!ownerId) {
-      throw new Error("Authentication is required");
-    }
-
-    const result = await openAIService.getLessonPlanById(ownerId, lessonPlanId, isAnonymous);
+    const result = await openAIService.getLessonPlanById(sessionId, lessonPlanId, true);
     return NextResponse.json({ data: result, error: null });
   } catch (error) {
     const { status, body } = handleApiError(error);

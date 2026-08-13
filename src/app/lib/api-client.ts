@@ -1,18 +1,6 @@
 export const API_BASE = "";
 
 // ============================================
-// ADMIN AUTH
-// ============================================
-
-export function getAdminToken(): string | null {
-  return null; // cookies are automatic in fetch
-}
-
-export function setAdminToken(_token: string | null) {
-  // token stored in HttpOnly cookie via server
-}
-
-// ============================================
 // ANONYMOUS SESSION MANAGEMENT
 // ============================================
 
@@ -33,12 +21,6 @@ export async function ensureSession(): Promise<string> {
     localStorage.setItem("lessora-session-id", result.sessionId);
   }
   return result.sessionId;
-}
-
-export function invalidateSession() {
-  if (typeof window !== "undefined") {
-    localStorage.removeItem("lessora-session-id");
-  }
 }
 
 // ============================================
@@ -63,11 +45,6 @@ export async function apiRequest<T>(
 
   const response = await fetch(`${API_BASE}${path}`, { ...options, headers, credentials: "include" });
 
-  if (response.status === 401) {
-    invalidateSession();
-    throw new Error("Session expired. Please refresh the page.");
-  }
-
   const payload = (await response.json()) as { data?: T; error?: { message?: string } | null };
 
   if (!response.ok) {
@@ -82,20 +59,15 @@ export async function apiRequest<T>(
 // ============================================
 
 export async function loginAdmin(email: string, password: string) {
-  const response = await fetch(`${API_BASE}/api/auth/login`, {
+  const response = await fetch(`${API_BASE}/api/admin/login`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "X-Client-Type": "web" },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
     credentials: "include",
   });
-
   const payload = (await response.json()) as { data?: { token: string; user: { name: string; email: string } }; error?: { message?: string } | null };
-
-  if (!response.ok) {
-    throw new Error(payload.error?.message || "Login failed");
-  }
+  if (!response.ok) throw new Error(payload.error?.message || "Login failed");
   if (!payload.data?.token) throw new Error("Invalid response from server");
-
   if (typeof window !== "undefined") {
     localStorage.setItem("lessora-admin-user", JSON.stringify(payload.data.user));
   }
@@ -127,6 +99,20 @@ export type SupportDonationConfig = { title: string; description: string; curren
 export type SupportDonationCheckoutResponse = { checkoutUrl: string; referenceNumber: string };
 export type SupportDonationStatus = { referenceNumber: string; status: "pending" | "paid" | "failed" | "canceled"; amount: number; currency: string; checkoutSessionId?: string; paymentId?: string; updatedAt: string };
 
+export interface User { id: string; email: string; name: string; status: "active" | "inactive" | "pending"; createdAt: string; lastLoginAt?: string; }
+
+export async function fetchUsers() {
+  return apiRequest<User[]>("/api/admin/users");
+}
+
+export async function updateUser(userId: string, data: { name?: string; email?: string; status?: string }) {
+  return apiRequest<User>(`/api/admin/users/${userId}`, { method: "PATCH", body: JSON.stringify(data) });
+}
+
+export async function softDeleteUser(userId: string) {
+  return apiRequest<{ success: boolean }>(`/api/admin/users/${userId}`, { method: "DELETE" });
+}
+
 export async function fetchSupportDonationConfig() {
   return apiRequest<SupportDonationConfig>("/api/support/donations/config");
 }
@@ -138,8 +124,6 @@ export async function createSupportDonationCheckout(payload: { amount: number })
 export async function fetchSupportDonationStatus(referenceNumber: string) {
   return apiRequest<SupportDonationStatus>(`/api/support/donations/${encodeURIComponent(referenceNumber)}`);
 }
-
-export interface User { id: string; email: string; name: string; status: "active" | "inactive" | "pending"; createdAt: string; lastLoginAt?: string; }
 
 // ============================================
 // LESSON PLAN APIs
@@ -183,22 +167,6 @@ export async function getSessionInfo(): Promise<SessionInfo> {
 
 export async function fetchAdminLessonPlans() {
   return apiRequest<AdminLessonPlanHistoryItem[]>("/api/admin/lesson-plans");
-}
-
-// ============================================
-// ADMIN USER MANAGEMENT
-// ============================================
-
-export async function fetchUsers() {
-  return apiRequest<User[]>("/api/admin/users");
-}
-
-export async function updateUser(userId: string, data: { name?: string; email?: string; status?: string }) {
-  return apiRequest<User>(`/api/admin/users/${userId}`, { method: "PATCH", body: JSON.stringify(data) });
-}
-
-export async function softDeleteUser(userId: string) {
-  return apiRequest<{ success: boolean }>(`/api/admin/users/${userId}`, { method: "DELETE" });
 }
 
 // ============================================

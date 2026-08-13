@@ -1,16 +1,16 @@
-"use client";
-import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { CheckCircle, Target, Clock, Browser } from "@phosphor-icons/react";
-import LessoraLogo from "@/app/assets/Transparent Logo.png";
-import { fetchLandingMetrics } from "@/app/lib/api-client";
-import { setSeoMetadata } from "@/app/utils/seo";
-import ScrollReveal from "@/app/components/scroll-reveal";
-import styles from "../landing.module.css";
+'use client';
+import { useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { CheckCircle, Target, Clock, Browser } from '@phosphor-icons/react';
+import LessoraLogo from '@/app/assets/Transparent Logo.png';
+import { fetchLandingMetrics } from '@/app/lib/api-client';
+import { setSeoMetadata } from '@/app/utils/seo';
+import ScrollReveal from '@/app/components/scroll-reveal';
+import styles from '../landing.module.css';
 
 export default function LandingPage() {
   const { data: landingMetrics } = useQuery({
-    queryKey: ["landingMetrics"],
+    queryKey: ['landingMetrics'],
     queryFn: fetchLandingMetrics,
     refetchInterval: 60_000,
     staleTime: 30_000,
@@ -20,17 +20,17 @@ export default function LandingPage() {
 
   useEffect(() => {
     setSeoMetadata({
-      title: "Lessora AI | Lesson Plans Made Simply",
+      title: 'Lessora AI | Lesson Plans Made Simply',
       description:
-        "Lessora AI helps educators create structured lesson plans, objectives, activities, and assessments — no account required.",
+        'Lessora AI helps educators create structured lesson plans, objectives, activities, and assessments — no account required.',
     });
   }, []);
 
   const metrics = [
     {
-      label: "Lesson plans created",
+      label: 'Lesson plans created',
       value: landingMetrics?.totalLessonPlans,
-      helper: "Plans shared with teachers across the platform",
+      helper: 'Plans shared with teachers across the platform',
     },
   ];
 
@@ -48,25 +48,49 @@ export default function LandingPage() {
           <p className={styles.userLandingEyebrow}>Less Planning, More Teaching</p>
           <h1 className={styles.userLandingTitle}>Lesson Plans, Made Simply</h1>
           <p className={styles.userLandingDescription}>
-            Transform your topic and grade level into a structured, professional lesson plan — complete
-            with activities, objectives, and assessments. No account needed.
+            Turn your topic and grade level into a complete, professional lesson plan with clear
+            objectives, engaging activities, and assessments. No account required.
           </p>
-          <p className={styles.userLandingOnboarding}>Just tell us what you are teaching. We handle the rest.</p>
+          <p className={styles.userLandingOnboarding}>
+            Just tell us what you are teaching. We handle the rest.
+          </p>
         </div>
         <div className={styles.userLandingCallout}>
           <p className={styles.userLandingCalloutLabel}>Start here</p>
-          <a href="/generate" className={styles.userLandingPrimaryCta}>Start Planning</a>
+          <a href="/generate" className={styles.userLandingPrimaryCta}>
+            Start Planning
+          </a>
         </div>
         <div className={styles.userLandingSecondaryLinks}>
-          <a href="/discover" className={styles.userLandingSecondaryLink}>Browse Plans</a>
-          <a href="/support" className={styles.userLandingSecondaryLink}>Support the project</a>
+          <a href="/discover" className={styles.userLandingSecondaryLink}>
+            Browse Plans
+          </a>
+          <a href="/support" className={styles.userLandingSecondaryLink}>
+            Support the project
+          </a>
         </div>
         <div className={styles.userLandingFeatureGrid}>
           {[
-            { icon: <CheckCircle weight="fill" size={24} />, title: "Professional Format", desc: "Structured, curriculum-ready plans you can use immediately" },
-            { icon: <Clock weight="fill" size={24} />, title: "Save Your Evenings", desc: "Create a full lesson plan in minutes, not hours" },
-            { icon: <Target weight="fill" size={24} />, title: "Guided by Your Input", desc: "Your topic, your standards, your classroom context" },
-            { icon: <Browser weight="fill" size={24} />, title: "Works Anywhere", desc: "Open it in any browser — no download, no install" },
+            {
+              icon: <CheckCircle weight="fill" size={24} />,
+              title: 'Professional Format',
+              desc: 'Structured, curriculum-ready plans you can use immediately',
+            },
+            {
+              icon: <Clock weight="fill" size={24} />,
+              title: 'Save Your Evenings',
+              desc: 'Create a full lesson plan in minutes, not hours',
+            },
+            {
+              icon: <Target weight="fill" size={24} />,
+              title: 'Guided by Your Input',
+              desc: 'Your topic, your standards, your classroom context',
+            },
+            {
+              icon: <Browser weight="fill" size={24} />,
+              title: 'Works Anywhere',
+              desc: 'Open it in any browser — no download, no install',
+            },
           ].map((feature, index) => (
             <ScrollReveal key={feature.title} delay={index * 80}>
               <div className={styles.userLandingFeatureCard}>

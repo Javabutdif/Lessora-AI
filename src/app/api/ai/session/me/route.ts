@@ -1,22 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Session } from "@/lib/schemas/session.schema";
-import { requireAuthOrSession, handleApiError } from "@/lib/middleware/auth-or-session";
+import { checkRateLimit } from "@/lib/middleware/rate-limiter";
+import { handleApiError } from "@/lib/middleware/error-handler";
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = await requireAuthOrSession(request);
+    const rateLimit = checkRateLimit(request);
+    if (rateLimit) return rateLimit;
 
-    if (!auth) {
-      return NextResponse.json(
-        { data: { creditsRemaining: 0, isAnonymous: true }, error: null },
-      );
+    const sessionId = request.headers.get("x-session-token") as string | null;
+
+    if (!sessionId) {
+      return NextResponse.json({
+        data: { creditsRemaining: 0, isAnonymous: true },
+        error: null,
+      });
     }
 
-    if (!auth.isAnonymous) {
-      return NextResponse.json({ data: { creditsRemaining: 5, isAnonymous: false }, error: null });
-    }
-
-    const session = await Session.findOne({ sessionId: auth.session.sessionId })
+    const session = await Session.findOne({ sessionId })
       .select("aiResponseCredits")
       .lean();
 

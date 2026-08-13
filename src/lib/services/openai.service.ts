@@ -678,12 +678,12 @@ class OpenAIService {
     if (isAnonymous) {
       // Ensure session exists with credits
       await Session.updateOne(
-        { _id: ownerId, aiResponseCredits: { $exists: false } },
+        { sessionId: ownerId, aiResponseCredits: { $exists: false } },
         { $set: { aiResponseCredits: 3 } }
       );
 
       const session = await Session.findOneAndUpdate(
-        { _id: ownerId, aiResponseCredits: { $gt: 0 } },
+        { sessionId: ownerId, aiResponseCredits: { $gt: 0 } },
         { $inc: { aiResponseCredits: -1 } },
         { new: true }
       );
@@ -716,7 +716,7 @@ class OpenAIService {
 
   private async refundResponseCredit(ownerId: string, isAnonymous: boolean) {
     if (isAnonymous) {
-      await Session.updateOne({ _id: ownerId }, { $inc: { aiResponseCredits: 1 } });
+      await Session.updateOne({ sessionId: ownerId }, { $inc: { aiResponseCredits: 1 } });
     } else {
       await User.updateOne({ _id: ownerId }, { $inc: { aiResponseCredits: 1 } });
     }

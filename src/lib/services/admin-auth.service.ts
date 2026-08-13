@@ -1,7 +1,14 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { LoginPayload } from "../schemas/auth.schema";
 import { AdminUser } from "../schemas/admin.schema";
+import { z } from "zod";
+
+export const loginSchema = z.object({
+  email: z.string().email("Valid email is required"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export type LoginPayload = z.infer<typeof loginSchema>;
 
 const JWT_EXPIRES_IN = "1h";
 
@@ -20,8 +27,8 @@ function signAdminToken(user: AdminAuthUser) {
   return jwt.sign({ user }, getJwtSecret(), { expiresIn: JWT_EXPIRES_IN });
 }
 
-export async function loginAdmin({ email, password }: LoginPayload) {
-  const admin = await AdminUser.findOne({ email }).select("+passwordHash");
+export async function loginAdmin(input: LoginPayload) {
+  const admin = await AdminUser.findOne({ email: input.email }).select("+passwordHash");
 
   if (!admin) {
     throw new Error("Invalid email or password");
@@ -31,7 +38,7 @@ export async function loginAdmin({ email, password }: LoginPayload) {
     throw new Error("Account disabled");
   }
 
-  const isValidPassword = await bcrypt.compare(password, admin.passwordHash);
+  const isValidPassword = await bcrypt.compare(input.password, admin.passwordHash);
   if (!isValidPassword) {
     throw new Error("Invalid email or password");
   }

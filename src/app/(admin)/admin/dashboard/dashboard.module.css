@@ -104,6 +104,11 @@
   color: var(--color-error-text);
 }
 
+.btnGhost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .infoGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));

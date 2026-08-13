@@ -97,9 +97,10 @@ function SupportContent() {
                   key={tier.id}
                   type="button"
                   onClick={() => handleDonate(tier.amount)}
+                  disabled={checkoutMutation.isPending}
                   className={`${styles.tierCard} ${tier.recommended ? styles.tierCardRecommended : ''}`}
                 >
-                  {tier.recommended && <span className={styles.recommendedBadge}>Recommended</span>}
+                  {tier.recommended && !checkoutMutation.isPending && <span className={styles.recommendedBadge}>Recommended</span>}
                   <p className={styles.tierLabel}>{tier.label}</p>
                   <p className={styles.tierAmount}>
                     {config?.currency || 'PHP'}{' '}
@@ -108,7 +109,7 @@ function SupportContent() {
                       maximumFractionDigits: 2,
                     })}
                   </p>
-                  <p className={styles.tierDescription}>{tier.description}</p>
+                  <p className={styles.tierDescription}>{checkoutMutation.isPending ? 'Processing...' : tier.description}</p>
                 </button>
               ))}
             </div>

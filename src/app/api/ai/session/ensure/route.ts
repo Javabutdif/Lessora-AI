@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateLessonPlanSchema, refineLessonPlanSchema } from "@/lib/schemas/ai.schema";
-import openAIService from "@/lib/services/openai.service";
 import { Session } from "@/lib/schemas/session.schema";
-import { requireAuthOrSession, handleApiError } from "@/lib/middleware/auth-or-session";
+import { checkRateLimit, getSessionId } from "@/lib/middleware/rate-limiter";
+import { handleApiError } from "@/lib/middleware/error-handler";
 
 export async function POST(request: NextRequest) {
   try {
+    const rateLimit = checkRateLimit(request);
+    if (rateLimit) return rateLimit;
+
     const existingSessionId = (await request.json())?.sessionId as string | undefined;
     let sessionId: string;
 
