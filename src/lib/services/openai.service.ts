@@ -11,6 +11,7 @@ import { Session } from '../schemas/session.schema';
 import { createActivityLog } from './activity-log.service';
 import { buildTemplatePrompt, buildActivityTypePrompt } from './template-prompts';
 import { AppError, NotFoundError, QuotaError, ExternalServiceError } from '../types/errors';
+import { isConnected } from '../db';
 
 export interface GenerateLessonPlanRequest {
   title: string;
@@ -138,6 +139,22 @@ const unrelatedRiskSignals = [
 ];
 
 class OpenAIService {
+  private publicPlansCache: { data: LessonPlanHistoryItem[]; timestamp: number } | null = null;
+  private readonly CACHE_TTL_MS = 60_000;
+
+  private getCachedPublicPlans(): LessonPlanHistoryItem[] | null {
+    if (!this.publicPlansCache) return null;
+    if (Date.now() - this.publicPlansCache.timestamp < this.CACHE_TTL_MS) {
+      return this.publicPlansCache.data;
+    }
+    this.publicPlansCache = null;
+    return null;
+  }
+
+  private setPublicPlansCache(data: LessonPlanHistoryItem[]): void {
+    this.publicPlansCache = { data, timestamp: Date.now() };
+  }
+
   async generateLessonPlan(
     request: GenerateLessonPlanRequest,
     ownerId: string,
@@ -416,13 +433,20 @@ class OpenAIService {
   }
 
   async listPublicLessonPlans(): Promise<LessonPlanHistoryItem[]> {
+    const cached = this.getCachedPublicPlans();
+    if (cached) return cached;
+
+    if (!isConnected) {
+      throw new ExternalServiceError('MongoDB', 'Database connection not ready');
+    }
+
     const plans = await LessonPlan.find({ generatedByAI: true, isPublic: true })
       .sort({ createdAt: -1 })
       .limit(20)
       .select('title subject gradeLevel totalDuration createdAt updatedAt templateId')
       .lean();
 
-    return plans.map((plan) => ({
+    const result = plans.map((plan) => ({
       id: plan._id.toString(),
       title: plan.title,
       subject: plan.subject,
@@ -432,9 +456,16 @@ class OpenAIService {
       updatedAt: plan.updatedAt,
       templateId: plan.templateId ?? 'lessora-ai',
     }));
+
+    this.setPublicPlansCache(result);
+    return result;
   }
 
   async getPublicLessonPlanById(lessonPlanId: string): Promise<LessonPlanHistoryDetail> {
+    if (!isConnected) {
+      throw new ExternalServiceError('MongoDB', 'Database connection not ready');
+    }
+
     const plan = await LessonPlan.findOne({
       _id: lessonPlanId,
       isPublic: true,
