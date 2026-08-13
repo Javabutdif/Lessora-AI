@@ -290,9 +290,15 @@ class OpenAIService {
       generatedByAI: true,
     });
 
-    if (!lessonPlan || !lessonPlan.aiDocument) {
+    if (!lessonPlan) {
       throw new NotFoundError('Lesson plan');
     }
+
+    const lessonPlanDocument = this.resolveLessonPlanDocument({
+      title: lessonPlan.title,
+      draftText: lessonPlan.draftText,
+      aiDocument: lessonPlan.aiDocument,
+    });
 
     const templateId = lessonPlan.templateId || 'lessora-ai';
     const scopeCheck = this.validateRequest(
@@ -320,7 +326,10 @@ class OpenAIService {
 
     try {
       document = await this.createRefinedDocumentWithOpenAI({
-        lessonPlan,
+        lessonPlan: {
+          ...lessonPlan,
+          aiDocument: lessonPlanDocument,
+        },
         selectedSections,
         refinementRequest,
         templateId,
@@ -463,9 +472,15 @@ class OpenAIService {
       generatedByAI: true,
     }).lean();
 
-    if (!plan || !plan.aiDocument) {
+    if (!plan) {
       throw new NotFoundError('Lesson plan');
     }
+
+    const document = this.resolveLessonPlanDocument({
+      title: plan.title,
+      draftText: plan.draftText,
+      aiDocument: plan.aiDocument,
+    });
 
     return {
       id: plan._id.toString(),
@@ -475,7 +490,7 @@ class OpenAIService {
       totalDuration: plan.totalDuration,
       updatedAt: plan.updatedAt,
       createdAt: plan.createdAt,
-      document: plan.aiDocument as unknown as LessonPlanDocument,
+      document,
       draftText: plan.draftText,
       model: plan.aiModel ?? undefined,
       templateId: plan.templateId ?? 'lessora-ai',
@@ -493,9 +508,15 @@ class OpenAIService {
 
     const plan = await LessonPlan.findOne(filter).lean();
 
-    if (!plan || !plan.aiDocument) {
+    if (!plan) {
       throw new NotFoundError('Lesson plan');
     }
+
+    const document = this.resolveLessonPlanDocument({
+      title: plan.title,
+      draftText: plan.draftText,
+      aiDocument: plan.aiDocument,
+    });
 
     return {
       id: plan._id.toString(),
@@ -505,7 +526,7 @@ class OpenAIService {
       totalDuration: plan.totalDuration,
       updatedAt: plan.updatedAt,
       createdAt: plan.createdAt,
-      document: plan.aiDocument as unknown as LessonPlanDocument,
+      document,
       draftText: plan.draftText,
       model: plan.aiModel ?? undefined,
       templateId: plan.templateId ?? 'lessora-ai',
@@ -1473,6 +1494,190 @@ ${this.buildGradeLevelAdaptationRequirement()}`,
       'Teacher Notes:',
       ...sections.teacherNotes.map((item) => `- ${item}`),
     ].join('\n');
+  }
+
+  private resolveLessonPlanDocument(params: {
+    title: string;
+    draftText?: string;
+    aiDocument?: unknown;
+  }): LessonPlanDocument {
+    if (this.isLessonPlanDocument(params.aiDocument)) {
+      return params.aiDocument;
+    }
+
+    if (params.draftText?.trim()) {
+      return this.buildLessonPlanDocumentFromDraftText(params.draftText, params.title);
+    }
+
+    throw new NotFoundError('Lesson plan');
+  }
+
+  private isLessonPlanDocument(value: unknown): value is LessonPlanDocument {
+    if (!value || typeof value !== 'object') {
+      return false;
+    }
+
+    const candidate = value as {
+      type?: unknown;
+      format?: unknown;
+      version?: unknown;
+      title?: unknown;
+      blocks?: unknown;
+      exportTargets?: unknown;
+    };
+
+    return (
+      candidate.type === 'lesson_plan_document' &&
+      candidate.format === 'json' &&
+      candidate.version === 1 &&
+      typeof candidate.title === 'string' &&
+      Array.isArray(candidate.blocks) &&
+      Array.isArray(candidate.exportTargets)
+    );
+  }
+
+  private buildLessonPlanDocumentFromDraftText(
+    draftText: string,
+    fallbackTitle: string
+  ): LessonPlanDocument {
+    const title = this.extractDraftScalar(draftText, 'Title') || fallbackTitle;
+    const subject = this.extractDraftScalar(draftText, 'Subject');
+    const gradeLevel = this.extractDraftScalar(draftText, 'Grade Level');
+    const duration = this.extractDraftScalar(draftText, 'Duration');
+    const lessonOverview =
+      this.extractDraftScalar(draftText, 'Lesson Overview') ||
+      'Review the generated lesson plan for the overview.';
+    const learningObjectives = this.extractDraftList(draftText, 'Learning Objectives');
+    const materials = this.extractDraftList(draftText, 'Materials');
+    const procedure = this.extractDraftList(draftText, 'Procedure');
+    const assessment = this.extractDraftList(draftText, 'Assessment');
+    const teacherNotes = this.extractDraftList(draftText, 'Teacher Notes');
+
+    const blocks: LessonPlanDocumentBlock[] = [{ type: 'heading', level: 1, text: title }];
+
+    if (subject) {
+      blocks.push({ type: 'paragraph', text: `Subject: ${subject}` });
+    }
+
+    if (gradeLevel) {
+      blocks.push({ type: 'paragraph', text: `Grade Level: ${gradeLevel}` });
+    }
+
+    if (duration) {
+      blocks.push({ type: 'paragraph', text: `Duration: ${duration}` });
+    }
+
+    blocks.push(
+      { type: 'heading', level: 2, text: 'Lesson Overview' },
+      { type: 'paragraph', text: lessonOverview },
+      { type: 'heading', level: 2, text: 'Learning Objectives' },
+      {
+        type: 'list',
+        style: 'bullet',
+        items: learningObjectives.length
+          ? learningObjectives
+          : ['Review the generated lesson plan for learning objectives.'],
+      },
+      { type: 'heading', level: 2, text: 'Materials' },
+      {
+        type: 'list',
+        style: 'bullet',
+        items: materials.length ? materials : ['Review the generated lesson plan for materials.'],
+      },
+      { type: 'heading', level: 2, text: 'Procedure' },
+      {
+        type: 'list',
+        style: 'numbered',
+        items: procedure.length ? procedure : ['Review the generated lesson plan for procedure.'],
+      },
+      { type: 'heading', level: 2, text: 'Assessment' },
+      {
+        type: 'list',
+        style: 'bullet',
+        items: assessment.length ? assessment : ['Review the generated lesson plan for assessment.'],
+      },
+      { type: 'heading', level: 2, text: 'Teacher Notes' },
+      {
+        type: 'list',
+        style: 'bullet',
+        items: teacherNotes.length
+          ? teacherNotes
+          : ['Review the generated lesson plan for teacher notes.'],
+      }
+    );
+
+    return {
+      type: 'lesson_plan_document',
+      format: 'json',
+      version: 1,
+      title,
+      blocks,
+      exportTargets: ['doc', 'pdf', 'docx'],
+    };
+  }
+
+  private extractDraftScalar(draftText: string, label: string): string | null {
+    const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const lines = draftText.split(/\r?\n/);
+
+    for (const line of lines) {
+      const match = line.match(new RegExp(`^${escapedLabel}:\\s*(.*)$`));
+      if (match) {
+        const value = match[1].trim();
+        return value || null;
+      }
+    }
+
+    return null;
+  }
+
+  private extractDraftList(draftText: string, label: string): string[] {
+    const lines = draftText.split(/\r?\n/).map((line) => line.trim());
+    const sectionStartIndex = lines.findIndex(
+      (line) => line === `${label}:` || line.startsWith(`${label}: `)
+    );
+
+    if (sectionStartIndex === -1) {
+      return [];
+    }
+
+    const items: string[] = [];
+
+    for (let index = sectionStartIndex + 1; index < lines.length; index += 1) {
+      const line = lines[index];
+
+      if (!line) {
+        continue;
+      }
+
+      if (this.isDraftSectionHeader(line)) {
+        break;
+      }
+
+      const item = line.replace(/^[-*•]\s*/, '').replace(/^\d+[.)]\s*/, '').trim();
+      if (item) {
+        items.push(item);
+      }
+    }
+
+    return items;
+  }
+
+  private isDraftSectionHeader(line: string): boolean {
+    const labels = [
+      'Title',
+      'Subject',
+      'Grade Level',
+      'Duration',
+      'Lesson Overview',
+      'Learning Objectives',
+      'Materials',
+      'Procedure',
+      'Assessment',
+      'Teacher Notes',
+    ];
+
+    return labels.some((label) => line === `${label}:` || line.startsWith(`${label}: `));
   }
 }
 
