@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Spinner, Warning, Check, House } from "@phosphor-icons/react";
-import { getLessonPlanById, refineLessonPlan, LessonPlanTemplate, LessonPlanHistoryDetail, ensureSession } from "@/app/lib/api-client";
+import { getPublicLessonPlanById, refineLessonPlan, LessonPlanTemplate, LessonPlanHistoryDetail, ensureSession } from "@/app/lib/api-client";
 import styles from "@/portal-theme.module.css";
 
 type RefineOption = { key: string; label: string };
@@ -74,7 +74,7 @@ export default function RefineLessonPage() {
     try {
       setIsLoading(true);
       setError("");
-      const data = await getLessonPlanById(planId);
+      const data = await getPublicLessonPlanById(planId);
       setPlan(data);
       setSelectedSections([]);
     } catch (err) {

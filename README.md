@@ -17,7 +17,7 @@ The platform uses OpenAI's GPT models to generate comprehensive, curriculum-alig
 ### For Teachers
 - **AI-Powered Lesson Generation**: Create complete lesson plans from topic, grade level, duration, and learning goals — no account required
 - **Multiple Templates**: Support for various lesson plan formats including DepEd semi-detailed templates
-- **Lesson Plan History**: View, edit, refine, and reuse previously generated lesson plans (session-based)
+- **Lesson Plan History**: View, edit, refine, and reuse previously generated lesson plans
 - **Document Export**: Export lesson plans in DOC, PDF, and DOCX formats
 - **Public Discover Page**: Browse lesson plans created by other teachers on the platform
 - **AI Response Credits**: Fair usage system with daily credit reset (3 free generations per day without an account, 5 per day for registered teachers)
@@ -38,7 +38,7 @@ Lessora AI is now a single **Next.js 15 App Router monolith**. The Express serve
 - **Styling**: CSS Modules + CSS custom properties (tokens in `src/app/globals.css`)
 - **Visual language**: "Academic notebook" — paper background, navy ink, Source Serif 4 display, hairline rules. No cards, no pill chips, no gradients.
 - **Database**: MongoDB with Mongoose ODM
-- **Authentication**: JWT stored in HTTP-only cookies (admin), anonymous session tokens via localStorage (teachers)
+- **Authentication**: JWT stored in HTTP-only cookies (admin), anonymous session tokens via localStorage for AI actions
 - **AI Integration**: OpenAI API (GPT-4o-mini)
 - **Email**: Resend for password reset and notifications
 - **Payments**: PayMongo integration for support donations

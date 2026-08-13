@@ -403,7 +403,7 @@ The backend must reject incomplete generated documents that miss required headin
 - The saved `LessonPlan.aiDocument` is the same JSON document used by preview, edit, and export.
 - Dashboard recent plans must call `GET /api/ai/lesson-plan/history`; do not use static recent-plan cards.
 - Clicking a recent plan should navigate to `/preview/{id}`.
-- The Generate Plan page loads saved plan details from `GET /api/ai/lesson-plan/history/:lessonPlanId`.
+- The preview and refine pages load saved plan details from `GET /api/ai/lesson-plan/public/:lessonPlanId`.
 - Saved plans open in preview mode by default and can be edited locally with the pencil toggle.
 - Exporting a history plan uses the same client-side export helper with the currently loaded document.
 - Saved-plan edits are local only until a save/update endpoint is explicitly added.

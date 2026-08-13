@@ -1,15 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter, useParams, useSearchParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { BookOpen, Clock, Warning, Plus, Spinner, DownloadSimple, House } from "@phosphor-icons/react";
-import { getLessonPlanById, getPublicLessonPlanById, LessonPlanHistoryDetail, ensureSession } from "@/app/lib/api-client";
+import { getPublicLessonPlanById, LessonPlanHistoryDetail, ensureSession } from "@/app/lib/api-client";
 import styles from "@/portal-theme.module.css";
 
 export default function PreviewPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
-  const searchParams = useSearchParams();
-  const isPublic = searchParams.get("public") === "true";
   const [plan, setPlan] = useState<LessonPlanHistoryDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -26,7 +24,7 @@ export default function PreviewPage() {
     try {
       setIsLoading(true);
       setError("");
-      setPlan(isPublic ? await getPublicLessonPlanById(planId) : await getLessonPlanById(planId));
+      setPlan(await getPublicLessonPlanById(planId));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load lesson plan");
     } finally {
