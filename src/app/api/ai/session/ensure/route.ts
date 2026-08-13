@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Session } from "@/lib/schemas/session.schema";
+import { connectionReady } from "@/lib/db";
 import { checkRateLimit, getSessionId } from "@/lib/middleware/rate-limiter";
 import { handleApiError } from "@/lib/middleware/error-handler";
 
 export async function POST(request: NextRequest) {
   try {
+    await connectionReady;
     const rateLimit = checkRateLimit(request);
     if (rateLimit) return rateLimit;
 

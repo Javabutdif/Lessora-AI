@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateLessonPlanSchema } from "@/lib/schemas/ai.schema";
 import openAIService from "@/lib/services/openai.service";
+import { connectionReady } from "@/lib/db";
 import { checkRateLimit, getSessionId } from "@/lib/middleware/rate-limiter";
 import { handleApiError } from "@/lib/middleware/error-handler";
 
 export async function POST(request: NextRequest) {
   try {
+    await connectionReady;
     const rateLimit = checkRateLimit(request);
     if (rateLimit) return rateLimit;
 

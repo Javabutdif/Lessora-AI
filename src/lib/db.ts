@@ -2,24 +2,53 @@ import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 const MONGODB_DBNAME = process.env.MONGODB_DBNAME || "lessora";
+const MAX_CONNECT_ATTEMPTS = 5;
+const RETRY_DELAY_MS = 2000;
 
 export let isConnected = false;
 
 let connectPromise: Promise<void> | null = null;
 
-export const connectionReady = (async () => {
+async function attemptConnect() {
+  await mongoose.connect(MONGODB_URI as string, { dbName: MONGODB_DBNAME });
+  isConnected = true;
+  console.log(`MongoDB [${MONGODB_DBNAME}] connected successfully`);
+}
+
+export const connectionReady = (() => {
+  if (connectPromise) {
+    return connectPromise;
+  }
+
   if (!MONGODB_URI) {
     console.warn("MONGODB_URI is not set. MongoDB connection skipped.");
-    return;
+    connectPromise = Promise.resolve();
+    return connectPromise;
   }
-  try {
-    await mongoose.connect(MONGODB_URI, { dbName: MONGODB_DBNAME });
-    isConnected = true;
-    console.log(`MongoDB [${MONGODB_DBNAME}] connected successfully`);
-  } catch (error) {
-    console.error("MongoDB connection failed:", error);
-    isConnected = false;
-  }
+
+  connectPromise = (async () => {
+    for (let attempt = 1; attempt <= MAX_CONNECT_ATTEMPTS; attempt += 1) {
+      try {
+        await attemptConnect();
+        return;
+      } catch (error) {
+        isConnected = false;
+        if (attempt === MAX_CONNECT_ATTEMPTS) {
+          console.error(
+            `MongoDB connection failed after ${MAX_CONNECT_ATTEMPTS} attempts:`,
+            error,
+          );
+          return;
+        }
+        console.warn(
+          `MongoDB connection attempt ${attempt} failed. Retrying in ${RETRY_DELAY_MS}ms...`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+      }
+    }
+  })();
+
+  return connectPromise;
 })();
 
 mongoose.connection.on("disconnected", () => {
