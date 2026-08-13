@@ -296,6 +296,10 @@ class OpenAIService {
 
     const lessonPlanDocument = this.resolveLessonPlanDocument({
       title: lessonPlan.title,
+      subject: lessonPlan.subject,
+      gradeLevel: lessonPlan.gradeLevel,
+      description: lessonPlan.description,
+      sessions: lessonPlan.sessions,
       draftText: lessonPlan.draftText,
       aiDocument: lessonPlan.aiDocument,
     });
@@ -478,6 +482,10 @@ class OpenAIService {
 
     const document = this.resolveLessonPlanDocument({
       title: plan.title,
+      subject: plan.subject,
+      gradeLevel: plan.gradeLevel,
+      description: plan.description,
+      sessions: plan.sessions,
       draftText: plan.draftText,
       aiDocument: plan.aiDocument,
     });
@@ -514,6 +522,10 @@ class OpenAIService {
 
     const document = this.resolveLessonPlanDocument({
       title: plan.title,
+      subject: plan.subject,
+      gradeLevel: plan.gradeLevel,
+      description: plan.description,
+      sessions: plan.sessions,
       draftText: plan.draftText,
       aiDocument: plan.aiDocument,
     });
@@ -1498,6 +1510,15 @@ ${this.buildGradeLevelAdaptationRequirement()}`,
 
   private resolveLessonPlanDocument(params: {
     title: string;
+    subject: string;
+    gradeLevel: string;
+    description: string;
+    sessions: Array<{
+      title: string;
+      content: string;
+      objectives: string[];
+      activities: string[];
+    }>;
     draftText?: string;
     aiDocument?: unknown;
   }): LessonPlanDocument {
@@ -1509,7 +1530,7 @@ ${this.buildGradeLevelAdaptationRequirement()}`,
       return this.buildLessonPlanDocumentFromDraftText(params.draftText, params.title);
     }
 
-    throw new NotFoundError('Lesson plan');
+    return this.buildLessonPlanDocumentFromLegacyPlan(params);
   }
 
   private isLessonPlanDocument(value: unknown): value is LessonPlanDocument {
@@ -1611,6 +1632,84 @@ ${this.buildGradeLevelAdaptationRequirement()}`,
       format: 'json',
       version: 1,
       title,
+      blocks,
+      exportTargets: ['doc', 'pdf', 'docx'],
+    };
+  }
+
+  private buildLessonPlanDocumentFromLegacyPlan(params: {
+    title: string;
+    subject: string;
+    gradeLevel: string;
+    description: string;
+    sessions: Array<{
+      title: string;
+      content: string;
+      objectives: string[];
+      activities: string[];
+    }>;
+  }): LessonPlanDocument {
+    const firstSession = params.sessions[0];
+    const lessonOverview =
+      params.description?.trim() ||
+      firstSession?.content?.trim() ||
+      'Review the saved lesson plan for lesson overview details.';
+
+    const learningObjectives = params.sessions
+      .flatMap((session) => session.objectives || [])
+      .filter((item, index, array) => item.trim() && array.indexOf(item) === index);
+
+    const procedure = params.sessions
+      .flatMap((session) => session.activities || [])
+      .filter((item, index, array) => item.trim() && array.indexOf(item) === index);
+
+    const blocks: LessonPlanDocumentBlock[] = [
+      { type: 'heading', level: 1, text: params.title },
+      { type: 'paragraph', text: `Subject: ${params.subject}` },
+      { type: 'paragraph', text: `Grade Level: ${params.gradeLevel}` },
+      { type: 'heading', level: 2, text: 'Lesson Overview' },
+      { type: 'paragraph', text: lessonOverview },
+      { type: 'heading', level: 2, text: 'Learning Objectives' },
+      {
+        type: 'list',
+        style: 'bullet',
+        items: learningObjectives.length
+          ? learningObjectives
+          : ['Review the saved lesson plan for learning objectives.'],
+      },
+      { type: 'heading', level: 2, text: 'Materials' },
+      {
+        type: 'list',
+        style: 'bullet',
+        items: ['Review the saved lesson plan for materials and resources.'],
+      },
+      { type: 'heading', level: 2, text: 'Procedure' },
+      {
+        type: 'list',
+        style: 'numbered',
+        items: procedure.length
+          ? procedure
+          : ['Review the saved lesson plan for procedure and activities.'],
+      },
+      { type: 'heading', level: 2, text: 'Assessment' },
+      {
+        type: 'list',
+        style: 'bullet',
+        items: ['Review the saved lesson plan for assessment details.'],
+      },
+      { type: 'heading', level: 2, text: 'Teacher Notes' },
+      {
+        type: 'list',
+        style: 'bullet',
+        items: ['Review the saved lesson plan for teacher notes and follow-up items.'],
+      },
+    ];
+
+    return {
+      type: 'lesson_plan_document',
+      format: 'json',
+      version: 1,
+      title: params.title,
       blocks,
       exportTargets: ['doc', 'pdf', 'docx'],
     };

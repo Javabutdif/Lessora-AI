@@ -13,7 +13,6 @@
 
 ## Current state
 
-- status: in progress
 - status: completed
 - current owner: qa
 - next action: none
@@ -59,8 +58,8 @@
 
 ## Risks or dependencies
 
-- risk: the draft-text parser may not perfectly reconstruct every historical record
-- dependency: a stored `draftText` value must exist for the fallback to work
+- risk: legacy reconstruction may only approximate older records when `aiDocument` and `draftText` are both missing
+- dependency: stored `description` or `sessions` data must exist for the broader fallback to work
 
 ## Handoff notes
 

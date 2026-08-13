@@ -18,7 +18,7 @@ Make legacy lesson plans open reliably in preview and refine even when the store
 
 ## Proposed behavior
 
-When a lesson plan record does not have `aiDocument`, the service should reconstruct a readable `LessonPlanDocument` from the stored `draftText` instead of throwing `NotFoundError`.
+When a lesson plan record does not have `aiDocument`, the service should reconstruct a readable `LessonPlanDocument` from stored legacy content instead of throwing `NotFoundError`. The preferred source is `draftText`; if that is missing, fall back to `description` and `sessions`.
 
 The reconstructed response should preserve the existing response shape so preview and refine pages keep working without any client-side changes. Newer records that already have `aiDocument` should continue to use the stored structured document.
 
@@ -37,7 +37,7 @@ The reconstructed response should preserve the existing response shape so previe
 ## Risks and open questions
 
 - risk: reconstructed legacy documents may not exactly match the original generated structure
-- question: are there any stored lesson plans with `draftText` missing as well, which would still need a separate handling path?
+- question: are there any stored lesson plans with both `draftText` and `description` missing, which would still need a separate handling path?
 
 ## Related docs
 
