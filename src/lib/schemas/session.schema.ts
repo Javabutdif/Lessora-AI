@@ -14,6 +14,8 @@ export interface ISession extends Document {
   ip: string;
   userAgent: string;
   aiResponseCredits: number; // starts at 3, refilled daily
+  dailySessionCount: number; // sessions created today, reset daily
+  dailyCountResetAt: Date; // midnight UTC+8 when counter resets
   lessonPlanIds: Types.ObjectId[];
   lastActivityAt: Date;
   createdAt: Date;
@@ -41,6 +43,15 @@ const SessionSchema = new Schema<ISession>(
       default: 3,
       min: 0,
     },
+    dailySessionCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    dailyCountResetAt: {
+      type: Date,
+      required: true,
+    },
     lessonPlanIds: {
       type: [Schema.Types.ObjectId],
       ref: "LessonPlan",
@@ -61,6 +72,9 @@ SessionSchema.index({ lastActivityAt: 1 }, { expireAfterSeconds: 5_184_000 });
 
 // Compound index for common lookup patterns
 SessionSchema.index({ sessionId: 1, aiResponseCredits: 1 });
+
+// Index for IP-based daily lookups
+SessionSchema.index({ ip: 1, dailyCountResetAt: -1 });
 
 let SessionModel = mongoose.models.Session as mongoose.Model<ISession> | undefined;
 if (!SessionModel) {

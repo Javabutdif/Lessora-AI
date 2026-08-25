@@ -14,8 +14,20 @@ export class SessionCreditRefreshScheduler {
       "0 0 * * *",
       async () => {
         try {
-          const result = await Session.updateMany({}, { $set: { aiResponseCredits: DEFAULT_MAX_ANON_CREDITS } });
-          console.log(`Session credit refresh completed: ${result.modifiedCount} sessions reset to ${DEFAULT_MAX_ANON_CREDITS} credits`);
+          const now = new Date();
+          const result = await Session.updateMany(
+            {},
+            {
+              $set: {
+                aiResponseCredits: DEFAULT_MAX_ANON_CREDITS,
+                dailySessionCount: 0,
+                dailyCountResetAt: now,
+              },
+            },
+          );
+          console.log(
+            `Session credit refresh completed: ${result.modifiedCount} sessions reset. Credits=${DEFAULT_MAX_ANON_CREDITS}, dailyCount=0`,
+          );
         } catch (error) {
           console.error("Session credit refresh failed:", error);
         }

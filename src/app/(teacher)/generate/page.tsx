@@ -1,8 +1,8 @@
 "use client";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { BookOpen, GraduationCap, Translate, House } from "@phosphor-icons/react";
-import { generateLessonPlan, LessonPlanTemplate, ensureSession } from "@/app/lib/api-client";
+import { generateLessonPlan, LessonPlanTemplate, ensureSession, getSessionInfo } from "@/app/lib/api-client";
 import Dropdown from "@/app/components/ui/dropdown";
 import styles from "@/portal-theme.module.css";
 
@@ -38,6 +38,22 @@ export default function GeneratePlanPage() {
   const [activityPreferenceNotes, setActivityPreferenceNotes] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [creditsRemaining, setCreditsRemaining] = useState<number | null>(null);
+  const [sessionsRemainingToday, setSessionsRemainingToday] = useState<number | null>(null);
+
+  useEffect(() => {
+    void ensureSession().then(() => loadSessionInfo());
+  }, []);
+
+  async function loadSessionInfo() {
+    try {
+      const info = await getSessionInfo();
+      setCreditsRemaining(info.creditsRemaining);
+      setSessionsRemainingToday(info.sessionsRemainingToday);
+    } catch {
+      // Session info unavailable — proceed without display
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -54,9 +70,17 @@ export default function GeneratePlanPage() {
         activityPreferences: activityPreferences.length ? activityPreferences : undefined,
         activityPreferenceNotes: activityPreferenceNotes || undefined,
       });
+      setCreditsRemaining(result.remainingResponses);
+      await loadSessionInfo();
       router.push(`/preview/${result.lessonPlanId}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate lesson plan");
+      const message = err instanceof Error ? err.message : "Failed to generate lesson plan";
+      if (message.includes("5 sessions used today") || message.includes("RATE_LIMITED_DAILY")) {
+        setError("You have used all 5 sessions for today. Try again tomorrow.");
+      } else {
+        setError(message);
+      }
+      await loadSessionInfo();
     } finally {
       setIsLoading(false);
     }
@@ -76,8 +100,8 @@ export default function GeneratePlanPage() {
         </a>
         <nav className={styles.userAppHeaderActions}>
            <a href="/home" className={styles.softSecondary}><House size={16} /> Home</a>
-          <a href="/discover" className={styles.softSecondary}>Browse Plans</a>
-          <a href="/support" className={styles.softSecondary}>Support</a>
+           <a href="/discover" className={styles.softSecondary}>Browse Plans</a>
+           <a href="/support" className={styles.softSecondary}>Support</a>
         </nav>
       </header>
 
@@ -87,6 +111,21 @@ export default function GeneratePlanPage() {
           <h2 className={styles.userAppHeroTitle}>Create a Lesson Plan</h2>
           <p className={styles.userAppHeroDescription}>Fill in the details below and Let AI build a structured, classroom-ready plan.</p>
         </div>
+
+        {(creditsRemaining !== null || sessionsRemainingToday !== null) && (
+          <div className={styles.dashSessionStatus}>
+            {sessionsRemainingToday !== null && (
+              <span className={styles.dashSessionStatusText}>
+                Sessions remaining today: <strong>{sessionsRemainingToday}</strong> / 5
+              </span>
+            )}
+            {creditsRemaining !== null && (
+              <span className={styles.dashSessionStatusText}>
+                AI credits remaining: <strong>{creditsRemaining}</strong>
+              </span>
+            )}
+          </div>
+        )}
 
         {error && (
           <div className={styles.errorPanel}>

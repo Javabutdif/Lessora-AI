@@ -3,6 +3,7 @@ import { Session } from "@/lib/schemas/session.schema";
 import { connectionReady } from "@/lib/db";
 import { checkRateLimit, getSessionId } from "@/lib/middleware/rate-limiter";
 import { handleApiError } from "@/lib/middleware/error-handler";
+import { checkDailyLimit, createOrUpdateDailySession } from "@/lib/middleware/ip-daily-limiter";
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,7 +11,17 @@ export async function POST(request: NextRequest) {
     const rateLimit = checkRateLimit(request);
     if (rateLimit) return rateLimit;
 
-    const existingSessionId = (await request.json())?.sessionId as string | undefined;
+    const dailyLimit = await checkDailyLimit(request);
+    if (dailyLimit) return dailyLimit;
+
+    let body: { sessionId?: string } = {};
+    try {
+      body = await request.json() as { sessionId?: string };
+    } catch {
+      // No body provided — treat as empty
+    }
+
+    const existingSessionId = body.sessionId as string | undefined;
     let sessionId: string;
 
     if (existingSessionId) {
@@ -20,23 +31,16 @@ export async function POST(request: NextRequest) {
       sessionId = generateSessionId();
     }
 
-    const session = await Session.findOneAndUpdate(
-      { sessionId },
-      {
-        $setOnInsert: {
-          sessionId,
-          ip: request.headers.get("x-forwarded-for") || "",
-          userAgent: request.headers.get("user-agent") || "",
-          aiResponseCredits: 3,
-          lessonPlanIds: [],
-        },
-        $set: { lastActivityAt: new Date() },
-      },
-      { new: true, upsert: true },
-    );
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+      request.headers.get("x-real-ip") ??
+      "";
+    const userAgent = request.headers.get("user-agent") ?? "";
+
+    const result = await createOrUpdateDailySession(sessionId, ip, userAgent);
 
     return NextResponse.json({
-      data: { sessionId: session.sessionId, creditsRemaining: session.aiResponseCredits },
+      data: { sessionId: result.sessionId, creditsRemaining: result.creditsRemaining },
       error: null,
     });
   } catch (error) {

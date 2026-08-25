@@ -171,6 +171,13 @@
   transform: scale(0.98);
 }
 
+.userLandingUsageNote {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-tertiary);
+  line-height: var(--line-height-relaxed);
+}
+
 /* Secondary links below callout — flat outline style */
 .userLandingSecondaryLinks {
   display: flex;

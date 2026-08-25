@@ -139,7 +139,7 @@ export type LessonPlanHistoryItem = { id: string; title: string; subject: string
 export type LessonPlanHistoryDetail = LessonPlanHistoryItem & { document: LessonPlanDocument; draftText: string; model?: string; templateId?: LessonPlanTemplate };
 export type PublicLessonPlan = LessonPlanHistoryItem;
 export type AdminLessonPlanHistoryItem = LessonPlanHistoryItem & { createdBy: { id: string; name: string; email: string } };
-export type SessionInfo = { creditsRemaining: number; isAnonymous: boolean };
+export type SessionInfo = { creditsRemaining: number; isAnonymous: boolean; sessionsRemainingToday: number };
 
 export async function generateLessonPlan(payload: GenerateLessonPlanPayload) {
   return apiRequest<GenerateLessonPlanResponse>("/api/ai/lesson-plan/generate", { method: "POST", body: JSON.stringify(payload) });

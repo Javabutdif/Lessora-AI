@@ -50,6 +50,9 @@ export default function LandingPage() {
           <a href="/generate" className={styles.userLandingPrimaryCta}>
             Start Planning
           </a>
+          <p className={styles.userLandingUsageNote}>
+            No account needed. Generate up to 3 lesson plans per day.
+          </p>
         </div>
         <div className={styles.userLandingSecondaryLinks}>
           <a href="/discover" className={styles.userLandingSecondaryLink}>
