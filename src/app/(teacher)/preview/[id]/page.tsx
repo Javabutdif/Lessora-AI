@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { BookOpen, Clock, Warning, Plus, Spinner, DownloadSimple, House } from "@phosphor-icons/react";
+import { BookOpen, Clock, Warning, Plus, Spinner, DownloadSimple } from "@phosphor-icons/react";
 import { getPublicLessonPlanById, LessonPlanHistoryDetail, ensureSession } from "@/app/lib/api-client";
 import styles from "@/portal-theme.module.css";
 
@@ -98,8 +98,9 @@ export default function PreviewPage() {
 
   function renderBlock(block: any, index: number) {
     if (block.type === "heading") {
+      const headingClass = block.level === 1 ? styles.planBlockHeading1 : block.level === 2 ? styles.planBlockHeading2 : styles.planBlockHeading3;
       const HeadingTag = `h${block.level}` as keyof JSX.IntrinsicElements;
-      return <HeadingTag key={index} style={{ fontSize: block.level === 1 ? 28 : block.level === 2 ? 22 : 18 }}>{block.text}</HeadingTag>;
+      return <HeadingTag key={index} className={headingClass}>{block.text}</HeadingTag>;
     }
     if (block.type === "paragraph") return <p key={index}>{block.text}</p>;
     if (block.type === "list") {
@@ -112,11 +113,14 @@ export default function PreviewPage() {
   return (
     <div className={styles.userAppPage}>
       <header className={styles.userAppHeader}>
-        <a href="/home" className={styles.userAppBrandLink}><h1 className={styles.userAppBrand}>Lessora AI</h1></a>
-        <div className={styles.userAppHeaderActions}>
-           <a href="/home" className={styles.softSecondary}><House size={16} /> Home</a>
-           <button type="button" onClick={() => router.push("/generate")} className={styles.softSecondary}><Plus size={16} /> New Plan</button>
-          <button type="button" onClick={() => router.push("/discover")} className={styles.softSecondary}>Browse</button>
+        <div className={styles.userAppHeaderInner}>
+          <a href="/home" className={styles.userAppBrandLink}><h1 className={styles.userAppBrand}>Lessora AI</h1></a>
+          <nav className={styles.userAppHeaderActions} aria-label="Main navigation">
+            <a href="/home" className={styles.userAppHeaderLink}>Home</a>
+            <a href="/discover" className={styles.userAppHeaderLink}>Discover</a>
+            <a href="/generate" className={styles.userAppHeaderLink}>New Plan</a>
+            <a href="/support" className={styles.userAppHeaderLink}>Support</a>
+          </nav>
         </div>
       </header>
 

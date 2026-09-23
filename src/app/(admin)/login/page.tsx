@@ -34,20 +34,20 @@ export default function LoginPage() {
   return (
     <div className={styles.adminAuthPage}>
       <div className={styles.adminAuthCard}>
-        <div style={{ marginBottom: 20 }}>
+        <div>
           <p className={styles.adminAuthEyebrow}>Admin Portal</p>
           <h1 className={styles.adminAuthTitle}>Sign in</h1>
           <p className={styles.adminAuthSubtitle}>Use administrator credentials to open the administrator dashboard.</p>
         </div>
 
         <form onSubmit={handleSubmit} className={styles.adminAuthForm}>
-          <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <span style={{ fontSize: 14, fontWeight: 600 }}>Email</span>
+          <label className={styles.adminAuthField}>
+            <span className={styles.adminAuthFieldLabel}>Email</span>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="admin@example.com" className={styles.adminAuthInput} />
           </label>
 
-          <label style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16 }}>
-            <span style={{ fontSize: 14, fontWeight: 600 }}>Password</span>
+          <label className={styles.adminAuthField}>
+            <span className={styles.adminAuthFieldLabel}>Password</span>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" className={styles.adminAuthInput} />
           </label>
 

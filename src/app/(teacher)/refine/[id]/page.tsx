@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { Spinner, Warning, Check, House } from "@phosphor-icons/react";
+import { Spinner, Warning, Check } from "@phosphor-icons/react";
 import { getPublicLessonPlanById, refineLessonPlan, LessonPlanTemplate, LessonPlanHistoryDetail, ensureSession } from "@/app/lib/api-client";
 import styles from "@/portal-theme.module.css";
 
@@ -108,10 +108,14 @@ export default function RefineLessonPage() {
   return (
     <div className={styles.userAppPage}>
       <header className={styles.userAppHeader}>
-        <a href="/home" className={styles.userAppBrandLink}><h1 className={styles.userAppBrand}>Lessora AI</h1></a>
-        <div className={styles.userAppHeaderActions}>
-           <a href="/home" className={styles.softSecondary}><House size={16} /> Home</a>
-          <button type="button" onClick={() => router.back()} className={styles.softSecondary}>Back</button>
+        <div className={styles.userAppHeaderInner}>
+          <a href="/home" className={styles.userAppBrandLink}><h1 className={styles.userAppBrand}>Lessora AI</h1></a>
+          <nav className={styles.userAppHeaderActions} aria-label="Main navigation">
+            <a href="/home" className={styles.userAppHeaderLink}>Home</a>
+            <a href="/discover" className={styles.userAppHeaderLink}>Discover</a>
+            <a href="/generate" className={styles.userAppHeaderLink}>New Plan</a>
+            <a href="/support" className={styles.userAppHeaderLink}>Support</a>
+          </nav>
         </div>
       </header>
 
@@ -170,7 +174,7 @@ export default function RefineLessonPage() {
             {error && !isRefining && <p className={`${styles.errorText} ${styles.refineErrorText}`}>{error}</p>}
 
             {isRefining && (
-              <div className={styles.userAppCenter} style={{ padding: "40px 0" }}>
+              <div className={styles.userAppCenter}>
                 <Spinner weight="fill" size={32} className={styles.spin} />
                 <p className={styles.centerTextSmall}>Refining lesson plan...</p>
               </div>

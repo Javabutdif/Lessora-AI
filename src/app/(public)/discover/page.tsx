@@ -9,7 +9,7 @@ import {
 } from "@/app/lib/api-client";
 import ScrollReveal from "@/app/components/scroll-reveal";
 import Dropdown from "@/app/components/ui/dropdown";
-import { Warning, Spinner, MagnifyingGlass, House } from "@phosphor-icons/react";
+import { Warning, Spinner, MagnifyingGlass } from "@phosphor-icons/react";
 import styles from "@/portal-theme.module.css";
 
 const ALL_GRADES = ["All Grades", "Preschool", "Kindergarten", "Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6", "Grade 7", "Grade 8", "Grade 9", "Grade 10", "Grade 11", "Grade 12", "Senior High School"];
@@ -51,14 +51,17 @@ export default function DiscoverPage() {
   return (
     <div className={styles.userAppPage}>
       <header className={styles.userAppHeader}>
-        <a href="/home" className={styles.userAppBrandLink}>
-          <h1 className={styles.userAppBrand}>Lessora AI</h1>
-        </a>
-        <nav className={styles.userAppHeaderActions}>
-           <a href="/home" className={styles.softSecondary}><House size={16} /> Home</a>
-           <button type="button" onClick={() => router.push("/generate")} className={styles.softSecondary}>New Plan</button>
-           <a href="/support" className={styles.softSecondary}>Support</a>
-        </nav>
+        <div className={styles.userAppHeaderInner}>
+          <a href="/home" className={styles.userAppBrandLink}>
+            <h1 className={styles.userAppBrand}>Lessora AI</h1>
+          </a>
+          <nav className={styles.userAppHeaderActions} aria-label="Main navigation">
+            <a href="/home" className={styles.userAppHeaderLink}>Home</a>
+            <a href="/discover" className={styles.userAppHeaderLink} aria-current="page">Discover</a>
+            <a href="/generate" className={styles.userAppHeaderLink}>New Plan</a>
+            <a href="/support" className={styles.userAppHeaderLink}>Support</a>
+          </nav>
+        </div>
       </header>
 
       <div className={styles.userAppContainer}>
@@ -94,7 +97,7 @@ export default function DiscoverPage() {
           <div className={styles.userAppCenter}>
             <MagnifyingGlass weight="fill" size={48} className={styles.iconWithBottomLarge} />
             <h3 className={styles.userAppCenterTitle}>No Plans Yet</h3>
-            <p className={styles.userAppCenterText} style={{ marginBottom: 24 }}>Be the first teacher to share a lesson plan.</p>
+            <p className={styles.userAppCenterText}>Be the first teacher to share a lesson plan.</p>
             <button type="button" onClick={() => router.push("/generate")} className={styles.flatButton}>Create Your First Plan</button>
           </div>
         )}
@@ -112,14 +115,13 @@ export default function DiscoverPage() {
             {filteredPlans.map((plan, index) => (
               <ScrollReveal key={plan.id} delay={index * 40}>
                 <div
-                  className={styles.planTile}
+                  className={navigatingId === plan.id ? `${styles.planTile} ${styles.planTileNavigating}` : styles.planTile}
                   onClick={() => navigatingId !== plan.id && handleNavigate(plan.id)}
-                  style={{ opacity: navigatingId === plan.id ? 0.5 : 1, cursor: navigatingId === plan.id ? "default" : "pointer" }}
                 >
                   {navigatingId === plan.id ? (
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "20px 0" }}>
+                    <div className={styles.planTileLoading}>
                       <Spinner weight="fill" size={20} className={styles.spin} />
-                      <span style={{ fontSize: 13, color: "var(--color-ink-secondary)" }}>Loading...</span>
+                      <span>Loading...</span>
                     </div>
                   ) : (
                     <>

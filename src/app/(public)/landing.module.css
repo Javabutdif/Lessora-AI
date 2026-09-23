@@ -6,29 +6,15 @@
   min-height: 100vh;
   background: var(--color-page);
   color: var(--color-ink-primary);
+  position: relative;
 }
 
-.userLandingNav {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--spacing-6);
-  padding: var(--spacing-6) var(--spacing-8);
-  border-bottom: 1px solid var(--color-rule);
-  flex-wrap: wrap;
-}
-
-.userLandingNav :global(a) {
-  color: var(--color-ink-secondary);
-  font-family: var(--font-family-mono);
-  font-size: 11px;
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-spacing-wider);
-  text-transform: uppercase;
-  text-decoration: none;
-}
-
-.userLandingNav :global(a:hover) {
-  color: var(--color-ink-primary);
+/* The 3px page-top rule — full-bleed, matches userAppPage::before. */
+.userLanding::before {
+  content: "";
+  display: block;
+  height: 3px;
+  background: var(--color-ink-primary);
 }
 
 .userLandingHero {
@@ -63,17 +49,6 @@
   z-index: 1;
 }
 
-/* The 3px page-top rule: spec's signature element. */
-.userLandingHero::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--color-ink-primary);
-}
-
 @media (min-width: 768px) {
   .userLandingHero {
     padding: var(--spacing-16) var(--spacing-8);
@@ -81,10 +56,6 @@
     gap: var(--spacing-12);
     align-items: center;
   }
-}
-
-.userLandingLogo {
-  display: none;
 }
 
 .userLandingEyebrow {
@@ -309,11 +280,6 @@
 }
 
 @media (max-width: 720px) {
-  .userLandingNav {
-    justify-content: center;
-    padding: var(--spacing-4);
-  }
-
   .userLandingHero {
     padding: var(--spacing-8) var(--spacing-4);
   }

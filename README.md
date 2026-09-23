@@ -102,20 +102,19 @@ src/
         lesson-plans/page.tsx — Admin lesson plan oversight
     api/
       ...                     — All API route handlers
-    components/               — Shared UI components
-    hooks/                    — Custom React hooks
-    lib/                      — API client, utils
-  lib/
+     components/               — Shared UI components
+     hooks/                    — Custom React hooks
+     lib/                      — API client, utils
+   lib/
     schemas/                  — Mongoose schemas
     services/                 — Business logic services
     middleware/               — Auth, rate limiting, error handling
     schedulers.ts             — Cron job initialization
     db.ts                     — MongoDB connection
   emails/                     — Email templates
-  middleware.ts               — Next.js middleware
-  globals.css                 — Global styles + design tokens
-  portal-theme.module.css     — Shared portal CSS utilities
-```
+   middleware.ts               — Next.js middleware
+   globals.css                 — Global styles + design tokens
+   portal-theme.module.css     — Shared portal CSS utilities (root-level, imported via `@/portal-theme.module.css`)
 
 ## 🚀 Getting Started
 

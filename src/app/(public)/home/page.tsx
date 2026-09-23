@@ -1,10 +1,10 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
 import { CheckCircle, Target, Clock, Browser } from '@phosphor-icons/react';
-import LessoraLogo from '@/app/assets/Transparent Logo.png';
 import { fetchLandingMetrics } from '@/app/lib/api-client';
 import ScrollReveal from '@/app/components/scroll-reveal';
 import styles from '../landing.module.css';
+import theme from '@/portal-theme.module.css';
 
 export default function LandingPage() {
   const { data: landingMetrics } = useQuery({
@@ -26,14 +26,19 @@ export default function LandingPage() {
 
   return (
     <div className={styles.userLanding}>
-      <header className={styles.userLandingNav}>
-        <a href="/about">About</a>
-        <a href="/support">Support</a>
-        <a href="/privacy-policy">Privacy</a>
-        <a href="/terms-and-conditions">Terms</a>
+      <header className={theme.userAppHeader}>
+        <div className={theme.userAppHeaderInner}>
+          <a href="/home" className={theme.userAppBrandLink}>
+            <h1 className={theme.userAppBrand}>Lessora AI</h1>
+          </a>
+          <nav className={theme.userAppHeaderActions} aria-label="Main navigation">
+            <a href="/discover" className={theme.userAppHeaderLink}>Discover</a>
+            <a href="/generate" className={theme.userAppHeaderLink}>New Plan</a>
+            <a href="/support" className={theme.userAppHeaderLink}>Support</a>
+          </nav>
+        </div>
       </header>
       <div className={styles.userLandingHero}>
-        <img src={LessoraLogo} alt="Lessora AI" className={styles.userLandingLogo} />
         <div>
           <p className={styles.userLandingEyebrow}>Less Planning, More Teaching</p>
           <h1 className={styles.userLandingTitle}>Lesson Plans, Made Simply</h1>

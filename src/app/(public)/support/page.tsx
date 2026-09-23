@@ -47,21 +47,18 @@ function SupportContent() {
   return (
     <main className={`${styles.infoPageShell} ${styles.supportPage}`}>
       <div className={styles.infoPageInner}>
-        <header className={styles.supportDonationHeader}>
-          <nav className={styles.supportDonationNav} aria-label="Public navigation">
-            <a href="/home" className={styles.supportDonationNavLink}>
-              Home
+        <header className={styles.userAppHeader}>
+          <div className={styles.userAppHeaderInner}>
+            <a href="/home" className={styles.userAppBrandLink}>
+              <h1 className={styles.userAppBrand}>Lessora AI</h1>
             </a>
-            <a href="/about" className={styles.supportDonationNavLink}>
-              About
-            </a>
-            <a href="/privacy-policy" className={styles.supportDonationNavLink}>
-              Privacy
-            </a>
-            <a href="/terms-and-conditions" className={styles.supportDonationNavLink}>
-              Terms
-            </a>
-          </nav>
+            <nav className={styles.userAppHeaderActions} aria-label="Main navigation">
+              <a href="/home" className={styles.userAppHeaderLink}>Home</a>
+              <a href="/discover" className={styles.userAppHeaderLink}>Discover</a>
+              <a href="/generate" className={styles.userAppHeaderLink}>New Plan</a>
+              <a href="/support" className={styles.userAppHeaderLink} aria-current="page">Support</a>
+            </nav>
+          </div>
         </header>
 
         <div className={styles.supportDonationContent}>

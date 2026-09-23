@@ -791,6 +791,10 @@
   .workspaceCardInteractive:hover {
     transform: none;
   }
+
+  .skeletonLine {
+    animation: none;
+  }
 }
 
 /* ========================================
@@ -842,13 +846,53 @@
 
 .userAppHeader {
   background: var(--color-page);
-  padding: var(--spacing-4) 0;
+  padding: var(--spacing-4) var(--spacing-6);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+@media (min-width: 768px) {
+  .userAppHeader {
+    padding: var(--spacing-4) var(--spacing-8);
+  }
+}
+
+.userAppHeaderInner {
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   gap: var(--spacing-4);
   flex-wrap: wrap;
-  border-bottom: 1px solid var(--color-rule);
+}
+
+.userAppHeaderActions {
+  display: flex;
+  gap: var(--spacing-4);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.userAppHeaderLink {
+  color: var(--color-ink-secondary);
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: var(--spacing-2) 0;
+  display: inline-block;
+}
+
+.userAppHeaderLink:hover {
+  color: var(--color-ink-primary);
+}
+
+.userAppHeaderLink[aria-current="page"] {
+  color: var(--color-ink-primary);
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 .supportDonationHeader {
@@ -896,13 +940,6 @@
 .userAppBrandLink:hover {
   color: var(--color-accent);
   text-decoration: none;
-}
-
-.userAppHeaderActions {
-  display: flex;
-  gap: var(--spacing-4);
-  align-items: center;
-  flex-wrap: wrap;
 }
 
 .userAppUser {
@@ -1044,6 +1081,51 @@
   letter-spacing: var(--letter-spacing-wider);
   text-transform: uppercase;
   color: var(--color-ink-tertiary);
+}
+
+.planTileLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-5) 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-secondary);
+}
+
+.planTileNavigating {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.planBlockHeading1 {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-tight);
+  color: var(--color-ink-primary);
+  margin: var(--spacing-6) 0 var(--spacing-3);
+}
+
+.planBlockHeading2 {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-tight);
+  color: var(--color-ink-primary);
+  margin: var(--spacing-5) 0 var(--spacing-2);
+}
+
+.planBlockHeading3 {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-tight);
+  color: var(--color-ink-primary);
+  margin: var(--spacing-4) 0 var(--spacing-2);
 }
 
 .userAppCenter {
@@ -1322,6 +1404,34 @@
 .adminAuthForm {
   display: grid;
   gap: var(--spacing-6);
+}
+
+.adminAuthField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.adminAuthFieldLabel {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink-primary);
+}
+
+.skeletonLine {
+  height: 12px;
+  background: var(--color-surface-sunken);
+  border-radius: 0;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeletonLineGap {
+  margin: var(--spacing-3) auto 0;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
 .adminAuthInput {

@@ -11,23 +11,10 @@ export default function LoadingSkeleton({ lines = 3 }: { lines?: number }) {
       {Array.from({ length: lines }).map((_, i) => (
         <div
           key={i}
-          style={{
-            height: 12,
-            background: "var(--color-surface-sunken)",
-            borderRadius: 0,
-            width: `${60 - i * 15}%`,
-            margin: "var(--spacing-3) auto 0",
-            animation: "pulse 1.5s ease-in-out infinite",
-            animationDelay: `${i * 0.15}s`,
-          }}
+          className={i === 0 ? styles.skeletonLine : `${styles.skeletonLine} ${styles.skeletonLineGap}`}
+          style={{ width: `${60 - i * 15}%` }}
         />
       ))}
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.4; }
-        }
-      `}</style>
     </div>
   );
 }

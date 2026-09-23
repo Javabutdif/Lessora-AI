@@ -18,7 +18,7 @@ export default function MetricCard({ title, value, helper, icon, loading, error,
     return (
       <div className={styles.card}>
         <div className={styles.skeletonLine} style={{ width: "60%" }} />
-        <div className={styles.skeletonLine} style={{ width: "40%", marginTop: 8 }} />
+        <div className={`${styles.skeletonLine} ${styles.skeletonLineGap}`} style={{ width: "40%" }} />
       </div>
     );
   }

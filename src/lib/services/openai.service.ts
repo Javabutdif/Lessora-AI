@@ -286,7 +286,6 @@ class OpenAIService {
   ): Promise<GenerateLessonPlanResponse> {
     const lessonPlan = await LessonPlan.findOne({
       _id: lessonPlanId,
-      ...(isAnonymous ? { sessionId: ownerId } : { userId: ownerId }),
       generatedByAI: true,
     });
 
@@ -365,7 +364,7 @@ class OpenAIService {
     }));
 
     await LessonPlan.updateOne(
-      { _id: lessonPlanId, ...(isAnonymous ? { sessionId: ownerId } : { userId: ownerId }) },
+      { _id: lessonPlanId, generatedByAI: true },
       {
         $set: {
           title: sections.title,

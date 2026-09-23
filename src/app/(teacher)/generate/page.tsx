@@ -1,7 +1,7 @@
 "use client";
 import { useState, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { BookOpen, GraduationCap, Translate, House } from "@phosphor-icons/react";
+import { BookOpen, GraduationCap, Translate } from "@phosphor-icons/react";
 import { generateLessonPlan, LessonPlanTemplate, ensureSession, getSessionInfo } from "@/app/lib/api-client";
 import Dropdown from "@/app/components/ui/dropdown";
 import styles from "@/portal-theme.module.css";
@@ -95,14 +95,17 @@ export default function GeneratePlanPage() {
   return (
     <div className={styles.userAppPage}>
       <header className={styles.userAppHeader}>
-        <a href="/home" className={styles.userAppBrandLink}>
-          <h1 className={styles.userAppBrand}>Lessora AI</h1>
-        </a>
-        <nav className={styles.userAppHeaderActions}>
-           <a href="/home" className={styles.softSecondary}><House size={16} /> Home</a>
-           <a href="/discover" className={styles.softSecondary}>Browse Plans</a>
-           <a href="/support" className={styles.softSecondary}>Support</a>
-        </nav>
+        <div className={styles.userAppHeaderInner}>
+          <a href="/home" className={styles.userAppBrandLink}>
+            <h1 className={styles.userAppBrand}>Lessora AI</h1>
+          </a>
+          <nav className={styles.userAppHeaderActions} aria-label="Main navigation">
+            <a href="/home" className={styles.userAppHeaderLink}>Home</a>
+            <a href="/discover" className={styles.userAppHeaderLink}>Discover</a>
+            <a href="/generate" className={styles.userAppHeaderLink} aria-current="page">New Plan</a>
+            <a href="/support" className={styles.userAppHeaderLink}>Support</a>
+          </nav>
+        </div>
       </header>
 
       <div className={styles.userAppContainer}>

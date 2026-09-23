@@ -35,7 +35,7 @@ export function getSupportDonationConfig() {
 }
 
 function getClientBaseUrl() {
-  return process.env.PUBLIC_APP_URL || process.env.CLIENT_BASE_URL || 'http://localhost:5174';
+  return process.env.PUBLIC_APP_URL || process.env.BASE_URL || 'http://localhost:5174';
 }
 
 function buildSupportReturnUrl(status: 'success' | 'cancelled', referenceNumber: string) {
