@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Session } from "@/lib/schemas/session.schema";
 import { connectionReady } from "@/lib/db";
-import { checkRateLimit } from "@/lib/middleware/rate-limiter";
+import { checkRateLimit, getClientIp } from "@/lib/middleware/rate-limiter";
 import { handleApiError } from "@/lib/middleware/error-handler";
+import { countSessionsCreatedToday, DAILY_SESSION_LIMIT } from "@/lib/middleware/ip-daily-limiter";
 
 export async function GET(request: NextRequest) {
   try {
     await connectionReady;
-    const rateLimit = checkRateLimit(request);
+    const rateLimit = await checkRateLimit(request);
     if (rateLimit) return rateLimit;
 
     const sessionId = request.headers.get("x-session-token") as string | null;
@@ -20,18 +21,19 @@ export async function GET(request: NextRequest) {
     }
 
     const session = await Session.findOne({ sessionId })
-      .select("aiResponseCredits dailySessionCount dailyCountResetAt")
+      .select("aiResponseCredits dailyCountResetAt")
       .lean();
 
-    const now = new Date();
-    const sessionsRemainingToday = Math.max(
-      0,
-      5 - ((session?.dailySessionCount as number) ?? 0),
-    );
+    const createdToday = await countSessionsCreatedToday(getClientIp(request));
+    const sessionsRemainingToday = Math.max(0, DAILY_SESSION_LIMIT - createdToday);
+
+    // Credits refill lazily on the next generation once the Manila day rolls over
+    const creditsRemaining =
+      session && session.dailyCountResetAt <= new Date() ? 3 : session?.aiResponseCredits ?? 0;
 
     return NextResponse.json({
       data: {
-        creditsRemaining: session?.aiResponseCredits ?? 0,
+        creditsRemaining,
         isAnonymous: true,
         sessionsRemainingToday,
       },

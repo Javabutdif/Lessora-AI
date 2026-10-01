@@ -1,42 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { Session } from "@/lib/schemas/session.schema";
 import { connectionReady } from "@/lib/db";
-import { checkRateLimit, getSessionId } from "@/lib/middleware/rate-limiter";
+import { checkRateLimit, getClientIp } from "@/lib/middleware/rate-limiter";
 import { handleApiError } from "@/lib/middleware/error-handler";
 import { checkDailyLimit, createOrUpdateDailySession } from "@/lib/middleware/ip-daily-limiter";
+import { generateSessionId } from "@/lib/utils/session-utils";
+
+const ensureSessionSchema = z.object({
+  sessionId: z.string().uuid("Invalid session id").optional(),
+});
 
 export async function POST(request: NextRequest) {
   try {
     await connectionReady;
-    const rateLimit = checkRateLimit(request);
+    const rateLimit = await checkRateLimit(request);
     if (rateLimit) return rateLimit;
 
-    const dailyLimit = await checkDailyLimit(request);
-    if (dailyLimit) return dailyLimit;
-
-    let body: { sessionId?: string } = {};
+    let rawBody: unknown = {};
     try {
-      body = await request.json() as { sessionId?: string };
+      rawBody = await request.json();
     } catch {
       // No body provided — treat as empty
     }
 
-    const existingSessionId = body.sessionId as string | undefined;
-    let sessionId: string;
+    const body = ensureSessionSchema.parse(rawBody);
+    const sessionId = body.sessionId ?? generateSessionId();
+    const ip = getClientIp(request);
 
-    if (existingSessionId) {
-      sessionId = existingSessionId;
-    } else {
-      const { generateSessionId } = await import("@/lib/utils/session-utils");
-      sessionId = generateSessionId();
+    // Only brand-new sessions count toward the per-IP daily cap
+    const existing = await Session.exists({ sessionId });
+    if (!existing) {
+      const dailyLimit = await checkDailyLimit(ip);
+      if (dailyLimit) return dailyLimit;
     }
 
-    const ip =
-      request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
-      request.headers.get("x-real-ip") ??
-      "";
     const userAgent = request.headers.get("user-agent") ?? "";
-
     const result = await createOrUpdateDailySession(sessionId, ip, userAgent);
 
     return NextResponse.json({

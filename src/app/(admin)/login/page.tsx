@@ -1,16 +1,11 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { loginAdmin } from "@/app/lib/api-client";
-import { setSeoMetadata } from "@/app/utils/seo";
 import styles from "@/portal-theme.module.css";
 
 export default function LoginPage() {
-  useEffect(() => {
-    setSeoMetadata({ title: "Admin Login | Lessora AI", description: "Admin login for Lessora AI.", robots: "noindex, follow" });
-  }, []);
-
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

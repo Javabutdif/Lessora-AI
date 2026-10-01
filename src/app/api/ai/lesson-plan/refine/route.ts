@@ -8,7 +8,7 @@ import { handleApiError } from "@/lib/middleware/error-handler";
 export async function POST(request: NextRequest) {
   try {
     await connectionReady;
-    const rateLimit = checkRateLimit(request);
+    const rateLimit = await checkRateLimit(request);
     if (rateLimit) return rateLimit;
 
     const sessionId = getSessionId(request);

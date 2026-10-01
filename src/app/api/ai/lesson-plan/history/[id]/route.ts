@@ -10,7 +10,7 @@ export async function GET(
 ) {
   try {
     await connectionReady;
-    const rateLimit = checkRateLimit(request);
+    const rateLimit = await checkRateLimit(request);
     if (rateLimit) return rateLimit;
 
     const sessionId = getSessionId(request);

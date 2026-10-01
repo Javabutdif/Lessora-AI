@@ -52,6 +52,14 @@ Keep entries short, specific, and ordered with the newest decision at the top.
 - decision: Build a dedicated React + TypeScript web admin under `client-side-admin` that consumes the existing Express API through shared auth and stats endpoints.
 - consequences: The admin portal can evolve independently from the mobile client while continuing to use the same backend server and data contracts.
 
+### MongoDB-backed rate limits and lazy credit refill (serverless-safe)
+
+- date: 2026-10-02
+- status: accepted
+- context: Production runs on Vercel serverless. In-memory rate-limit Maps were per instance (effectively disabled), and the node-cron credit schedulers were never initialised and cannot run there, so anonymous credits never refilled.
+- decision: Store fixed-window counters in a MongoDB `ratelimits` collection (`src/lib/schemas/rate-limit.schema.ts`, TTL-cleaned) via `checkLimit`/`checkRateLimit` in `src/lib/middleware/rate-limiter.ts`. Refill anonymous credits lazily in `reserveResponseCredit` once `dailyCountResetAt` (next 00:00 Asia/Manila) has passed. No Redis and no cron.
+- consequences: Limits hold across instances and restarts with no new dependency, at the cost of one Mongo upsert per AI request. The limiter fails open if Mongo is down. Any future scheduled job (e.g. the daily activity report) needs Vercel Cron.
+
 ## Notes
 
 - Prefer a new entry when a decision would otherwise be easy to forget or reverse incorrectly.

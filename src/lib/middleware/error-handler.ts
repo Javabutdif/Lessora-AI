@@ -32,13 +32,11 @@ export function handleApiError(err: unknown): { status: number; body: ApiErrorRe
     };
   }
 
-  const message = err instanceof Error ? err.message : "Unexpected server error";
-  const statusCode = 500;
-
-  console.error("[error]", message, err);
+  // Log the real cause server-side; never echo driver/provider internals to the client
+  console.error("[error]", err instanceof Error ? err.message : err, err);
 
   return {
-    status: statusCode,
-    body: { data: null, error: { code: "SERVER_ERROR", message } },
+    status: 500,
+    body: { data: null, error: { code: "SERVER_ERROR", message: "Unexpected server error" } },
   };
 }

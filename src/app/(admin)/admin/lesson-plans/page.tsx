@@ -2,16 +2,31 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { fetchAdminLessonPlans, AdminLessonPlanHistoryItem } from "@/app/lib/api-client";
+import { Spinner } from "@phosphor-icons/react";
+import { fetchAdminLessonPlans, deleteAdminLessonPlan, AdminLessonPlanHistoryItem } from "@/app/lib/api-client";
 import LoadingSkeleton from "@/app/components/loading-skeleton";
 import styles from "./plans.module.css";
 
 export default function AdminLessonPlansPage() {
   const router = useRouter();
-  const { data: plans, isLoading, error } = useQuery({
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const { data: plans, isLoading, error, refetch } = useQuery({
     queryKey: ["adminLessonPlans"],
     queryFn: fetchAdminLessonPlans,
   });
+
+  async function handleDelete(plan: AdminLessonPlanHistoryItem) {
+    if (!confirm(`Permanently delete "${plan.title}"? This cannot be undone.`)) return;
+    setIsDeleting(plan.id);
+    try {
+      await deleteAdminLessonPlan(plan.id);
+      refetch();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to delete lesson plan");
+    } finally {
+      setIsDeleting(null);
+    }
+  }
 
   return (
     <div className={styles.page}>
@@ -35,6 +50,7 @@ export default function AdminLessonPlansPage() {
                 <th>Duration</th>
                 <th>Created</th>
                 <th>By</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -46,6 +62,11 @@ export default function AdminLessonPlansPage() {
                   <td>{plan.totalDuration} min</td>
                   <td>{new Date(plan.createdAt).toLocaleDateString()}</td>
                   <td>{plan.createdBy.name}</td>
+                  <td>
+                    <button type="button" onClick={() => handleDelete(plan)} disabled={isDeleting === plan.id} className={styles.btnDelete}>
+                      {isDeleting === plan.id ? <><Spinner weight="fill" size={12} className={styles.spin} /> Deleting...</> : "Delete"}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

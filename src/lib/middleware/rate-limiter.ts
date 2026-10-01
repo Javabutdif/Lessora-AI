@@ -1,51 +1,88 @@
 import { NextRequest, NextResponse } from "next/server";
+import { RateLimit } from "../schemas/rate-limit.schema";
 
 const IP_RATE_LIMIT = 20;
 const SESSION_RATE_LIMIT = 5;
 const WINDOW_MS = 60_000;
 
-const ipWindow = new Map<string, { count: number; resetAt: number }>();
-const sessionWindow = new Map<string, { count: number; resetAt: number }>();
+type RateLimitOptions = {
+  bucket: string;
+  limit: number;
+  windowMs?: number;
+  message?: string;
+};
 
 export function getSessionId(request: NextRequest): string | null {
   return request.headers.get("x-session-token") as string | null;
 }
 
-export function checkRateLimit(request: NextRequest): NextResponse | null {
-  const sessionId = getSessionId(request);
+// Vercel sets x-real-ip and overwrites x-forwarded-for, so neither can be spoofed by the client there.
+export function getClientIp(request: NextRequest): string {
+  const realIp = request.headers.get("x-real-ip");
+  if (realIp) return realIp.trim();
   const forwarded = request.headers.get("x-forwarded-for");
-  const ip = forwarded ? forwarded.split(",")[0].trim() : request.headers.get("x-real-ip") ?? "unknown";
+  return forwarded ? forwarded.split(",")[0].trim() : "unknown";
+}
 
+function tooManyRequests(message: string, retryAfterSeconds: number): NextResponse {
+  return NextResponse.json(
+    { data: null, error: { code: "RATE_LIMITED", message } },
+    { status: 429, headers: { "Retry-After": String(retryAfterSeconds) } },
+  );
+}
+
+async function hitWindow(key: string, windowMs: number): Promise<{ count: number; resetInSeconds: number }> {
   const now = Date.now();
+  const windowStart = now - (now % windowMs);
+  const expiresAt = new Date(windowStart + windowMs);
 
-  // Per-IP check
-  let ipEntry = ipWindow.get(ip);
-  if (!ipEntry || now > ipEntry.resetAt) {
-    ipEntry = { count: 0, resetAt: now + WINDOW_MS };
-    ipWindow.set(ip, ipEntry);
-  }
-  ipEntry.count++;
-  if (ipEntry.count > IP_RATE_LIMIT) {
-    return NextResponse.json(
-      { data: null, error: { code: "RATE_LIMITED", message: "Too many requests. Please try again shortly." } },
-      { status: 429 },
-    );
-  }
+  const entry = await RateLimit.findOneAndUpdate(
+    { key: `${key}:${windowStart}` },
+    { $inc: { count: 1 }, $setOnInsert: { expiresAt } },
+    { new: true, upsert: true },
+  ).lean();
 
-  // Per-sessionId AI check
-  if (sessionId) {
-    let sessionEntry = sessionWindow.get(sessionId);
-    if (!sessionEntry || now > sessionEntry.resetAt) {
-      sessionEntry = { count: 0, resetAt: now + WINDOW_MS };
-      sessionWindow.set(sessionId, sessionEntry);
+  return {
+    count: entry?.count ?? 1,
+    resetInSeconds: Math.max(1, Math.ceil((expiresAt.getTime() - now) / 1000)),
+  };
+}
+
+export async function checkLimit(
+  request: NextRequest,
+  { bucket, limit, windowMs = WINDOW_MS, message = "Too many requests. Please try again shortly." }: RateLimitOptions,
+): Promise<NextResponse | null> {
+  const ip = getClientIp(request);
+
+  try {
+    const { count, resetInSeconds } = await hitWindow(`${bucket}:ip:${ip}`, windowMs);
+    if (count > limit) {
+      console.warn(`[rate-limit] ${bucket} limit hit for ip ${ip}`);
+      return tooManyRequests(message, resetInSeconds);
     }
-    sessionEntry.count++;
-    if (sessionEntry.count > SESSION_RATE_LIMIT) {
-      return NextResponse.json(
-        { data: null, error: { code: "RATE_LIMITED", message: "AI requests limit exceeded. Try again in a minute." } },
-        { status: 429 },
-      );
+    return null;
+  } catch (error) {
+    // Fail open: a rate limit store hiccup should not block legitimate teachers
+    console.error(`[rate-limit] ${bucket} check failed:`, error);
+    return null;
+  }
+}
+
+export async function checkRateLimit(request: NextRequest): Promise<NextResponse | null> {
+  const ipLimit = await checkLimit(request, { bucket: "ai", limit: IP_RATE_LIMIT });
+  if (ipLimit) return ipLimit;
+
+  const sessionId = getSessionId(request);
+  if (!sessionId) return null;
+
+  try {
+    const { count, resetInSeconds } = await hitWindow(`ai:session:${sessionId}`, WINDOW_MS);
+    if (count > SESSION_RATE_LIMIT) {
+      console.warn("[rate-limit] ai session limit hit");
+      return tooManyRequests("AI requests limit exceeded. Try again in a minute.", resetInSeconds);
     }
+  } catch (error) {
+    console.error("[rate-limit] ai session check failed:", error);
   }
 
   return null;

@@ -8,9 +8,10 @@ import OpenAIConfig from '../config/openai.config';
 import { LessonPlan } from '../schemas/lesson.schema';
 import { User } from '../schemas/user.schema';
 import { Session } from '../schemas/session.schema';
+import { computeNextResetAt } from '../middleware/ip-daily-limiter';
 import { createActivityLog } from './activity-log.service';
 import { buildTemplatePrompt, buildActivityTypePrompt } from './template-prompts';
-import { AppError, NotFoundError, QuotaError, ExternalServiceError } from '../types/errors';
+import { AppError, NotFoundError, QuotaError, ExternalServiceError, ValidationError } from '../types/errors';
 
 export interface GenerateLessonPlanRequest {
   title: string;
@@ -172,7 +173,7 @@ class OpenAIService {
     );
 
     if (!scopeCheck.isValid) {
-      throw new Error(scopeCheck.reason ?? OpenAIConfig.refusalMessage);
+      throw new ValidationError(scopeCheck.reason ?? OpenAIConfig.refusalMessage);
     }
 
     if (!OpenAIConfig.apiKey) {
@@ -309,7 +310,7 @@ class OpenAIService {
     );
 
     if (!scopeCheck.isValid) {
-      throw new Error(scopeCheck.reason ?? OpenAIConfig.refusalMessage);
+      throw new ValidationError(scopeCheck.reason ?? OpenAIConfig.refusalMessage);
     }
 
     this.validateRefinementSections(selectedSections, templateId);
@@ -666,7 +667,7 @@ class OpenAIService {
     );
 
     if (invalid.length) {
-      throw new Error('One or more selected sections are invalid for this template.');
+      throw new ValidationError('One or more selected sections are invalid for this template.');
     }
   }
 
@@ -712,6 +713,22 @@ class OpenAIService {
       await Session.updateOne(
         { sessionId: ownerId, aiResponseCredits: { $exists: false } },
         { $set: { aiResponseCredits: 3 } }
+      );
+
+      // Lazy daily refill: cron schedulers do not run on serverless hosting
+      const now = new Date();
+      await Session.updateOne(
+        {
+          sessionId: ownerId,
+          $or: [{ dailyCountResetAt: { $lte: now } }, { dailyCountResetAt: { $exists: false } }],
+        },
+        {
+          $set: {
+            aiResponseCredits: 3,
+            dailySessionCount: 0,
+            dailyCountResetAt: computeNextResetAt(now),
+          },
+        }
       );
 
       const session = await Session.findOneAndUpdate(

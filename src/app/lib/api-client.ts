@@ -65,9 +65,9 @@ export async function loginAdmin(email: string, password: string) {
     body: JSON.stringify({ email, password }),
     credentials: "include",
   });
-  const payload = (await response.json()) as { data?: { token: string; user: { name: string; email: string } }; error?: { message?: string } | null };
+  const payload = (await response.json()) as { data?: { user: { name: string; email: string } }; error?: { message?: string } | null };
   if (!response.ok) throw new Error(payload.error?.message || "Login failed");
-  if (!payload.data?.token) throw new Error("Invalid response from server");
+  if (!payload.data?.user) throw new Error("Invalid response from server");
   if (typeof window !== "undefined") {
     localStorage.setItem("lessora-admin-user", JSON.stringify(payload.data.user));
   }
@@ -167,6 +167,10 @@ export async function getSessionInfo(): Promise<SessionInfo> {
 
 export async function fetchAdminLessonPlans() {
   return apiRequest<AdminLessonPlanHistoryItem[]>("/api/admin/lesson-plans");
+}
+
+export async function deleteAdminLessonPlan(lessonPlanId: string) {
+  return apiRequest<{ success: boolean }>(`/api/admin/lesson-plans/${encodeURIComponent(lessonPlanId)}`, { method: "DELETE" });
 }
 
 // ============================================

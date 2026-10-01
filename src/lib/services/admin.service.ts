@@ -1,6 +1,8 @@
-import { Types } from "mongoose";
+import { Types, isValidObjectId } from "mongoose";
 import { LessonPlan } from "../schemas/lesson.schema";
+import { Session } from "../schemas/session.schema";
 import { User } from "../schemas/user.schema";
+import { NotFoundError } from "../types/errors";
 
 const DASHBOARD_METRICS_CACHE_TTL_MS = 60_000;
 
@@ -125,4 +127,22 @@ export async function listAdminLessonPlans(): Promise<
       },
     };
   });
+}
+
+export async function deleteAdminLessonPlan(lessonPlanId: string, adminId: string): Promise<void> {
+  if (!isValidObjectId(lessonPlanId)) {
+    throw new NotFoundError("Lesson plan");
+  }
+
+  const deleted = await LessonPlan.findByIdAndDelete(lessonPlanId);
+  if (!deleted) {
+    throw new NotFoundError("Lesson plan");
+  }
+
+  await Session.updateMany(
+    { lessonPlanIds: deleted._id },
+    { $pull: { lessonPlanIds: deleted._id } },
+  );
+
+  console.log(`[admin] lesson plan ${lessonPlanId} deleted by admin ${adminId}`);
 }

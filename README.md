@@ -143,22 +143,29 @@ Create a `.env` file in the root:
 ```env
 MONGODB_URI=mongodb://localhost:27017/lessora
 MONGODB_DBNAME=lessora
-JWT_SECRET=change-me-in-production
-ADMIN_EMAIL=admin@lessora.com
-ADMIN_PASSWORD=LessoraAdmin123
-ADMIN_FIRST_NAME=Lessora
-ADMIN_LAST_NAME=Admin
+JWT_SECRET=<long-random-string>
 OPENAI_API_KEY=sk-...
 OPENAI_MODEL=gpt-4o-mini
 RESEND_API_KEY=re_...
 RESEND_FROM_EMAIL=noreply@lessora.com
-PAYMONGO_SECRET_KEY=pk_test_...
+PAYMONGO_SECRET_KEY=sk_test_...
+PAYMONGO_WEBHOOK_SECRET=whsk_...
 PAYMONGO_API_BASE_URL=https://api.paymongo.com
 CREDIT_REFRESH_START_DATE=2026-06-09T00:00:00+08:00
 CREDIT_MAX_PER_USER=5
 BASE_URL=http://localhost:3000
 PUBLIC_APP_URL=http://localhost:3000
 ```
+
+### Change the admin password
+
+Admin accounts live in MongoDB; their passwords are never stored in `.env` or in this repo. To set a new one:
+
+```bash
+bash scripts/set-admin-password.sh   # or: powershell -File scripts/set-admin-password.ps1
+```
+
+The script prompts for the admin email and a hidden new password (at least 15 characters).
 
 ### Start the development server
 

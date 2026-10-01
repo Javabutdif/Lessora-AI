@@ -7,9 +7,9 @@ const durationSchema = z.coerce
   .max(600, "Duration must be 600 minutes or less");
 
 export const generateLessonPlanSchema = z.object({
-  title: z.string().min(2, "Title is required"),
-  subject: z.string().min(2, "Subject is required"),
-  gradeLevel: z.string().min(1, "Grade level is required"),
+  title: z.string().min(2, "Title is required").max(150, "Title must be 150 characters or less"),
+  subject: z.string().min(2, "Subject is required").max(150, "Subject must be 150 characters or less"),
+  gradeLevel: z.string().min(1, "Grade level is required").max(50, "Grade level must be 50 characters or less"),
   duration: durationSchema,
   numberOfSessions: z.coerce
     .number()
@@ -19,7 +19,7 @@ export const generateLessonPlanSchema = z.object({
     .default(1),
   userDraftText: z.string().max(12000).optional(),
   language: z.string().min(2).max(50).default("english"),
-  activityPreferences: z.array(z.string()).optional().default([]),
+  activityPreferences: z.array(z.string().max(100)).max(10).optional().default([]),
   activityPreferenceNotes: z.string().max(200).optional(),
   templateNotes: z.string().max(4000).optional(),
   templateId: z
@@ -36,9 +36,13 @@ export const generateLessonPlanSchema = z.object({
 export const refineLessonPlanSchema = z.object({
   lessonPlanId: z.string().min(1, "Lesson plan id is required"),
   selectedSections: z
-    .array(z.string().min(1))
-    .min(1, "Select at least one section to refine"),
-  refinementRequest: z.string().min(3, "Refinement request is required"),
+    .array(z.string().min(1).max(100))
+    .min(1, "Select at least one section to refine")
+    .max(20, "Select 20 sections or fewer"),
+  refinementRequest: z
+    .string()
+    .min(3, "Refinement request is required")
+    .max(2000, "Refinement request must be 2000 characters or less"),
 });
 
 export const lessonPlanDocumentBlockSchema = z.discriminatedUnion("type", [

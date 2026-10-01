@@ -1,45 +1,37 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { Session } from "../schemas/session.schema";
 
-const DAILY_SESSION_LIMIT = 5;
+export const DAILY_SESSION_LIMIT = 5;
 
-function getIp(request: NextRequest): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  return forwarded ? forwarded.split(",")[0].trim() : request.headers.get("x-real-ip") ?? "unknown";
+const DAY_MS = 24 * 60 * 60 * 1000;
+// Asia/Manila is UTC+8 with no daylight saving
+const MANILA_OFFSET_MS = 8 * 60 * 60 * 1000;
+
+export function startOfManilaDay(now = new Date()): Date {
+  const manilaMs = now.getTime() + MANILA_OFFSET_MS;
+  return new Date(manilaMs - (manilaMs % DAY_MS) - MANILA_OFFSET_MS);
 }
 
-function computeNextResetAt(): Date {
-  const now = new Date();
-  // Asia/Manila is UTC+8
-  const utcMs = now.getTime() + now.getTimezoneOffset() * 60_000;
-  const tomorrow = new Date(utcMs + 24 * 60 * 60 * 1000);
-  const nextReset = new Date(tomorrow.getTime() - 8 * 60 * 60 * 1000);
-  return nextReset;
+export function computeNextResetAt(now = new Date()): Date {
+  return new Date(startOfManilaDay(now).getTime() + DAY_MS);
 }
 
-export async function checkDailyLimit(request: NextRequest): Promise<NextResponse | null> {
-  const ip = getIp(request);
-  const now = new Date();
+export async function countSessionsCreatedToday(ip: string): Promise<number> {
+  return Session.countDocuments({ ip, createdAt: { $gte: startOfManilaDay() } });
+}
 
+export async function checkDailyLimit(ip: string): Promise<NextResponse | null> {
   try {
-    const sessions = await Session.find({
-      ip,
-      dailyCountResetAt: { $gt: now },
-    }).sort({ dailyCountResetAt: -1 });
+    const createdToday = await countSessionsCreatedToday(ip);
 
-    if (sessions.length === 0) {
-      return null;
-    }
-
-    const totalDailyCount = sessions.reduce((sum, s) => sum + (s.dailySessionCount ?? 0), 0);
-
-    if (totalDailyCount >= DAILY_SESSION_LIMIT) {
+    if (createdToday >= DAILY_SESSION_LIMIT) {
+      console.warn(`[ip-daily-limiter] daily session cap hit for ip ${ip}`);
       return NextResponse.json(
         {
           data: null,
           error: {
             code: "RATE_LIMITED_DAILY",
-            message: `5 sessions used today. Try again tomorrow.`,
+            message: `${DAILY_SESSION_LIMIT} sessions used today. Try again tomorrow.`,
           },
         },
         { status: 429 },
@@ -58,10 +50,6 @@ export async function createOrUpdateDailySession(
   ip: string,
   userAgent: string,
 ): Promise<{ sessionId: string; creditsRemaining: number }> {
-  const resetAt = computeNextResetAt();
-  const now = new Date();
-
-  // First: upsert with $setOnInsert only (no $inc — avoids same-path conflict)
   const session = await Session.findOneAndUpdate(
     { sessionId },
     {
@@ -71,30 +59,18 @@ export async function createOrUpdateDailySession(
         userAgent,
         aiResponseCredits: 3,
         dailySessionCount: 1,
-        dailyCountResetAt: resetAt,
+        dailyCountResetAt: computeNextResetAt(),
         lessonPlanIds: [],
       },
       $set: {
-        lastActivityAt: now,
+        lastActivityAt: new Date(),
       },
     },
     { new: true, upsert: true },
   );
 
-  // Then: increment dailySessionCount for existing sessions (separate operation)
-  const isInsert = session.isNew;
-  if (!isInsert) {
-    await Session.updateOne(
-      { sessionId },
-      { $inc: { dailySessionCount: 1 } },
-    );
-  }
-
-  // Re-fetch to get the updated count
-  const updated = await Session.findOne({ sessionId });
-
   return {
-    sessionId: updated!.sessionId,
-    creditsRemaining: updated!.aiResponseCredits,
+    sessionId: session.sessionId,
+    creditsRemaining: session.aiResponseCredits,
   };
 }

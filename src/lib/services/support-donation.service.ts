@@ -1,4 +1,5 @@
 import { SupportDonation } from '../schemas/support-donation.schema';
+import { NotFoundError, ValidationError } from '../types/errors';
 import { createPaymongoCheckoutSession, createSupportDonationReference } from './paymongo.service';
 
 export const SUPPORT_DONATION_TIERS = [
@@ -49,7 +50,7 @@ export async function createSupportDonationCheckout(amount: number) {
   const tier = SUPPORT_DONATION_TIERS.find((item) => item.amount === amount);
 
   if (!tier) {
-    throw new Error('Unsupported donation amount');
+    throw new ValidationError('Unsupported donation amount');
   }
 
   const referenceNumber = createSupportDonationReference();
@@ -88,7 +89,7 @@ export async function getSupportDonationStatus(referenceNumber: string) {
   const donation = await SupportDonation.findOne({ referenceNumber }).lean();
 
   if (!donation) {
-    throw new Error('Donation record not found');
+    throw new NotFoundError('Donation record');
   }
 
   return {
@@ -114,25 +115,24 @@ export async function recordPaymongoWebhook(payload: {
     ? { referenceNumber: payload.referenceNumber }
     : { checkoutSessionId: payload.checkoutSessionId };
 
+  // Only settle donations we created at checkout; the stored amount stays authoritative
   const donation = await SupportDonation.findOneAndUpdate(
-    query,
+    { ...query, status: 'pending' },
     {
       $set: {
         status: payload.status,
         checkoutSessionId: payload.checkoutSessionId,
         paymentId: payload.paymentId,
-        amount: payload.amount,
-        currency: payload.currency || 'PHP',
-      },
-      $setOnInsert: {
-        referenceNumber: payload.referenceNumber || createSupportDonationReference(),
-        amount: payload.amount || 0,
-        currency: payload.currency || 'PHP',
-        status: payload.status,
       },
     },
-    { upsert: true, new: true }
+    { new: true }
   );
+
+  if (!donation) {
+    console.warn('[support-donation] webhook for unknown or already settled donation ignored');
+  } else if (payload.amount !== undefined && payload.amount !== donation.amount) {
+    console.warn(`[support-donation] webhook amount mismatch for ${donation.referenceNumber}`);
+  }
 
   return donation;
 }

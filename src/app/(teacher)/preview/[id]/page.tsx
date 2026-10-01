@@ -1,174 +1,137 @@
-"use client";
-import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { BookOpen, Clock, Warning, Plus, Spinner, DownloadSimple } from "@phosphor-icons/react";
-import { getPublicLessonPlanById, LessonPlanHistoryDetail, ensureSession } from "@/app/lib/api-client";
-import styles from "@/portal-theme.module.css";
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { cache } from 'react';
+import { isValidObjectId } from 'mongoose';
+import openAIService from '@/lib/services/openai.service';
+import { connectionReady } from '@/lib/db';
+import { NotFoundError } from '@/lib/types/errors';
+import type { LessonPlanHistoryDetail } from '@/app/lib/api-client';
+import PreviewClient from './preview-client';
 
-export default function PreviewPage() {
-  const router = useRouter();
-  const { id } = useParams<{ id: string }>();
-  const [plan, setPlan] = useState<LessonPlanHistoryDetail | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [isExporting, setIsExporting] = useState(false);
-  const [exportingFormat, setExportingFormat] = useState("");
-  const [isNavigatingRefine, setIsNavigatingRefine] = useState(false);
+const SITE_URL = process.env.PUBLIC_APP_URL || 'https://lessora.ajgenabio.me';
+const DB_TIMEOUT_MS = 15_000;
 
-  useEffect(() => {
-    void ensureSession();
-    if (id) loadPlan(id);
-  }, [id]);
+type PreviewPageParams = {
+  params: Promise<{ id: string }>;
+};
 
-  async function loadPlan(planId: string) {
-    try {
-      setIsLoading(true);
-      setError("");
-      setPlan(await getPublicLessonPlanById(planId));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load lesson plan");
-    } finally {
-      setIsLoading(false);
-    }
+// Shared by generateMetadata and the page so one request does one DB lookup.
+// Awaiting the connection first matters: on a cold serverless start the query
+// used to fail, and the fallback metadata marked every lesson plan noindex.
+const getPublicPlan = cache(async (id: string): Promise<LessonPlanHistoryDetail | null> => {
+  if (!isValidObjectId(id)) return null;
+
+  await Promise.race([
+    connectionReady,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('MongoDB connection timed out')), DB_TIMEOUT_MS)
+    ),
+  ]);
+
+  try {
+    const plan = await openAIService.getPublicLessonPlanById(id);
+    // Plain DTO for the client component (no Mongo/Date objects across the boundary)
+    return {
+      id: plan.id,
+      title: plan.title,
+      subject: plan.subject,
+      gradeLevel: plan.gradeLevel,
+      totalDuration: plan.totalDuration,
+      createdAt: new Date(plan.createdAt).toISOString(),
+      updatedAt: new Date(plan.updatedAt).toISOString(),
+      document: plan.document as LessonPlanHistoryDetail['document'],
+      draftText: plan.draftText,
+      model: plan.model,
+      templateId: plan.templateId as LessonPlanHistoryDetail['templateId'],
+    };
+  } catch (error) {
+    if (error instanceof NotFoundError) return null;
+    throw error;
+  }
+});
+
+export async function generateMetadata({ params }: PreviewPageParams): Promise<Metadata> {
+  const { id } = await params;
+  const plan = await getPublicPlan(id);
+
+  if (!plan) {
+    return {
+      title: 'Lesson Plan Not Found',
+      robots: {
+        index: false,
+        follow: true,
+      },
+    };
   }
 
-  async function handleExport(format: "pdf" | "docx") {
-    if (!plan) return;
-    try {
-      setIsExporting(true);
-      setExportingFormat(format.toUpperCase());
-      const doc = plan.document;
-      const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim() || '#1E3A8A';
-      const inkColor = getComputedStyle(document.documentElement).getPropertyValue('--color-ink-primary').trim() || '#111111';
-      const secondaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-ink-secondary').trim() || '#4B5563';
-      const tertiaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-ink-tertiary').trim() || '#6B7280';
-      const ruleColor = getComputedStyle(document.documentElement).getPropertyValue('--color-rule').trim() || '#E7E5DF';
-      const headerHtml = `<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px;"><h1 style="font-size: 24px; color: ${accentColor}; border-bottom: 2px solid ${accentColor}; padding-bottom: 12px; margin-bottom: 24px;">${doc.title}</h1><p style="color: ${secondaryColor}; font-size: 13px; margin-bottom: 24px;">Subject: ${plan.subject} | Grade: ${plan.gradeLevel} | Duration: ${plan.totalDuration} min</p>`;
-      const footerHtml = `<p style="font-size: 11px; color: ${tertiaryColor}; margin-top: 40px; border-top: 1px solid ${ruleColor}; padding-top: 16px;">Generated by Lessora AI</p></div>`;
-      const blocksHtml = doc.blocks.map((block) => {
-        if (block.type === "heading") {
-          const tag = `h${block.level}`;
-          const size = block.level === 1 ? "20px" : block.level === 2 ? "17px" : "15px";
-          return `<${tag} style="font-size: ${size}; color: ${inkColor}; margin: 20px 0 10px; font-weight: 700;">${block.text}</${tag}>`;
-        }
-        if (block.type === "paragraph") {
-          return `<p style="font-size: 14px; line-height: 1.7; color: ${inkColor}; margin: 0 0 14px;">${block.text}</p>`;
-        }
-        if (block.type === "list") {
-          const Tag = block.style === "numbered" ? "ol" : "ul";
-          const items = block.items.map((item) => `<li style="font-size: 14px; line-height: 1.6; margin-bottom: 6px;">${item}</li>`).join("");
-          return `<${Tag} style="padding-left: 24px; margin: 0 0 16px; font-size: 14px; color: ${inkColor};">${items}</${Tag}>`;
-        }
-        return "";
-      }).join("");
-      const html = `${headerHtml}${blocksHtml}${footerHtml}`;
-      if (format === "pdf") {
-        const printWindow = window.open("", "_blank");
-        if (printWindow) {
-          printWindow.document.write(`<!DOCTYPE html><html><head><title>${doc.title}</title><style>body{margin:0;}</style></head><body>${html}</body></html>`);
-          printWindow.document.close();
-          printWindow.focus();
-          printWindow.print();
-          printWindow.close();
-        }
-      } else {
-        const blob = new Blob([`<html><head><meta charset="utf-8"><title>${doc.title}</title></head><body>${html}</body></html>`], { type: "application/msword" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${doc.title.replace(/\s+/g, "_")}.doc`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }
-    } catch (err) {
-      console.error("Export failed:", err);
-    } finally {
-      setIsExporting(false);
-      setExportingFormat("");
-    }
+  const title = `${plan.title} | Lesson Plan`;
+  const description = `${plan.subject} lesson plan for ${plan.gradeLevel} (${plan.totalDuration} minutes). Generated by Lessora AI.`;
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/preview/${id}`,
+    },
+    openGraph: {
+      type: 'article',
+      url: `/preview/${id}`,
+      siteName: 'Lessora AI',
+      title,
+      description,
+      images: [
+        {
+          url: '/lessora-logo.png',
+          width: 512,
+          height: 512,
+          alt: 'Lessora AI',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+      images: ['/lessora-logo.png'],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
+}
+
+export default async function PreviewPage({ params }: PreviewPageParams) {
+  const { id } = await params;
+  const plan = await getPublicPlan(id);
+
+  if (!plan) {
+    notFound();
   }
 
-  function handleNavigateToRefine() {
-    if (!id || isNavigatingRefine) return;
-    setIsNavigatingRefine(true);
-    router.push(`/refine/${id}`);
-  }
-
-  function renderBlock(block: any, index: number) {
-    if (block.type === "heading") {
-      const headingClass = block.level === 1 ? styles.planBlockHeading1 : block.level === 2 ? styles.planBlockHeading2 : styles.planBlockHeading3;
-      const HeadingTag = `h${block.level}` as keyof JSX.IntrinsicElements;
-      return <HeadingTag key={index} className={headingClass}>{block.text}</HeadingTag>;
-    }
-    if (block.type === "paragraph") return <p key={index}>{block.text}</p>;
-    if (block.type === "list") {
-      const ListTag = block.style === "numbered" ? "ol" : "ul";
-      return <ListTag key={index}>{block.items.map((item: string, i: number) => <li key={i}>{item}</li>)}</ListTag>;
-    }
-    return null;
-  }
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'LearningResource',
+    name: plan.title,
+    url: `${SITE_URL}/preview/${plan.id}`,
+    learningResourceType: 'Lesson plan',
+    educationalLevel: plan.gradeLevel,
+    about: plan.subject,
+    timeRequired: `PT${plan.totalDuration}M`,
+    inLanguage: 'en',
+    isAccessibleForFree: true,
+    dateCreated: plan.createdAt,
+    dateModified: plan.updatedAt,
+    publisher: { '@type': 'Organization', name: 'Lessora AI', url: SITE_URL },
+  };
 
   return (
-    <div className={styles.userAppPage}>
-      <header className={styles.userAppHeader}>
-        <div className={styles.userAppHeaderInner}>
-          <a href="/home" className={styles.userAppBrandLink}><h1 className={styles.userAppBrand}>Lessora AI</h1></a>
-          <nav className={styles.userAppHeaderActions} aria-label="Main navigation">
-            <a href="/home" className={styles.userAppHeaderLink}>Home</a>
-            <a href="/discover" className={styles.userAppHeaderLink}>Discover</a>
-            <a href="/generate" className={styles.userAppHeaderLink}>New Plan</a>
-            <a href="/support" className={styles.userAppHeaderLink}>Support</a>
-          </nav>
-        </div>
-      </header>
-
-      <div className={styles.userAppContainerDoc}>
-        {isLoading && (
-          <div className={styles.userAppCenterLarge}>
-            <Spinner weight="fill" size={36} className={styles.spin} />
-            <p className={styles.centerTextSmall}>Loading lesson plan...</p>
-          </div>
-        )}
-
-        {error && !isLoading && (
-          <div className={styles.errorPanel}>
-            <Warning size={28} className={styles.iconWithBottom} />
-            <p className={styles.centerTitle}>Failed to load lesson plan</p>
-            <p className={styles.centerText}>{error}</p>
-            <button type="button" onClick={() => router.push("/generate")} className={styles.softDanger}>Back to Generate</button>
-          </div>
-        )}
-
-        {!isLoading && !error && plan && (
-          <>
-            <section className={styles.planCardSpacious}>
-              <p className={styles.planCardTitle}>Lesson Plan Preview</p>
-              <h1 className={styles.planCardHeading}>{plan.title}</h1>
-              <div className={styles.chipRow}>
-                <span className={`${styles.chip} ${styles.chipAccent}`}><BookOpen weight="fill" size={12} /> {plan.subject}</span>
-                <span className={`${styles.chip} ${styles.chipPurple}`}>Grade: {plan.gradeLevel}</span>
-                <span className={`${styles.chip} ${styles.chipSuccess}`}><Clock weight="fill" size={12} /> {plan.totalDuration} minutes</span>
-              </div>
-              <div className={styles.planCardMeta}>Created: {new Date(plan.createdAt).toLocaleString()}</div>
-            </section>
-
-            <section className={styles.planCardBody}>
-              <div className={styles.planDocContainer}>
-                {plan.document.blocks.map((block, index) => renderBlock(block, index))}
-              </div>
-            </section>
-
-            <div className={styles.actionRow}>
-              <button type="button" onClick={() => router.push("/generate")} className={styles.flatButton}><Plus weight="bold" size={16} /> Create New Plan</button>
-              {id && <button type="button" onClick={handleNavigateToRefine} className={styles.softSecondary} disabled={isNavigatingRefine}>{isNavigatingRefine ? <><Spinner weight="fill" size={14} className={styles.spin} /> Opening...</> : "Refine This Plan"}</button>}
-              <button type="button" onClick={() => handleExport("pdf")} className={styles.softSecondary} disabled={isExporting}><DownloadSimple weight="bold" size={16} /> {isExporting && exportingFormat === "PDF" ? "Preparing..." : "Download PDF"}</button>
-              <button type="button" onClick={() => handleExport("docx")} className={styles.softSecondary} disabled={isExporting}><DownloadSimple weight="bold" size={16} /> {isExporting && exportingFormat === "DOCX" ? "Preparing..." : "Download Word"}</button>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        // Escape "<" so plan text can never close the script tag
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }}
+      />
+      <PreviewClient plan={plan} />
+    </>
   );
 }

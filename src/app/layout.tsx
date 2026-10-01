@@ -51,12 +51,9 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  alternates: {
-    canonical: '/',
-  },
+  // No root canonical/og:url: child routes would inherit it and all claim to be the homepage
   openGraph: {
     type: 'website',
-    url: '/',
     siteName: 'Lessora AI',
     title: 'Lessora AI | Lesson Plans Made Simply',
     description:
@@ -100,6 +97,20 @@ const structuredData = {
       name: 'Lessora AI',
       url: SITE_URL,
       logo: `${SITE_URL}/lessora-logo.png`,
+    },
+    {
+      '@type': 'WebApplication',
+      name: 'Lessora AI',
+      url: SITE_URL,
+      applicationCategory: 'EducationalApplication',
+      operatingSystem: 'Any',
+      description:
+        'Generate curriculum-ready lesson plans, including DepEd and MATATAG formats, from a topic, grade level, and duration. No account required.',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'PHP',
+      },
     },
   ],
 };
