@@ -1,19 +1,16 @@
-"use client";
-
-import { Spinner } from "@phosphor-icons/react";
 import styles from "@/portal-theme.module.css";
 
-export default function LoadingSkeleton({ lines = 3 }: { lines?: number }) {
+// Ink widths per ruled line, so the placeholder reads like a written page, not a bar chart
+const LINE_WIDTHS = [72, 88, 64, 80, 56, 76, 68, 84];
+
+export default function LoadingSkeleton({ lines = 3, label = "Loading" }: { lines?: number; label?: string }) {
   return (
-    <div className={styles.userAppCenter}>
-      <Spinner weight="fill" size={32} className={styles.spin} />
-      <p className={styles.centerTextSmall}>Loading...</p>
+    <div className={styles.ruledSkeleton} role="status" aria-live="polite">
+      <p className={styles.ruledSkeletonLabel}>{label}…</p>
       {Array.from({ length: lines }).map((_, i) => (
-        <div
-          key={i}
-          className={i === 0 ? styles.skeletonLine : `${styles.skeletonLine} ${styles.skeletonLineGap}`}
-          style={{ width: `${60 - i * 15}%` }}
-        />
+        <div key={i} className={styles.ruledSkeletonLine}>
+          <span className={styles.ruledSkeletonInk} style={{ width: `${LINE_WIDTHS[i % LINE_WIDTHS.length]}%` }} />
+        </div>
       ))}
     </div>
   );

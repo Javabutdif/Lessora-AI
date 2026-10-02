@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { Spinner, Warning, Check } from "@phosphor-icons/react";
 import { getPublicLessonPlanById, refineLessonPlan, LessonPlanTemplate, LessonPlanHistoryDetail, ensureSession } from "@/app/lib/api-client";
+import SiteHeader from "@/app/components/site-header";
+import LoadingSkeleton from "@/app/components/loading-skeleton";
 import styles from "@/portal-theme.module.css";
 
 type RefineOption = { key: string; label: string };
@@ -107,90 +108,70 @@ export default function RefineLessonPage() {
 
   return (
     <div className={styles.userAppPage}>
-      <header className={styles.userAppHeader}>
-        <div className={styles.userAppHeaderInner}>
-          <a href="/home" className={styles.userAppBrandLink}><h1 className={styles.userAppBrand}>Lessora AI</h1></a>
-          <nav className={styles.userAppHeaderActions} aria-label="Main navigation">
-            <a href="/home" className={styles.userAppHeaderLink}>Home</a>
-            <a href="/discover" className={styles.userAppHeaderLink}>Discover</a>
-            <a href="/generate" className={styles.userAppHeaderLink}>New Plan</a>
-            <a href="/support" className={styles.userAppHeaderLink}>Support</a>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
-      <div className={styles.userAppContainer}>
-        <div className={styles.userAppHero}>
-          <p className={styles.eyebrow}>Refine</p>
-          <h2 className={styles.userAppHeroTitle}>Refine Your Lesson Plan</h2>
-          <p className={styles.userAppHeroDescription}>Select sections to update and describe what you&apos;d like to change.</p>
-        </div>
+      <main className={styles.userAppContainerNarrow}>
+        {isLoading && <LoadingSkeleton lines={6} label="Loading lesson plan" />}
 
-        {isLoading && (
-          <div className={styles.userAppCenter}>
-            <Spinner weight="fill" size={32} className={styles.spin} />
-            <p className={styles.centerTextSmall}>Loading...</p>
-          </div>
-        )}
-
-        {error && !isLoading && (
-          <div className={styles.errorPanel}>
-            <Warning size={28} className={styles.iconWithBottom} />
-            <p className={styles.centerTitle}>Failed to load plan</p>
+        {error && !isLoading && !plan && (
+          <div className={styles.errorPanel} role="alert">
+            <p className={styles.centerTitle}>This lesson plan could not be loaded</p>
             <p className={styles.centerText}>{error}</p>
-            <button type="button" onClick={() => router.push("/generate")} className={styles.softSecondary}>Back to Generate</button>
+            <a href="/generate" className={styles.softSecondary}>Start a new plan</a>
           </div>
         )}
 
-        {!isLoading && !error && plan && (
+        {!isLoading && plan && (
           <>
-            <section className={styles.planCardSpacious}>
-              <p className={styles.planCardTitle}>{plan.title}</p>
-              <div className={styles.chipRow}>
-                <span className={`${styles.chip} ${styles.chipAccent}`}>{plan.subject}</span>
-                <span className={`${styles.chip} ${styles.chipPurple}`}>{plan.gradeLevel}</span>
-              </div>
-            </section>
+            <div className={styles.pageHead}>
+              <p className={styles.metaLine}>{plan.subject} · {plan.gradeLevel} · {plan.totalDuration} min</p>
+              <h1 className={styles.pageTitle}>Refine: {plan.title}</h1>
+              <p className={styles.pageIntro}>Tick the sections to rewrite and say what should change. The rest of the plan stays as it is.</p>
+            </div>
 
-            <section className={styles.refineSectionsSection}>
-              <h3 className={styles.refineSectionsHeading}>Select sections to refine</h3>
-              <div className={styles.refineSectionBtnGroup}>
-                {(templateSections[plan.templateId || "lessora-ai"] || templateSections["lessora-ai"]).map((opt) => (
-                  <button key={opt.key} type="button" onClick={() => toggleSection(opt.key)} className={`${styles.refineSectionBtnFlat} ${selectedSections.includes(opt.key) ? styles.refineSectionBtnFlatSelected : ""}`}>
-                    {selectedSections.includes(opt.key) && <Check weight="fill" size={12} className={styles.checkIcon} />}
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </section>
+            <fieldset disabled={isRefining} className={styles.worksheet}>
+              <fieldset className={styles.worksheetPart}>
+                <legend className={styles.worksheetPartTitle}>
+                  <span className={styles.worksheetNumeral}>I.</span> Sections to rewrite
+                </legend>
+                <div className={styles.refineChecklist}>
+                  {(templateSections[plan.templateId || "lessora-ai"] || templateSections["lessora-ai"]).map((opt) => (
+                    <label key={opt.key} className={styles.checkRow}>
+                      <input
+                        type="checkbox"
+                        checked={selectedSections.includes(opt.key)}
+                        onChange={() => toggleSection(opt.key)}
+                        className={styles.choiceInput}
+                      />
+                      {opt.label}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
 
-            <section className={styles.refineRequestSection}>
-              <label className={styles.formFieldGap}>
-                <span className={styles.formLabel}>What would you like to change?</span>
-                <textarea value={refinementRequest} onChange={(e) => setRefinementRequest(e.target.value)} rows={4} placeholder="e.g., Make the activities more interactive for Grade 4 students, add more real-world examples..." className={styles.userAppTextarea} />
-              </label>
-            </section>
+              <section className={styles.worksheetPart} aria-labelledby="part-change">
+                <h2 id="part-change" className={styles.worksheetPartTitle}>
+                  <span className={styles.worksheetNumeral}>II.</span> What should change
+                </h2>
+                <textarea value={refinementRequest} onChange={(e) => setRefinementRequest(e.target.value)} rows={4} aria-labelledby="part-change" placeholder="Make the activities more hands-on for Grade 4 and add examples from the market or barangay." className={styles.userAppTextarea} />
+              </section>
+            </fieldset>
 
-            {error && !isRefining && <p className={`${styles.errorText} ${styles.refineErrorText}`}>{error}</p>}
+            {error && !isRefining && <p className={`${styles.errorText} ${styles.refineErrorText}`} role="alert">{error}</p>}
 
-            {isRefining && (
-              <div className={styles.userAppCenter}>
-                <Spinner weight="fill" size={32} className={styles.spin} />
-                <p className={styles.centerTextSmall}>Refining lesson plan...</p>
-              </div>
-            )}
-
-            {!isRefining && (
-              <div className={styles.refineActionRow}>
-                <button type="button" onClick={handleRefine} disabled={isRefining || selectedSections.length === 0 || !refinementRequest.trim()} className={styles.flatButton}>
-                  {isRefining ? <><Spinner weight="fill" size={14} className={styles.spin} /> Refining...</> : "Refine Plan"}
-                </button>
-                <button type="button" onClick={() => router.push(`/preview/${plan.id}`)} className={styles.softSecondary}>Cancel</button>
-              </div>
-            )}
+            <div className={styles.worksheetSubmit}>
+              <button type="button" onClick={handleRefine} disabled={isRefining || selectedSections.length === 0 || !refinementRequest.trim()} aria-busy={isRefining} className={styles.flatButton}>
+                {isRefining ? "Refining…" : "Refine plan"}
+              </button>
+              {isRefining ? (
+                <p className={styles.busyNote} aria-live="polite">Rewriting the sections you ticked. Keep this tab open.</p>
+              ) : (
+                <a href={`/preview/${plan.id}`} className={styles.softSecondary}>Back to the plan</a>
+              )}
+            </div>
           </>
         )}
-      </div>
+      </main>
     </div>
   );
 }

@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { BookOpen, Clock, Plus, Spinner, DownloadSimple } from "@phosphor-icons/react";
+import { DownloadSimple } from "@phosphor-icons/react";
 import { LessonPlanHistoryDetail, LessonPlanDocumentBlock, ensureSession } from "@/app/lib/api-client";
+import SiteHeader from "@/app/components/site-header";
 import styles from "@/portal-theme.module.css";
 
 // Lesson text is AI output and must never be interpreted as markup in the export window
@@ -115,43 +116,26 @@ export default function PreviewClient({ plan }: { plan: LessonPlanHistoryDetail 
 
   return (
     <div className={styles.userAppPage}>
-      <header className={styles.userAppHeader}>
-        <div className={styles.userAppHeaderInner}>
-          <a href="/home" className={styles.userAppBrandLink}><p className={styles.userAppBrand}>Lessora AI</p></a>
-          <nav className={styles.userAppHeaderActions} aria-label="Main navigation">
-            <a href="/home" className={styles.userAppHeaderLink}>Home</a>
-            <a href="/discover" className={styles.userAppHeaderLink}>Discover</a>
-            <a href="/generate" className={styles.userAppHeaderLink}>New Plan</a>
-            <a href="/support" className={styles.userAppHeaderLink}>Support</a>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
-      <div className={styles.userAppContainerDoc}>
-        <section className={styles.planCardSpacious}>
-          <p className={styles.planCardTitle}>Lesson Plan Preview</p>
-          <h1 className={styles.planCardHeading}>{plan.title}</h1>
-          <div className={styles.chipRow}>
-            <span className={`${styles.chip} ${styles.chipAccent}`}><BookOpen weight="fill" size={12} /> {plan.subject}</span>
-            <span className={`${styles.chip} ${styles.chipPurple}`}>Grade: {plan.gradeLevel}</span>
-            <span className={`${styles.chip} ${styles.chipSuccess}`}><Clock weight="fill" size={12} /> {plan.totalDuration} minutes</span>
-          </div>
-          <div className={styles.planCardMeta}>Created: {formatCreatedAt(plan.createdAt)}</div>
+      <main className={styles.userAppContainerNarrow}>
+        <section className={styles.pageHead}>
+          <p className={styles.metaLine}>{plan.subject} · {plan.gradeLevel} · {plan.totalDuration} minutes</p>
+          <h1 className={styles.pageTitle}>{plan.title}</h1>
+          <p className={styles.planCardMeta}>Created {formatCreatedAt(plan.createdAt)}</p>
         </section>
 
-        <section className={styles.planCardBody}>
-          <div className={styles.planDocContainer}>
-            {plan.document.blocks.map((block, index) => renderBlock(block, index))}
-          </div>
-        </section>
+        <article className={styles.planDocument}>
+          {plan.document.blocks.map((block, index) => renderBlock(block, index))}
+        </article>
 
         <div className={styles.actionRow}>
-          <button type="button" onClick={() => router.push("/generate")} className={styles.flatButton}><Plus weight="bold" size={16} /> Create New Plan</button>
-          <button type="button" onClick={handleNavigateToRefine} className={styles.softSecondary} disabled={isNavigatingRefine}>{isNavigatingRefine ? <><Spinner weight="fill" size={14} className={styles.spin} /> Opening...</> : "Refine This Plan"}</button>
-          <button type="button" onClick={() => handleExport("pdf")} className={styles.softSecondary} disabled={isExporting}><DownloadSimple weight="bold" size={16} /> {isExporting && exportingFormat === "PDF" ? "Preparing..." : "Download PDF"}</button>
-          <button type="button" onClick={() => handleExport("docx")} className={styles.softSecondary} disabled={isExporting}><DownloadSimple weight="bold" size={16} /> {isExporting && exportingFormat === "DOCX" ? "Preparing..." : "Download Word"}</button>
+          <button type="button" onClick={handleNavigateToRefine} className={styles.flatButton} disabled={isNavigatingRefine} aria-busy={isNavigatingRefine}>{isNavigatingRefine ? "Opening…" : "Refine this plan"}</button>
+          <button type="button" onClick={() => handleExport("pdf")} className={styles.softSecondary} disabled={isExporting} aria-busy={isExporting && exportingFormat === "PDF"}><DownloadSimple weight="bold" size={16} /> {isExporting && exportingFormat === "PDF" ? "Preparing…" : "Download PDF"}</button>
+          <button type="button" onClick={() => handleExport("docx")} className={styles.softSecondary} disabled={isExporting} aria-busy={isExporting && exportingFormat === "DOCX"}><DownloadSimple weight="bold" size={16} /> {isExporting && exportingFormat === "DOCX" ? "Preparing…" : "Download Word"}</button>
+          <a href="/generate" className={styles.softSecondary}>Start a new plan</a>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

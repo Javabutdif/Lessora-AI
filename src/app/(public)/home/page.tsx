@@ -1,10 +1,17 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
-import { CheckCircle, Target, Clock, Browser } from '@phosphor-icons/react';
 import { fetchLandingMetrics } from '@/app/lib/api-client';
-import ScrollReveal from '@/app/components/scroll-reveal';
+import SiteHeader from '@/app/components/site-header';
 import styles from '../landing.module.css';
-import theme from '@/portal-theme.module.css';
+
+// What a generated plan contains — each line matches something the generator actually produces
+const PLAN_CONTENTS = [
+  { term: 'Objectives', desc: 'Written for your topic and grade level.' },
+  { term: 'Procedure', desc: 'Activities in the styles you pick, split across your sessions.' },
+  { term: 'Assessment', desc: 'Checks for understanding you can use as written or adjust.' },
+  { term: 'Formats', desc: 'Lessora standard, DepEd semi-detailed, detailed lesson plan, daily lesson log, MATATAG.' },
+  { term: 'Export', desc: 'Download as PDF or Word and keep editing from there.' },
+];
 
 export default function LandingPage() {
   const { data: landingMetrics } = useQuery({
@@ -16,103 +23,48 @@ export default function LandingPage() {
   });
   const numberFormatter = new Intl.NumberFormat();
 
-  const metrics = [
-    {
-      label: 'Lesson plans created',
-      value: landingMetrics?.totalLessonPlans,
-      helper: 'Plans shared with teachers across the platform',
-    },
-  ];
-
   return (
     <div className={styles.userLanding}>
-      <header className={theme.userAppHeader}>
-        <div className={theme.userAppHeaderInner}>
-          <a href="/home" className={theme.userAppBrandLink}>
-            <h1 className={theme.userAppBrand}>Lessora AI</h1>
-          </a>
-          <nav className={theme.userAppHeaderActions} aria-label="Main navigation">
-            <a href="/discover" className={theme.userAppHeaderLink}>Discover</a>
-            <a href="/generate" className={theme.userAppHeaderLink}>New Plan</a>
-            <a href="/support" className={theme.userAppHeaderLink}>Support</a>
-          </nav>
-        </div>
-      </header>
-      <div className={styles.userLandingHero}>
+      <SiteHeader current="home" />
+      <main className={styles.userLandingHero}>
         <div>
-          <p className={styles.userLandingEyebrow}>Less Planning, More Teaching</p>
-          <h1 className={styles.userLandingTitle}>Lesson Plans, Made Simply</h1>
+          <h1 className={styles.userLandingTitle}>A lesson plan for tomorrow&apos;s class</h1>
           <p className={styles.userLandingDescription}>
-            Turn your topic and grade level into a complete, professional lesson plan with clear
-            objectives, engaging activities, and assessments. No account required.
-          </p>
-          <p className={styles.userLandingOnboarding}>
-            Just tell us what you are teaching. We handle the rest.
+            Enter the topic, grade level and class time. Lessora writes the objectives, procedure
+            and assessment in the format you choose. No account needed.
           </p>
         </div>
         <div className={styles.userLandingCallout}>
-          <p className={styles.userLandingCalloutLabel}>Start here</p>
           <a href="/generate" className={styles.userLandingPrimaryCta}>
-            Start Planning
+            Start a lesson plan
           </a>
           <p className={styles.userLandingUsageNote}>
-            No account needed. Generate up to 3 lesson plans per day.
+            Generate up to 3 lesson plans a day without an account.
           </p>
+          <div className={styles.userLandingSecondaryLinks}>
+            <a href="/discover" className={styles.userLandingSecondaryLink}>
+              Browse plans from other teachers
+            </a>
+          </div>
         </div>
-        <div className={styles.userLandingSecondaryLinks}>
-          <a href="/discover" className={styles.userLandingSecondaryLink}>
-            Browse Plans
-          </a>
-          <a href="/support" className={styles.userLandingSecondaryLink}>
-            Support the project
-          </a>
-        </div>
-        <div className={styles.userLandingFeatureGrid}>
-          {[
-            {
-              icon: <CheckCircle weight="fill" size={24} />,
-              title: 'Professional Format',
-              desc: 'Structured, curriculum-ready plans you can use immediately',
-            },
-            {
-              icon: <Clock weight="fill" size={24} />,
-              title: 'Save Your Evenings',
-              desc: 'Create a full lesson plan in minutes, not hours',
-            },
-            {
-              icon: <Target weight="fill" size={24} />,
-              title: 'Guided by Your Input',
-              desc: 'Your topic, your standards, your classroom context',
-            },
-            {
-              icon: <Browser weight="fill" size={24} />,
-              title: 'Works Anywhere',
-              desc: 'Open it in any browser — no download, no install',
-            },
-          ].map((feature, index) => (
-            <ScrollReveal key={feature.title} delay={index * 80}>
-              <div className={styles.userLandingFeatureCard}>
-                <div className={styles.userLandingFeatureIcon}>{feature.icon}</div>
-                <h3 className={styles.userLandingFeatureTitle}>{feature.title}</h3>
-                <p className={styles.userLandingFeatureText}>{feature.desc}</p>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-        <ScrollReveal delay={400}>
-          <div className={styles.userLandingMetricGrid}>
-            {metrics.map((metric) => (
-              <div key={metric.label} className={styles.userLandingMetricCard}>
-                <p className={styles.userLandingMetricLabel}>{metric.label}</p>
-                <p className={styles.userLandingMetricValue}>
-                  {numberFormatter.format(metric.value ?? 0)}
-                </p>
-                <p className={styles.userLandingMetricHelper}>{metric.helper}</p>
+
+        <section className={styles.userLandingContents} aria-labelledby="plan-contents">
+          <h2 id="plan-contents" className={styles.userLandingContentsTitle}>In each plan</h2>
+          <dl className={styles.userLandingContentsList}>
+            {PLAN_CONTENTS.map((item) => (
+              <div key={item.term} className={styles.userLandingContentsRow}>
+                <dt className={styles.userLandingContentsTerm}>{item.term}</dt>
+                <dd className={styles.userLandingContentsDesc}>{item.desc}</dd>
               </div>
             ))}
-          </div>
-        </ScrollReveal>
-      </div>
+          </dl>
+        </section>
+
+        <p className={styles.userLandingCount}>
+          <span className={styles.userLandingCountValue}>{numberFormatter.format(landingMetrics?.totalLessonPlans ?? 0)}</span>
+          {' '}lesson plans written so far. <a href="/support">Help keep Lessora free</a>.
+        </p>
+      </main>
     </div>
   );
 }

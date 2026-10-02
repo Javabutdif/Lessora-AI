@@ -7,7 +7,17 @@ import {
   fetchSupportDonationConfig,
   fetchSupportDonationStatus,
 } from '@/app/lib/api-client';
-import styles from '@/portal-theme.module.css';
+import SiteHeader from '@/app/components/site-header';
+import LoadingSkeleton from '@/app/components/loading-skeleton';
+import styles from "@/portal-theme.module.css";
+
+// Donation amounts are stored in centavos (PayMongo's smallest unit)
+function formatCentavos(amount: number): string {
+  return (amount / 100).toLocaleString('en-PH', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
 
 function SupportContent() {
   const searchParams = useSearchParams();
@@ -47,34 +57,21 @@ function SupportContent() {
   return (
     <main className={`${styles.infoPageShell} ${styles.supportPage}`}>
       <div className={styles.infoPageInner}>
-        <header className={styles.userAppHeader}>
-          <div className={styles.userAppHeaderInner}>
-            <a href="/home" className={styles.userAppBrandLink}>
-              <h1 className={styles.userAppBrand}>Lessora AI</h1>
-            </a>
-            <nav className={styles.userAppHeaderActions} aria-label="Main navigation">
-              <a href="/home" className={styles.userAppHeaderLink}>Home</a>
-              <a href="/discover" className={styles.userAppHeaderLink}>Discover</a>
-              <a href="/generate" className={styles.userAppHeaderLink}>New Plan</a>
-              <a href="/support" className={styles.userAppHeaderLink} aria-current="page">Support</a>
-            </nav>
-          </div>
-        </header>
+        <SiteHeader current="support" />
 
         <div className={styles.supportDonationContent}>
           <div className={styles.supportDonationCard}>
-            <p className={styles.eyebrow}>Support</p>
             <h1 className={styles.supportDonationTitle}>{config?.title || 'Support Lessora AI'}</h1>
             <p className={styles.supportDonationDescription}>
-              {config?.description || 'Help us keep building for teachers.'}
+              {config?.description || (configQuery.isLoading ? '' : 'Help us keep building for teachers.')}
             </p>
 
             {status === 'success' && successDonation && (
               <div className={styles.successPanel}>
-                <p className={styles.successTitle}>Thank you for your support!</p>
+                <p className={styles.successTitle}>Thank you. Your donation was received.</p>
                 <p className={styles.successText}>
-                  Your donation of {config?.currency || 'PHP'}{' '}
-                  {successDonation.amount.toLocaleString()} has been received.
+                  Amount: {config?.currency || 'PHP'}{' '}
+                  {formatCentavos(successDonation.amount)}
                 </p>
                 <p className={styles.successMessage}>{config?.successMessage || ''}</p>
               </div>
@@ -82,10 +79,12 @@ function SupportContent() {
 
             {status === 'cancelled' && (
               <div className={styles.errorPanel}>
-                <p className={styles.centerTitle}>Donation cancelled</p>
-                <p className={styles.centerText}>You can try again whenever you&apos;d like.</p>
+                <p className={styles.centerTitle}>The donation was cancelled</p>
+                <p className={styles.centerText}>No payment was taken. Pick an amount below to try again.</p>
               </div>
             )}
+
+            {configQuery.isLoading && <LoadingSkeleton lines={3} label="Loading donation options" />}
 
             <div className={styles.tierGrid}>
               {tiers.map((tier) => (
@@ -100,12 +99,9 @@ function SupportContent() {
                   <p className={styles.tierLabel}>{tier.label}</p>
                   <p className={styles.tierAmount}>
                     {config?.currency || 'PHP'}{' '}
-                    {(tier.amount / 100).toLocaleString('en-PH', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                    {formatCentavos(tier.amount)}
                   </p>
-                  <p className={styles.tierDescription}>{checkoutMutation.isPending ? 'Processing...' : tier.description}</p>
+                  <p className={styles.tierDescription}>{checkoutMutation.isPending ? 'Opening checkout…' : tier.description}</p>
                 </button>
               ))}
             </div>
@@ -118,7 +114,7 @@ function SupportContent() {
 
 export default function SupportDonationPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<main className={`${styles.infoPageShell} ${styles.supportPage}`}><div className={styles.infoPageInner}><SiteHeader current="support" /><LoadingSkeleton lines={4} /></div></main>}>
       <SupportContent />
     </Suspense>
   );

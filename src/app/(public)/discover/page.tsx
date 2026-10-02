@@ -1,15 +1,12 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, MouseEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import {
-  getPublicLessonPlanById,
-  listPublicLessonPlans,
-  PublicLessonPlan,
-} from "@/app/lib/api-client";
+import { listPublicLessonPlans } from "@/app/lib/api-client";
 import ScrollReveal from "@/app/components/scroll-reveal";
 import Dropdown from "@/app/components/ui/dropdown";
-import { Warning, Spinner, MagnifyingGlass } from "@phosphor-icons/react";
+import SiteHeader from "@/app/components/site-header";
+import LoadingSkeleton from "@/app/components/loading-skeleton";
 import styles from "@/portal-theme.module.css";
 
 const ALL_GRADES = ["All Grades", "Preschool", "Kindergarten", "Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6", "Grade 7", "Grade 8", "Grade 9", "Grade 10", "Grade 11", "Grade 12", "Senior High School"];
@@ -43,70 +40,53 @@ export default function DiscoverPage() {
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   }
 
-  function handleNavigate(planId: string) {
+  function handleNavigate(event: MouseEvent<HTMLAnchorElement>, planId: string) {
+    // Modified clicks (new tab, new window) behave like a normal link
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
+    event.preventDefault();
+    if (navigatingId) return;
     setNavigatingId(planId);
     router.push(`/preview/${planId}?public=true`);
   }
 
   return (
     <div className={styles.userAppPage}>
-      <header className={styles.userAppHeader}>
-        <div className={styles.userAppHeaderInner}>
-          <a href="/home" className={styles.userAppBrandLink}>
-            <h1 className={styles.userAppBrand}>Lessora AI</h1>
-          </a>
-          <nav className={styles.userAppHeaderActions} aria-label="Main navigation">
-            <a href="/home" className={styles.userAppHeaderLink}>Home</a>
-            <a href="/discover" className={styles.userAppHeaderLink} aria-current="page">Discover</a>
-            <a href="/generate" className={styles.userAppHeaderLink}>New Plan</a>
-            <a href="/support" className={styles.userAppHeaderLink}>Support</a>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader current="discover" />
 
-      <div className={styles.userAppContainer}>
-        <div className={styles.userAppHero}>
-          <p className={styles.eyebrow}>Discover</p>
-          <h2 className={styles.userAppHeroTitle}>All Lesson Plans</h2>
-          <p className={styles.userAppHeroDescription}>Explore lesson plans shared by teachers across the platform.</p>
+      <main className={styles.userAppContainer}>
+        <div className={styles.pageHead}>
+          <h1 className={styles.pageTitle}>Lesson plans from other teachers</h1>
+          <p className={styles.pageIntro}>Open any plan to read it, download it, or refine a copy for your own class.</p>
         </div>
 
         <div className={styles.filterBar}>
-          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search by topic, subject, or grade..." className={styles.searchInputLg} />
-          <Dropdown options={ALL_SUBJECTS.filter((s) => s !== "All Subjects").map((s) => ({ value: s, label: s }))} value={selectedSubject === "All Subjects" ? "" : selectedSubject} onChange={(v) => setSelectedSubject(v || "All Subjects")} placeholder="All Subjects" />
-          <Dropdown options={ALL_GRADES.filter((g) => g !== "All Grades").map((g) => ({ value: g, label: g }))} value={selectedGrade === "All Grades" ? "" : selectedGrade} onChange={(v) => setSelectedGrade(v || "All Grades")} placeholder="All Grades" />
+          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search by topic, subject or grade" aria-label="Search lesson plans" className={styles.searchInputLg} />
+          <Dropdown options={ALL_SUBJECTS.filter((s) => s !== "All Subjects").map((s) => ({ value: s, label: s }))} value={selectedSubject === "All Subjects" ? "" : selectedSubject} onChange={(v) => setSelectedSubject(v || "All Subjects")} placeholder="All subjects" />
+          <Dropdown options={ALL_GRADES.filter((g) => g !== "All Grades").map((g) => ({ value: g, label: g }))} value={selectedGrade === "All Grades" ? "" : selectedGrade} onChange={(v) => setSelectedGrade(v || "All Grades")} placeholder="All grades" />
         </div>
 
-        {isLoading && (
-          <div className={styles.userAppCenter}>
-            <Spinner weight="fill" size={32} className={styles.spin} />
-            <p className={styles.centerTextSmall}>Loading plans...</p>
-          </div>
-        )}
+        {isLoading && <LoadingSkeleton lines={6} label="Loading lesson plans" />}
 
         {error && !isLoading && (
-          <div className={styles.errorPanel}>
-            <Warning size={28} className={styles.iconWithBottom} />
-            <p className={styles.centerTitle}>Failed to load plans</p>
+          <div className={styles.errorPanel} role="alert">
+            <p className={styles.centerTitle}>Lesson plans could not be loaded</p>
             <p className={styles.centerText}>{typeof error === 'string' ? error : String(error)}</p>
-            <button type="button" onClick={() => window.location.reload()} className={styles.softSecondary}>Try Again</button>
+            <button type="button" onClick={() => window.location.reload()} className={styles.softSecondary}>Reload the page</button>
           </div>
         )}
 
         {!isLoading && !error && (!plans || plans.length === 0) && (
           <div className={styles.userAppCenter}>
-            <MagnifyingGlass weight="fill" size={48} className={styles.iconWithBottomLarge} />
-            <h3 className={styles.userAppCenterTitle}>No Plans Yet</h3>
-            <p className={styles.userAppCenterText}>Be the first teacher to share a lesson plan.</p>
-            <button type="button" onClick={() => router.push("/generate")} className={styles.flatButton}>Create Your First Plan</button>
+            <h2 className={styles.userAppCenterTitle}>No lesson plans yet</h2>
+            <p className={styles.userAppCenterText}>Plans appear here once teachers generate them.</p>
+            <a href="/generate" className={styles.flatButton}>Write the first one</a>
           </div>
         )}
 
         {!isLoading && !error && filteredPlans.length === 0 && plans && plans.length > 0 && (
           <div className={styles.userAppCenter}>
-            <MagnifyingGlass weight="fill" size={40} className={styles.iconWithBottomLarge} />
-            <h3 className={styles.userAppCenterTitle}>No Results Found</h3>
-            <p className={styles.userAppCenterText}>Try a different search term or filter</p>
+            <h2 className={styles.userAppCenterTitle}>No plans match</h2>
+            <p className={styles.userAppCenterText}>Try a shorter search, or set subject and grade back to all.</p>
           </div>
         )}
 
@@ -114,34 +94,25 @@ export default function DiscoverPage() {
           <div className={styles.planGrid}>
             {filteredPlans.map((plan, index) => (
               <ScrollReveal key={plan.id} delay={index * 40}>
-                <div
-                  className={navigatingId === plan.id ? `${styles.planTile} ${styles.planTileNavigating}` : styles.planTile}
-                  onClick={() => navigatingId !== plan.id && handleNavigate(plan.id)}
-                >
-                  {navigatingId === plan.id ? (
-                    <div className={styles.planTileLoading}>
-                      <Spinner weight="fill" size={20} className={styles.spin} />
-                      <span>Loading...</span>
+                <article className={navigatingId === plan.id ? `${styles.planTile} ${styles.planTileNavigating}` : styles.planTile}>
+                  <a
+                    href={`/preview/${plan.id}?public=true`}
+                    onClick={(event) => handleNavigate(event, plan.id)}
+                    aria-busy={navigatingId === plan.id}
+                    className={styles.planTileLink}
+                  >
+                    <p className={styles.metaLine}>{plan.subject} · {plan.gradeLevel} · {plan.totalDuration} min</p>
+                    <h2 className={styles.planTileTitle}>{plan.title}</h2>
+                    <div className={styles.planTileMeta}>
+                      <span>{navigatingId === plan.id ? "Opening…" : formatDate(plan.createdAt)}</span>
                     </div>
-                  ) : (
-                    <>
-                      <h3 className={styles.planTileTitle}>{plan.title}</h3>
-                      <div className={styles.planTileChipRow}>
-                        <span className={`${styles.chip} ${styles.chipAccent}`}>{plan.subject}</span>
-                        <span className={`${styles.chip} ${styles.chipPurple}`}>{plan.gradeLevel}</span>
-                      </div>
-                      <div className={styles.planTileMeta}>
-                        <span>{plan.totalDuration} min</span>
-                        <span>{formatDate(plan.createdAt)}</span>
-                      </div>
-                    </>
-                  )}
-                </div>
+                  </a>
+                </article>
               </ScrollReveal>
             ))}
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

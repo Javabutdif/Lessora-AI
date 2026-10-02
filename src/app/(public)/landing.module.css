@@ -1,5 +1,5 @@
 /* LandingPage — minimalist "Academic notebook"
-   Teacher-first tone: calm, encouraging, human.
+   Teacher-first tone: calm, plain, specific.
    Single primary CTA. No pill shapes. Paper + ink + navy. */
 
 .userLanding {
@@ -18,7 +18,6 @@
 }
 
 .userLandingHero {
-  position: relative;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -27,45 +26,13 @@
   gap: var(--spacing-10);
 }
 
-/* Ambient paper-warm radial gradient behind hero — signature move. */
-.userLandingHero::after {
-  content: "";
-  position: absolute;
-  top: -10%;
-  left: -5%;
-  width: 60%;
-  height: 80%;
-  background: radial-gradient(
-    ellipse at 30% 20%,
-    rgba(30, 58, 138, 0.04) 0%,
-    transparent 60%
-  );
-  pointer-events: none;
-  z-index: 0;
-}
-
-.userLandingHero > * {
-  position: relative;
-  z-index: 1;
-}
-
 @media (min-width: 768px) {
   .userLandingHero {
     padding: var(--spacing-16) var(--spacing-8);
     grid-template-columns: 1fr 1fr;
     gap: var(--spacing-12);
-    align-items: center;
+    align-items: end;
   }
-}
-
-.userLandingEyebrow {
-  margin: 0 0 var(--spacing-3);
-  font-family: var(--font-family-mono);
-  font-size: 11px;
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-spacing-wider);
-  text-transform: uppercase;
-  color: var(--color-ink-tertiary);
 }
 
 .userLandingTitle {
@@ -76,23 +43,15 @@
   letter-spacing: var(--letter-spacing-tight);
   color: var(--color-ink-primary);
   font-weight: var(--font-weight-semibold);
+  text-wrap: balance;
 }
 
 .userLandingDescription {
-  margin: 0 0 var(--spacing-4);
+  margin: 0;
   max-width: 36rem;
   color: var(--color-ink-secondary);
   font-size: var(--font-size-lg);
   line-height: var(--line-height-relaxed);
-}
-
-/* Onboarding helper line — warm, guiding */
-.userLandingOnboarding {
-  margin: 0 0 var(--spacing-6);
-  color: var(--color-warm-green-text);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-relaxed);
-  font-style: italic;
 }
 
 .userLandingCallout {
@@ -101,16 +60,6 @@
   padding: var(--spacing-6) 0;
   border-top: 1px solid var(--color-ink-primary);
   border-bottom: 1px solid var(--color-ink-primary);
-}
-
-.userLandingCalloutLabel {
-  margin: 0 0 var(--spacing-2);
-  font-family: var(--font-family-mono);
-  font-size: 11px;
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-spacing-wider);
-  text-transform: uppercase;
-  color: var(--color-ink-tertiary);
 }
 
 /* Single primary CTA — navy filled */
@@ -149,134 +98,90 @@
   line-height: var(--line-height-relaxed);
 }
 
-/* Secondary links below callout — flat outline style */
 .userLandingSecondaryLinks {
   display: flex;
   gap: var(--spacing-4);
   flex-wrap: wrap;
 }
 
+/* Secondary link — plain underlined text, not a second button */
 .userLandingSecondaryLink {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-3) var(--spacing-6);
-  min-height: 44px;
-  border: 1px solid var(--color-rule);
-  background: transparent;
-  color: var(--color-ink-secondary);
-  border-radius: var(--radius-md);
-  font-family: var(--font-family-base);
+  color: var(--color-ink-primary);
   font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  width: fit-content;
-  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--color-rule);
+  transition: text-decoration-color var(--transition-fast);
 }
 
 .userLandingSecondaryLink:hover {
-  background: var(--color-surface-hover);
-  color: var(--color-ink-primary);
-  border-color: var(--color-ink-tertiary);
+  text-decoration-color: var(--color-ink-primary);
 }
 
-.userLandingFeatureGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0;
-  border-top: 1px solid var(--color-rule);
+/* "In each plan" — a ruled contents list, like the front page of a workbook */
+.userLandingContents {
+  grid-column: 1 / -1;
 }
 
-.userLandingFeatureCard {
-  display: grid;
-  gap: var(--spacing-3);
-  padding: var(--spacing-6) 0;
-  border-bottom: 1px solid var(--color-rule);
-  transition: border-bottom-color var(--transition-fast);
+.userLandingContentsTitle {
+  margin: 0 0 var(--spacing-4);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
 }
 
-.userLandingFeatureCard:hover {
-  border-bottom-color: var(--color-accent);
-}
-
-@media (min-width: 768px) {
-  .userLandingFeatureCard {
-    padding: var(--spacing-8) var(--spacing-6);
-    border-bottom: none;
-    border-right: 1px solid var(--color-rule);
-  }
-
-  .userLandingFeatureCard:hover {
-    border-right-color: var(--color-accent);
-  }
-}
-
-.userLandingFeatureIcon {
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--color-rule);
-  color: var(--color-warm-green);
-  font-size: var(--font-size-lg);
-}
-
-.userLandingFeatureTitle {
+.userLandingContentsList {
   margin: 0;
+  border-top: 3px double var(--color-ink-primary);
+}
+
+.userLandingContentsRow {
+  display: grid;
+  gap: var(--spacing-1);
+  padding: var(--spacing-4) 0;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+@media (min-width: 640px) {
+  .userLandingContentsRow {
+    grid-template-columns: 12rem 1fr;
+    gap: var(--spacing-6);
+    align-items: baseline;
+  }
+}
+
+.userLandingContentsTerm {
   font-family: var(--font-family-display);
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--letter-spacing-tight);
   color: var(--color-ink-primary);
 }
 
-.userLandingFeatureText {
+.userLandingContentsDesc {
   margin: 0;
   color: var(--color-ink-secondary);
   line-height: var(--line-height-relaxed);
-  font-size: var(--font-size-sm);
 }
 
-.userLandingMetricGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: var(--spacing-8);
-  padding-top: var(--spacing-8);
-  border-top: 1px solid var(--color-rule);
-}
-
-.userLandingMetricCard {
-  display: grid;
-  gap: var(--spacing-3);
-  padding: var(--spacing-6) 0;
-  border-top: 1px solid var(--color-ink-primary);
-}
-
-.userLandingMetricLabel {
+.userLandingCount {
+  grid-column: 1 / -1;
   margin: 0;
-  font-family: var(--font-family-mono);
-  font-size: 11px;
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-spacing-wider);
-  text-transform: uppercase;
-  color: var(--color-ink-tertiary);
+  color: var(--color-ink-secondary);
+  font-size: var(--font-size-base);
 }
 
-.userLandingMetricValue {
-  margin: 0;
+.userLandingCount a {
+  color: var(--color-ink-primary);
+  text-underline-offset: 4px;
+}
+
+.userLandingCountValue {
   font-family: var(--font-family-display);
-  font-size: clamp(32px, 4vw, 48px);
-  line-height: var(--line-height-tight);
-  letter-spacing: var(--letter-spacing-tight);
+  font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-semibold);
   color: var(--color-ink-primary);
-}
-
-.userLandingMetricHelper {
-  margin: 0;
-  color: var(--color-ink-secondary);
-  line-height: var(--line-height-relaxed);
-  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 720px) {
@@ -284,12 +189,7 @@
     padding: var(--spacing-8) var(--spacing-4);
   }
 
-  .userLandingPrimaryCta,
-  .userLandingSecondaryLink {
+  .userLandingPrimaryCta {
     width: 100%;
-  }
-
-  .userLandingSecondaryLinks {
-    flex-direction: column;
   }
 }
